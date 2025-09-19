@@ -1,0 +1,9 @@
+{
+    "name": "MultifunctionalCheat",
+    "version_number": "1.0.0",
+    "website_url": "https://github.com/AnZhi20/AnZhi20-HoLMod",
+    "description": "提供城中可招门客上限、可建民居上限、可建商铺上限、商铺兑换元宝上限与家族全角色体力上限、科举人数上限、男女生育最大子嗣上限修改。",
+    "dependencies": [
+        "BepInEx-BepInExPack-5.4.2100"
+    ]
+}
