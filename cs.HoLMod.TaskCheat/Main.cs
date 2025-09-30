@@ -12,7 +12,7 @@ namespace cs.HoLMod.TaskCheat
         // GUI窗口位置和大小
         private Rect windowRect = new Rect(20, 20, 400, 300);
         // 是否显示窗口
-        private bool showWindow = true;
+        private bool showWindow = false;
         // 窗口ID
         private int windowID = 1000;
         // 插件日志
