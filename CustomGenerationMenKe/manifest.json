@@ -1,9 +1,0 @@
-{
-    "name": "CustomGenerationMenKe",
-    "version_number": "1.2.0",
-    "website_url": "https://github.com/AnZhi20/AnZhi20-HoLMod",
-    "description": "在游戏内按F1打开窗口可自定义添加门客。Press F1 in-game to open a window where you can customize and add followers.",
-    "dependencies": [
-        "BepInEx-BepInExPack-5.4.2100"
-    ]
-}
