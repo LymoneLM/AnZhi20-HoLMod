@@ -10,7 +10,7 @@ namespace cs.HoLMod.TaskCheat
     public class TaskCheat : BaseUnityPlugin
     {
         // GUI窗口位置和大小
-        private Rect windowRect = new Rect(20, 20, 400, 300);
+        private Rect windowRect = new Rect(20, 20, 400, 500);
         // 是否显示窗口
         private bool showWindow = false;
         // 窗口ID
