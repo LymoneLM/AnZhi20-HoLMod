@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
+using BepInEx.Logging;
 
 namespace cs.HoLMod.TaskCheat
 {
@@ -416,6 +417,7 @@ namespace cs.HoLMod.TaskCheat
         //任务参数
         public static List<List<string>> AllTaskOrderData = new List<List<string>>
 		{
+            //{完成任务声望增加值，完成任务所需次数，完成任务铜钱增加值|完成任务元宝增加值}
 			new List<string>
 			{
 				"1",
@@ -898,89 +900,106 @@ namespace cs.HoLMod.TaskCheat
             }
 		};
 
-        //任务添加
-        public static List<List<string>> TaskListData = new List<List<string>>
+        // 从Mainload读取任务数据并进行对比和更新
+        public static void UpdateTasksFromMainload()
         {
-            new List<string> { "0", "0" },
-            new List<string> { "1", "0" },
-            new List<string> { "2", "0" },
-            new List<string> { "3", "0" },
-            new List<string> { "4", "0" },
-            new List<string> { "5", "0" },
-            new List<string> { "6", "0" },
-            new List<string> { "7", "0" },
-            new List<string> { "8", "0" },
-            new List<string> { "9", "0" },
-            new List<string> { "10", "0" },
-            new List<string> { "11", "0" },
-            new List<string> { "12", "0" },
-            new List<string> { "13", "0" },
-            new List<string> { "14", "0" },
-            new List<string> { "15", "0" },
-            new List<string> { "16", "0" },
-            new List<string> { "17", "0" },
-            new List<string> { "18", "0" },
-            new List<string> { "19", "0" },
-            new List<string> { "20", "0" },
-            new List<string> { "21", "0" },
-            new List<string> { "22", "0" },
-            new List<string> { "23", "0" },
-            new List<string> { "24", "0" },
-            new List<string> { "25", "0" },
-            new List<string> { "26", "0" },
-            new List<string> { "27", "0" },
-            new List<string> { "28", "0" },
-            new List<string> { "29", "0" },
-            new List<string> { "30", "0" },
-            new List<string> { "31", "0" },
-            new List<string> { "32", "0" },
-            new List<string> { "33", "0" },
-            new List<string> { "34", "0" },
-            new List<string> { "35", "0" },
-            new List<string> { "36", "0" },
-            new List<string> { "37", "0" },
-            new List<string> { "38", "0" },
-            new List<string> { "39", "0" },
-            new List<string> { "40", "0" },
-            new List<string> { "41", "0" },
-            new List<string> { "42", "0" },
-            new List<string> { "43", "0" },
-            new List<string> { "44", "0" },
-            new List<string> { "45", "0" },
-            new List<string> { "46", "0" },
-            new List<string> { "47", "0" },
-            new List<string> { "48", "0" },
-            new List<string> { "49", "0" },
-            new List<string> { "50", "0" },
-            new List<string> { "51", "0" },
-            new List<string> { "52", "0" },
-            new List<string> { "53", "0" },
-            new List<string> { "54", "0" },
-            new List<string> { "55", "0" },
-            new List<string> { "56", "0" },
-            new List<string> { "57", "0" },
-            new List<string> { "58", "0" },
-            new List<string> { "59", "0" },
-            new List<string> { "60", "0" },
-            new List<string> { "61", "0" },
-            new List<string> { "62", "0" },
-            new List<string> { "63", "0" },
-            new List<string> { "64", "0" },
-            new List<string> { "65", "0" },
-            new List<string> { "66", "0" },
-            new List<string> { "67", "0" },
-            new List<string> { "68", "0" },
-            new List<string> { "69", "0" },
-            new List<string> { "70", "0" },
-            new List<string> { "71", "0" },
-            new List<string> { "72", "0" },
-            new List<string> { "73", "0" },
-            new List<string> { "74", "0" },
-            new List<string> { "75", "0" },
-            new List<string> { "76", "0" },
-            new List<string> { "77", "0" },
-            new List<string> { "78", "0" },
-            new List<string> { "79", "0" }
-        };
+            try
+            {
+                // 获取Mainload对象
+                var mainload = GameObject.Find("Mainload");
+                if (mainload == null)
+                {
+                    Logger.LogWarning("TaskCheat: 未找到Mainload对象");
+                    return;
+                }
+
+                // 读取Mainload.Text_AllTaskOrder
+                var textAllTaskOrderField = mainload.GetType().GetField("Text_AllTaskOrder");
+                if (textAllTaskOrderField != null)
+                {
+                    var newTextTasks = textAllTaskOrderField.GetValue(mainload) as List<List<string>>;
+                    if (newTextTasks != null && newTextTasks.Count > 0)
+                    {
+                        CompareAndUpdateTasks(Text_AllTaskOrder, newTextTasks, "Text_AllTaskOrder");
+                    }
+                }
+                else
+                {
+                    Logger.LogWarning("TaskCheat: 未找到Mainload.Text_AllTaskOrder字段");
+                }
+
+                // 读取Mainload.AllTaskOrderData
+                var allTaskOrderDataField = mainload.GetType().GetField("AllTaskOrderData");
+                if (allTaskOrderDataField != null)
+                {
+                    var newTaskData = allTaskOrderDataField.GetValue(mainload) as List<List<string>>;
+                    if (newTaskData != null && newTaskData.Count > 0)
+                    {
+                        CompareAndUpdateTasks(AllTaskOrderData, newTaskData, "AllTaskOrderData");
+                    }
+                }
+                else
+                {
+                    Logger.LogWarning("TaskCheat: 未找到Mainload.AllTaskOrderData字段");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Logger.LogError("TaskCheat: 更新任务数据时发生错误: " + ex.Message);
+            }
+        }
+
+        // 比较并更新任务列表
+        private static void CompareAndUpdateTasks(List<List<string>> existingTasks, List<List<string>> newTasks, string taskType)
+        {
+            int addedCount = 0;
+
+            // 遍历新任务列表
+            foreach (var newTask in newTasks)
+            {
+                bool found = false;
+                
+                // 检查现有任务列表中是否已存在该任务
+                for (int i = 0; i < existingTasks.Count; i++)
+                {
+                    if (AreTasksEqual(existingTasks[i], newTask))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                // 如果任务不存在，则添加
+                if (!found)
+                {
+                    existingTasks.Add(newTask);
+                    addedCount++;
+                }
+            }
+
+            Logger.LogInfo($"TaskCheat: {taskType} 更新完成 - 添加了 {addedCount} 个新任务");
+        }
+
+        // 比较两个任务是否相同
+        private static bool AreTasksEqual(List<string> task1, List<string> task2)
+        {
+            if (task1.Count != task2.Count)
+                return false;
+
+            for (int i = 0; i < task1.Count; i++)
+            {
+                if (task1[i] != task2[i])
+                    return false;
+            }
+
+            return true;
+        }
+
+        // 获取Logger实例
+        private static ManualLogSource Logger
+        {
+            get { return TaskCheat.Log; }
+        }
+
     }
 }

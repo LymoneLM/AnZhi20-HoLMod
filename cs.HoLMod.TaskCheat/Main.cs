@@ -3,27 +3,102 @@ using BepInEx.Logging;
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Linq;
+using HarmonyLib;
 
 namespace cs.HoLMod.TaskCheat
 {
+    // 插件信息类
+    public static class PluginInfo
+    {
+        public const string PLUGIN_GUID = "cs.HoLMod.TaskCheat.AnZhi20";
+        public const string PLUGIN_NAME = "HoLMod.TaskCheat";
+        public const string PLUGIN_VERSION = "1.1.0";
+    }
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class TaskCheat : BaseUnityPlugin
     {
         // GUI窗口位置和大小
-        private Rect windowRect = new Rect(20, 20, 400, 500);
+        private Rect windowRect = new Rect(20, 20, 300, 600);
         // 是否显示窗口
         private bool showWindow = false;
         // 窗口ID
         private int windowID = 1000;
         // 插件日志
         internal static ManualLogSource Log;
+        // 单例实例
+        public static TaskCheat Instance { get; private set; }
         // UI缩放因子
         private float scaleFactor = 1f;
+        
+        // 任务选择窗口相关
+        private bool showTaskSelectionWindow = false;
+        private Rect taskSelectionWindowRect = new Rect(100, 100, 700, 600);
+        private int taskSelectionWindowID = 2000;
+        private Vector2 taskScrollPosition = Vector2.zero;
+        private List<bool> taskSelectionStates = new List<bool>();
+        private List<List<string>> selectedTasks = new List<List<string>>();
+        
+        // 任务添加窗口相关
+        private bool showAddTaskWindow = false;
+        private Rect addTaskWindowRect = new Rect(100, 100, 700, 600);
+        private int addTaskWindowID = 3000;
+        private Vector2 addTaskScrollPosition = Vector2.zero;
+        private List<bool> addTaskSelectionStates = new List<bool>();
+        
+        // 确认对话框相关
+        private bool showConfirmClearAllDialog = false;
+        private Rect confirmDialogRect = new Rect(200, 200, 300, 300);
+        private int confirmDialogID = 4000;
 
         private void Awake()
         {
+            // 保存实例引用
+            Instance = this;
+            
             Log = Logger;
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+            
+            // 初始化Harmony补丁
+            Harmony.CreateAndPatchAll(typeof(TaskCheat));
+            
+            // 注意：不再在启动时加载配置，而是在ReadGameData时加载
+            // LoadRepetitiveTaskConfig();
+        }
+        
+        /// <summary>
+        /// 加载重复任务配置
+        /// </summary>
+        public void LoadRepetitiveTaskConfig()
+        {
+            try
+            {
+                // 从配置文件加载选中的任务索引
+                List<int> selectedTaskIndices = TaskCheatConfig.LoadRepetitiveTaskSelection();
+                
+                if (selectedTaskIndices.Count > 0)
+                {
+                    // 转换为RepetitiveTaskHandler需要的格式
+                    List<List<string>> tasksToAdd = new List<List<string>>();
+                    foreach (int index in selectedTaskIndices)
+                    {
+                        tasksToAdd.Add(new List<string> { index.ToString(), "0" });
+                    }
+                    
+                    // 更新ToBeAdded
+                    RepetitiveTaskHandler.AddSelectedTasks(tasksToAdd);
+                    Logger.LogInfo("已根据配置更新待重复任务列表，共加载" + selectedTaskIndices.Count + "个任务");
+                }
+                else
+                {
+                    Logger.LogInfo("未加载到重复任务配置，ToBeAdded列表为空");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("加载重复任务配置时出错: " + ex.Message);
+                Logger.LogError(ex.StackTrace);
+            }
         }
 
         private void Update()
@@ -32,7 +107,13 @@ namespace cs.HoLMod.TaskCheat
             if (Input.GetKeyDown(KeyCode.F4))
             {
                 showWindow = !showWindow;
+                // 关闭所有子窗口
+                showTaskSelectionWindow = false;
+                showAddTaskWindow = false;
             }
+            
+            // 调用重复任务添加方法，根据时间间隔自动添加任务
+            RepetitiveTaskHandler.RepetitiveTaskAdd();
         }
 
         private void OnGUI()
@@ -42,13 +123,50 @@ namespace cs.HoLMod.TaskCheat
                 // 创建无边框窗口
                 windowRect = GUI.Window(windowID, windowRect, DrawWindow, "", GUI.skin.window);
             }
+            
+            if (showTaskSelectionWindow)
+            {
+                // 创建任务选择窗口
+                taskSelectionWindowRect = GUI.Window(taskSelectionWindowID, taskSelectionWindowRect, DrawTaskSelectionWindow, "", GUI.skin.window);
+            }
+            
+            if (showAddTaskWindow)
+            {
+                // 创建任务添加窗口
+                addTaskWindowRect = GUI.Window(addTaskWindowID, addTaskWindowRect, DrawAddTaskWindow, "", GUI.skin.window);
+            }
+            
+            if (showConfirmClearAllDialog)
+            {
+                // 创建确认对话框
+                confirmDialogRect = GUI.Window(confirmDialogID, confirmDialogRect, DrawConfirmClearAllDialog, "", GUI.skin.window);
+            }
         }
 
+
+        //窗口UI设计
         private void DrawWindow(int windowID)
         {
+            // 标题和关闭按钮行
+            GUILayout.BeginHorizontal();
+            // 占位符，确保关闭按钮在右侧
+            GUILayout.FlexibleSpace();
+            // 关闭按钮
+            GUIStyle closeButtonStyle = new GUIStyle(GUI.skin.button)
+            {
+                fixedWidth = 30,
+                fixedHeight = 30,
+                alignment = TextAnchor.MiddleCenter
+            };
+            if (GUILayout.Button("X", closeButtonStyle))
+            {
+                showWindow = false;
+            }
+            GUILayout.EndHorizontal();
+            
             // 任务编辑器标题
             GUILayout.BeginVertical();
-            GUILayout.Space(10);
+            GUILayout.Space(5);
             GUIStyle titleStyle = new GUIStyle(GUI.skin.label)
             {
                 fontSize = 16,
@@ -73,7 +191,7 @@ namespace cs.HoLMod.TaskCheat
             GUILayout.Space(5);
             GUILayout.BeginHorizontal();
             GUILayout.Space(40);
-            if (GUILayout.Button("清除所有任务", GUILayout.Width(150), GUILayout.Height(30)))
+            if (GUILayout.Button("清除所有任务", GUILayout.Width(200), GUILayout.Height(30)))
             {
                 ClearAllTasks();
             }
@@ -88,7 +206,10 @@ namespace cs.HoLMod.TaskCheat
             GUILayout.Space(5);
             GUILayout.BeginHorizontal();
             GUILayout.Space(40);
-            GUILayout.Label("功能暂未实现", GUI.skin.label);
+            if (GUILayout.Button("选择需要添加的任务", GUILayout.Width(200), GUILayout.Height(30)))
+            {
+                OpenAddTaskWindow();
+            }
             GUILayout.EndHorizontal();
             GUILayout.Space(15);
 
@@ -100,7 +221,18 @@ namespace cs.HoLMod.TaskCheat
             GUILayout.Space(5);
             GUILayout.BeginHorizontal();
             GUILayout.Space(40);
-            GUILayout.Label("功能暂未实现", GUI.skin.label);
+            if (GUILayout.Button("选择需要重复的任务", GUILayout.Width(200), GUILayout.Height(30)))
+            {
+                OpenTaskSelectionWindow();
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.Space(5);
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(40);
+            if (GUILayout.Button("清除配置文件", GUILayout.Width(200), GUILayout.Height(30)))
+            {
+                TryClearConfig();
+            }
             GUILayout.EndHorizontal();
 
             GUILayout.EndVertical();
@@ -127,6 +259,7 @@ namespace cs.HoLMod.TaskCheat
             GUI.DragWindow(new Rect(0, 0, windowRect.width, windowRect.height));
         }
 
+        //清除所有任务
         private void ClearAllTasks()
         {
             try
@@ -144,7 +277,7 @@ namespace cs.HoLMod.TaskCheat
         }
 
         // 显示提示信息到游戏界面
-        private void ShowNotification(string message)
+        public void ShowNotification(string message)
         {
             try
             {
@@ -162,13 +295,540 @@ namespace cs.HoLMod.TaskCheat
                 Logger.LogError(string.Format("显示提示信息时出错: {0}", ex.Message));
             }
         }
-    }
+        
+        // 打开任务选择窗口
+        private void OpenTaskSelectionWindow()
+        {
+            try
+            {
+                // 重置选择状态
+                selectedTasks.Clear();
+                taskSelectionStates.Clear();
+                
+                // 根据Text_AllTaskOrder的数量初始化选择状态列表
+                if (TaskList.Text_AllTaskOrder != null)
+                {
+                    for (int i = 0; i < TaskList.Text_AllTaskOrder.Count; i++)
+                    {
+                        taskSelectionStates.Add(false);
+                    }
+                    
+                    // 加载配置文件中的选择状态
+                    List<int> savedSelections = TaskCheatConfig.LoadRepetitiveTaskSelection();
+                    foreach (int index in savedSelections)
+                    {
+                        if (index >= 0 && index < taskSelectionStates.Count)
+                        {
+                            taskSelectionStates[index] = true;
+                        }
+                    }
+                }
+                
+                // 显示任务选择窗口
+                showTaskSelectionWindow = true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("打开任务选择窗口时出错: " + ex.Message);
+                ShowNotification("打开任务选择窗口失败!");
+            }
+        }
+        
+        // 绘制任务选择窗口
+        private void DrawTaskSelectionWindow(int windowID)
+        {
+            GUILayout.BeginVertical();
+            
+            // 标题和关闭按钮行
+            // 第一行：关闭按钮在右上
+            GUILayout.BeginHorizontal();
+            // 占位符，确保关闭按钮在右侧
+            GUILayout.FlexibleSpace();
+            // 关闭按钮
+            GUIStyle closeButtonStyle = new GUIStyle(GUI.skin.button)
+            {
+                fixedWidth = 30,
+                fixedHeight = 30,
+                alignment = TextAnchor.MiddleCenter
+            };
+            if (GUILayout.Button("X", closeButtonStyle))
+            {
+                showTaskSelectionWindow = false;
+            }
+            GUILayout.EndHorizontal();
+            
+            // 第二行：居中显示标题
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            // 窗口标题
+            GUIStyle titleStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 16,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter
+            };
+            GUILayout.Label("选择要重复添加的任务", titleStyle);
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.Space(10);
+            
+            // 任务列表滚动视图
+            taskScrollPosition = GUILayout.BeginScrollView(taskScrollPosition, GUILayout.Height(400));
+            
+            if (TaskList.Text_AllTaskOrder != null)
+            {
+                for (int i = 0; i < TaskList.Text_AllTaskOrder.Count; i++)
+                {
+                    if (i < taskSelectionStates.Count)
+                    {
+                        string taskText = TaskList.Text_AllTaskOrder[i][0];
+                        // 提取以|分隔的前半部分
+                        string baseDisplayText = taskText.Split('|')[0];
 
-    // 插件信息类
-    public static class PluginInfo
+                        // 初始化显示文本，默认使用原始文本
+                        string displayText = baseDisplayText;
+                        
+                        // 尝试从AllTaskOrderData中获取数据并格式化显示文本
+                        try
+                        {
+                            if (TaskList.AllTaskOrderData != null && i < TaskList.AllTaskOrderData.Count)
+                            {
+                                var taskData = TaskList.AllTaskOrderData[i];
+                                if (taskData != null && taskData.Count >= 3)
+                                {
+                                    // 获取任务所需次数
+                                    string times = taskData[1];
+                                    // 获取声望值
+                                    string reputation = taskData[0];
+                                    // 解析铜钱和元宝值
+                                    string[] rewardData = taskData[2].Split('|');
+                                    string money = rewardData.Length > 0 ? rewardData[0] : "0";
+                                    string gold = rewardData.Length > 1 ? rewardData[1] : "0";
+                                    
+                                    // 替换^符号为实际次数
+                                    displayText = baseDisplayText.Replace("^", times);
+                                    // 添加奖励信息
+                                    displayText += $"，任务奖励：声望+{reputation}、铜钱+{money}、元宝+{gold}";
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogError("格式化任务显示文本时出错: " + ex.Message);
+                        }
+                        
+                        // 绘制多选框，使文本居中显示
+                        GUILayout.BeginHorizontal();
+                        GUILayout.FlexibleSpace();
+                        taskSelectionStates[i] = GUILayout.Toggle(taskSelectionStates[i], displayText, GUILayout.Width(600));
+                        GUILayout.FlexibleSpace();
+                        GUILayout.EndHorizontal();
+                        GUILayout.Space(5);
+                    }
+                }
+            }
+            
+            GUILayout.EndScrollView();
+            
+            GUILayout.Space(20);
+            
+            // 确认选择按钮
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("确认选择", GUILayout.Width(150), GUILayout.Height(30)))
+            {
+                ConfirmTaskSelection();
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            
+            GUILayout.EndVertical();
+            
+            // 允许拖动窗口
+            GUI.DragWindow(new Rect(0, 0, taskSelectionWindowRect.width, taskSelectionWindowRect.height));
+        }
+        
+        /// <summary>
+        /// 尝试清除配置文件
+        /// </summary>
+        private void TryClearConfig()
+        {
+            try
+            {
+                string storageIdentifier = TaskCheatConfig.GetStorageIdentifier();
+                
+                // 增强检查：确保存储标识不为空或无效
+                if (string.IsNullOrEmpty(storageIdentifier))
+                {
+                    Logger.LogWarning("存储标识为空，显示确认清除所有配置对话框");
+                    showConfirmClearAllDialog = true;
+                    return;
+                }
+                
+                // 尝试加载配置，检查存储标识是否有效
+                List<int> selectedTasks = TaskCheatConfig.LoadRepetitiveTaskSelection();
+                
+                // 增强检查：如果selectedTasks为null或为空列表，都认为存储标识无效
+                if (selectedTasks != null && selectedTasks.Count > 0)
+                {
+                    // 存储标识有效，只清除当前存储标识的配置
+                    bool success = TaskCheatConfig.ClearConfigByStorageIdentifier(storageIdentifier);
+                    if (success)
+                    {
+                        // 清除配置文件后，立即清空内存中的待添加任务列表
+                        RepetitiveTaskHandler.ToBeAdded.Clear();
+                        Logger.LogInfo("已清空内存中的待添加任务列表");
+                        ShowNotification("配置文件已清除成功！");
+                    }
+                    else
+                    {
+                        ShowNotification("配置文件清除失败！");
+                    }
+                }
+                else
+                {
+                    // 存储标识无效，显示确认清除所有配置的对话框
+                    Logger.LogWarning("存储标识无效或对应配置不存在，显示确认清除所有配置对话框");
+                    showConfirmClearAllDialog = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("尝试清除配置文件时出错: " + ex.Message);
+                Logger.LogError("异常堆栈: " + ex.StackTrace);
+                ShowNotification("操作失败: " + ex.Message);
+                // 出错时也显示确认对话框，让用户选择是否清除所有配置
+                showConfirmClearAllDialog = true;
+            }
+        }
+        
+        /// <summary>
+        /// 绘制确认清除所有配置的对话框
+        /// </summary>
+        /// <param name="windowID">窗口ID</param>
+        private void DrawConfirmClearAllDialog(int windowID)
+        {
+            GUILayout.BeginVertical();
+            GUILayout.Space(20);
+            
+            // 标题样式
+            GUIStyle titleStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 14,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter
+            };
+            
+            // 内容样式
+            GUIStyle contentStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 12,
+                alignment = TextAnchor.MiddleCenter,
+                wordWrap = true
+            };
+            
+            GUILayout.Label("确认操作", titleStyle);
+            GUILayout.Space(10);
+            GUILayout.Label("未找到本存档的配置，可能未生成或已删除。", contentStyle, GUILayout.Height(40));
+            GUILayout.Label("是否清除所有配置？", contentStyle, GUILayout.Height(40));
+            
+            GUILayout.Space(10);
+            
+            // 按钮区域
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            
+            if (GUILayout.Button("是", GUILayout.Width(80), GUILayout.Height(30)))
+            {
+                // 清除所有配置
+                bool success = TaskCheatConfig.ClearAllConfig();
+                if (success)
+                {
+                    // 清除所有配置后，立即清空内存中的待添加任务列表
+                    RepetitiveTaskHandler.ToBeAdded.Clear();
+                    Logger.LogInfo("已清空内存中的待添加任务列表");
+                    ShowNotification("所有配置已清除成功！");
+                }
+                else
+                {
+                    ShowNotification("清除所有配置失败！");
+                }
+                showConfirmClearAllDialog = false;
+            }
+            
+            GUILayout.Space(20);
+            
+            if (GUILayout.Button("否", GUILayout.Width(80), GUILayout.Height(30)))
+            {
+                // 取消操作
+                showConfirmClearAllDialog = false;
+            }
+            
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            
+            GUILayout.EndVertical();
+            
+            // 允许拖动窗口
+            GUI.DragWindow(new Rect(0, 0, confirmDialogRect.width, confirmDialogRect.height));
+        }
+        
+        // 确认任务选择
+        private void ConfirmTaskSelection()
+        {
+            try
+            {
+                // 收集选中的任务
+                List<List<string>> tasksToAdd = new List<List<string>>();
+                List<int> selectedIndices = new List<int>();
+                
+                if (TaskList.Text_AllTaskOrder != null && taskSelectionStates.Count > 0)
+                {
+                    for (int i = 0; i < taskSelectionStates.Count && i < TaskList.Text_AllTaskOrder.Count; i++)
+                    {
+                        if (taskSelectionStates[i])
+                        {
+                            // 添加对应的任务数据（如 {0, 0}）
+                            tasksToAdd.Add(new List<string> { i.ToString(), "0" });
+                            selectedIndices.Add(i);
+                        }
+                    }
+                }
+                
+                // 将选中的任务添加到RepetitiveTask的ToBeAdded中
+                if (tasksToAdd.Count > 0)
+                {
+                    RepetitiveTaskHandler.AddSelectedTasks(tasksToAdd);
+                    ShowNotification(string.Format("成功选择了 {0} 个任务！", tasksToAdd.Count));
+                }
+                else
+                {
+                    ShowNotification("未选择任何任务！");
+                }
+                
+                // 保存选择状态到配置文件
+                TaskCheatConfig.SaveRepetitiveTaskSelection(selectedIndices);
+                
+                // 关闭任务选择窗口
+                showTaskSelectionWindow = false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("确认任务选择时出错: " + ex.Message);
+                ShowNotification("确认任务选择失败!");
+            }
+        }
+
+        // 打开任务添加窗口
+        private void OpenAddTaskWindow()
+        {
+            try
+            {
+                // 重置选择状态
+                addTaskSelectionStates.Clear();
+                
+                // 根据Text_AllTaskOrder的数量初始化选择状态列表
+                if (TaskList.Text_AllTaskOrder != null)
+                {
+                    for (int i = 0; i < TaskList.Text_AllTaskOrder.Count; i++)
+                    {
+                        addTaskSelectionStates.Add(false);
+                    }
+                }
+                
+                // 显示任务添加窗口
+                showAddTaskWindow = true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("打开任务添加窗口时出错: " + ex.Message);
+                ShowNotification("打开任务添加窗口失败!");
+            }
+        }
+        
+        // 绘制任务添加窗口
+        private void DrawAddTaskWindow(int windowID)
+        {
+            GUILayout.BeginVertical();
+
+            // 标题和关闭按钮行
+            // 第一行：关闭按钮在右上
+            GUILayout.BeginHorizontal();
+            // 占位符，确保关闭按钮在右侧
+            GUILayout.FlexibleSpace();
+            // 关闭按钮
+            GUIStyle closeButtonStyle = new GUIStyle(GUI.skin.button)
+            {
+                fixedWidth = 30,
+                fixedHeight = 30,
+                alignment = TextAnchor.MiddleCenter
+            };
+            if (GUILayout.Button("X", closeButtonStyle))
+            {
+                showTaskSelectionWindow = false;
+            }
+            GUILayout.EndHorizontal();
+            
+            // 第二行：居中显示标题
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            // 窗口标题
+            GUIStyle titleStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 16,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter
+            };
+            GUILayout.Label("选择要添加的任务", titleStyle);
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.Space(10);
+            
+            // 任务列表滚动视图
+            addTaskScrollPosition = GUILayout.BeginScrollView(addTaskScrollPosition, GUILayout.Height(400));
+            
+            if (TaskList.Text_AllTaskOrder != null)
+            {
+                for (int i = 0; i < TaskList.Text_AllTaskOrder.Count; i++)
+                {
+                    if (i < addTaskSelectionStates.Count)
+                    {
+                        string taskText = TaskList.Text_AllTaskOrder[i][0];
+                        // 提取以|分隔的前半部分
+                        string baseDisplayText = taskText.Split('|')[0];
+
+                        // 初始化显示文本，默认使用原始文本
+                        string displayText = baseDisplayText;
+                        
+                        // 尝试从AllTaskOrderData中获取数据并格式化显示文本
+                        try
+                        {
+                            if (TaskList.AllTaskOrderData != null && i < TaskList.AllTaskOrderData.Count)
+                            {
+                                var taskData = TaskList.AllTaskOrderData[i];
+                                if (taskData != null && taskData.Count >= 3)
+                                {
+                                    // 获取任务所需次数
+                                    string times = taskData[1];
+                                    // 获取声望值
+                                    string reputation = taskData[0];
+                                    // 解析铜钱和元宝值
+                                    string[] rewardData = taskData[2].Split('|');
+                                    string money = rewardData.Length > 0 ? rewardData[0] : "0";
+                                    string gold = rewardData.Length > 1 ? rewardData[1] : "0";
+                                    
+                                    // 替换^符号为实际次数
+                                    displayText = baseDisplayText.Replace("^", times);
+                                    // 添加奖励信息
+                                    displayText += $"，任务奖励：声望+{reputation}、铜钱+{money}、元宝+{gold}";
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogError("格式化任务显示文本时出错: " + ex.Message);
+                        }
+                        
+                        // 绘制多选框
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Space(20);
+                        addTaskSelectionStates[i] = GUILayout.Toggle(addTaskSelectionStates[i], displayText, GUILayout.Width(600));
+                        GUILayout.EndHorizontal();
+                        GUILayout.Space(5);
+                    }
+                }
+            }
+            
+            GUILayout.EndScrollView();
+            
+            GUILayout.Space(20);
+            
+            // 确认选择按钮
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("确认添加", GUILayout.Width(150), GUILayout.Height(30)))
+            {
+                ConfirmAddTaskSelection();
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            
+            GUILayout.EndVertical();
+            
+            // 允许拖动窗口
+            GUI.DragWindow(new Rect(0, 0, addTaskWindowRect.width, addTaskWindowRect.height));
+        }
+        
+        // 确认任务添加选择
+        private void ConfirmAddTaskSelection()
+        {
+            try
+            {
+                // 收集选中的任务
+                List<List<string>> tasksToAdd = new List<List<string>>();
+                
+                if (TaskList.Text_AllTaskOrder != null && addTaskSelectionStates.Count > 0)
+                {
+                    for (int i = 0; i < addTaskSelectionStates.Count && i < TaskList.Text_AllTaskOrder.Count; i++)
+                    {
+                        if (addTaskSelectionStates[i])
+                        {
+                            // 添加对应的任务数据（如 {0, 0}）
+                            tasksToAdd.Add(new List<string> { i.ToString(), "0" });
+                        }
+                    }
+                }
+                
+                // 调用AddTasks类中的方法添加任务到当前任务列表
+                if (tasksToAdd.Count > 0)
+                {
+                    AddTaskHandler.AddTasksToCurrent(tasksToAdd);
+                }
+                
+                // 关闭任务添加窗口
+                showAddTaskWindow = false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("确认任务添加时出错: " + ex.Message);
+                ShowNotification("确认任务添加失败!");
+            }
+        }
+    }
+    
+    // SaveData.ReadGameData方法的补丁
+    [HarmonyPatch(typeof(SaveData))]
+    [HarmonyPatch("ReadGameData")]
+    public static class SaveDataReadGameDataPatch
     {
-        public const string PLUGIN_GUID = "cs.HoLMod.TaskCheat.AnZhi20";
-        public const string PLUGIN_NAME = "HoLMod.TaskCheat";
-        public const string PLUGIN_VERSION = "1.0.0";
+        private static void Postfix()
+        {
+            try
+            {
+                // 获取当前存储标识
+                string saveId = Mainload.CunDangIndex_now;
+                
+                if (TaskCheat.Instance != null)
+                {
+                    // 验证存储标识是否有效
+                    if (string.IsNullOrEmpty(saveId))
+                    {
+                        TaskCheat.Log?.LogWarning("存储标识为空，无法加载特定存档的配置文件");
+                    }
+                    else
+                    {
+                        TaskCheat.Log?.LogInfo($"读取存档数据后，根据存储标识 {saveId} 加载配置文件");
+                    }
+                    
+                    // 无论存储标识是否有效，都尝试加载配置
+                    TaskCheat.Instance.LoadRepetitiveTaskConfig();
+                }
+            }
+            catch (Exception ex)
+            {
+                TaskCheat.Log?.LogError("在ReadGameData后加载配置时出错: " + ex.Message);
+                TaskCheat.Log?.LogError(ex.StackTrace);
+            }
+        }
     }
 }
