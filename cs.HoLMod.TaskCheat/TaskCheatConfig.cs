@@ -232,8 +232,14 @@ namespace cs.HoLMod.TaskCheat
                 string storageIdentifier = GetStorageIdentifier();
                 string configKey = GetUniqueConfigKey(storageIdentifier, SelectedTasksKeySuffix);
                 
+                // 增加详细日志记录
+                TaskCheat.Log?.LogInfo($"尝试加载重复任务配置 - 存储标识: {storageIdentifier}, 配置键: {configKey}");
+                
                 // 使用GetConfigValueFromBepInEx方法获取配置
                 string configValue = GetConfigValueFromBepInEx("重复任务配置", configKey);
+                
+                // 增加获取到的配置值日志
+                TaskCheat.Log?.LogInfo($"获取到的配置值: '{configValue}'");
                 
                 if (!string.IsNullOrEmpty(configValue))
                 {
@@ -241,18 +247,19 @@ namespace cs.HoLMod.TaskCheat
                         .Where(s => int.TryParse(s, out _))
                         .Select(int.Parse)
                         .ToList();
-                     
+                      
                     TaskCheat.Log?.LogInfo($"已加载重复任务选择配置，选中任务数量: {indices.Count}（存储标识: {storageIdentifier}）");
                     return indices;
                 }
-                 
+                  
                 TaskCheat.Log?.LogInfo("未找到重复任务选择配置，将使用默认配置");
             }
             catch (Exception ex)
             {
                 TaskCheat.Log?.LogError("加载配置失败: " + ex.Message);
+                TaskCheat.Log?.LogError(ex.StackTrace);
             }
-             
+              
             return new List<int>();
         }
         
@@ -533,6 +540,49 @@ namespace cs.HoLMod.TaskCheat
                 // 定义我们需要查找的所有可能的section
                 string[] sections = { "重复任务配置", "时间记录配置", "重复任务设置" };
                 
+                // 尝试清空所有可能的配置键
+                string[] possibleSuffixes = { SelectedTasksKeySuffix, LastTimeRecordKeySuffix, CheckIntervalKeySuffix };
+                
+                // 使用反射获取BepInEx配置系统中的所有配置节
+                System.Reflection.PropertyInfo configDataProperty = TaskCheat.Instance.Config.GetType().GetProperty("ConfigData", 
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                
+                if (configDataProperty != null)
+                {
+                    var configData = configDataProperty.GetValue(TaskCheat.Instance.Config) as System.Collections.Generic.Dictionary<string, object>;
+                    if (configData != null)
+                    {
+                        foreach (string section in sections)
+                        {
+                            if (configData.ContainsKey(section))
+                            {
+                                // 移除整个配置节
+                                configData.Remove(section);
+                                TaskCheat.Log?.LogInfo($"已清除配置节: {section}");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // 如果无法使用反射，使用备用方法：尝试清除所有可能的配置键
+                    // 注意：这种方法可能无法清除所有配置，但比什么都不做要好
+                    string dummyIdentifier = "dummy";
+                    foreach (string suffix in possibleSuffixes)
+                    {
+                        string configKey = GetUniqueConfigKey(dummyIdentifier, suffix);
+                        foreach (string section in sections)
+                        {
+                            try
+                            {
+                                var configEntry = TaskCheat.Instance.Config.Bind<string>(section, configKey, "");
+                                configEntry.Value = "";
+                            }
+                            catch { }
+                        }
+                    }
+                }
+                
                 // 保存更新后的配置
                 TaskCheat.Instance.Config.Save();
                 
@@ -542,6 +592,7 @@ namespace cs.HoLMod.TaskCheat
             catch (Exception ex)
             {
                 TaskCheat.Log?.LogError("清除所有配置时出错: " + ex.Message);
+                TaskCheat.Log?.LogError(ex.StackTrace);
                 return false;
             }
         }

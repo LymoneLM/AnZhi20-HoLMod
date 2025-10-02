@@ -61,7 +61,7 @@ namespace cs.HoLMod.TaskCheat
             Instance = this;
             
             Log = Logger;
-            Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+            TaskCheat.Log?.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
             
             // 使用BepInEx配置系统初始化任务检查间隔
             TaskCheckInterval = Config.Bind<int>("重复任务设置", "任务检查间隔（秒）", 10, "设置重复任务的检查时间间隔，范围：1-10秒");
@@ -69,8 +69,6 @@ namespace cs.HoLMod.TaskCheat
             // 初始化Harmony补丁
             Harmony.CreateAndPatchAll(typeof(TaskCheat));
             
-            // 注意：不再在启动时加载配置，而是在ReadGameData时加载
-            // LoadRepetitiveTaskConfig();
         }
         
         /// <summary>
@@ -86,7 +84,7 @@ namespace cs.HoLMod.TaskCheat
                 // 检查存储标识是否有效且不为默认值
                 if (string.IsNullOrEmpty(storageIdentifier) || storageIdentifier == TaskCheatConfig.DefaultStorageIdentifier)
                 {
-                    Logger.LogWarning("存储标识无效或为默认值，不加载重复任务配置");
+                    TaskCheat.Log?.LogWarning("存储标识无效或为默认值，不加载重复任务配置");
                     // 清空待添加任务列表，防止使用旧的任务配置
                     RepetitiveTaskHandler.ToBeAdded.Clear();
                     return;
@@ -106,20 +104,25 @@ namespace cs.HoLMod.TaskCheat
                     
                     // 更新ToBeAdded
                     RepetitiveTaskHandler.AddSelectedTasks(tasksToAdd);
-                    Logger.LogInfo("已根据配置更新待重复任务列表，共加载" + selectedTaskIndices.Count + "个任务");
+                    TaskCheat.Log?.LogInfo("已根据配置更新待重复任务列表，共加载" + selectedTaskIndices.Count + "个任务");
+
+                    // 直接调用TaskAdd方法立即添加任务
+                    RepetitiveTaskHandler.TaskAdd();
                 }
                 else
                 {
-                    Logger.LogInfo("未加载到重复任务配置，ToBeAdded列表为空");
+                    TaskCheat.Log?.LogInfo("未加载到重复任务配置，ToBeAdded列表为空");
                     // 确保待添加任务列表为空
                     RepetitiveTaskHandler.ToBeAdded.Clear();
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("加载重复任务配置时出错: " + ex.Message);
-                Logger.LogError(ex.StackTrace);
+                TaskCheat.Log?.LogError("加载重复任务配置时出错: " + ex.Message);
+                TaskCheat.Log?.LogError(ex.StackTrace);
             }
+
+            
         }
 
         private void Update()
@@ -286,13 +289,13 @@ namespace cs.HoLMod.TaskCheat
             try
             {
                 TaskClearer.AllTaskClear();
-                Logger.LogInfo("所有任务已清除!");
+                TaskCheat.Log?.LogInfo("所有任务已清除!");
                 // 显示成功提示
                 ShowNotification("任务已清除成功!");
             }
             catch (System.Exception ex)
             {
-                Logger.LogError("清除任务时出错: " + ex.Message);
+                TaskCheat.Log?.LogError("清除任务时出错: " + ex.Message);
                 ShowNotification("清除失败: " + ex.Message);
             }
         }
@@ -313,7 +316,7 @@ namespace cs.HoLMod.TaskCheat
             }
             catch (Exception ex)
             {
-                Logger.LogError(string.Format("显示提示信息时出错: {0}", ex.Message));
+                TaskCheat.Log?.LogError(string.Format("显示提示信息时出错: {0}", ex.Message));
             }
         }
         
@@ -350,7 +353,7 @@ namespace cs.HoLMod.TaskCheat
             }
             catch (Exception ex)
             {
-                Logger.LogError("打开任务选择窗口时出错: " + ex.Message);
+                TaskCheat.Log?.LogError("打开任务选择窗口时出错: " + ex.Message);
                 ShowNotification("打开任务选择窗口失败!");
             }
         }
@@ -435,7 +438,7 @@ namespace cs.HoLMod.TaskCheat
                         }
                         catch (Exception ex)
                         {
-                            Logger.LogError("格式化任务显示文本时出错: " + ex.Message);
+                            TaskCheat.Log?.LogError("格式化任务显示文本时出错: " + ex.Message);
                         }
                         
                         // 绘制多选框，使文本居中显示
@@ -481,7 +484,7 @@ namespace cs.HoLMod.TaskCheat
                 // 增强检查：确保存储标识不为空或无效
                 if (string.IsNullOrEmpty(storageIdentifier))
                 {
-                    Logger.LogWarning("存储标识为空，显示确认清除所有配置对话框");
+                    TaskCheat.Log?.LogWarning("存储标识为空，显示确认清除所有配置对话框");
                     showConfirmClearAllDialog = true;
                     return;
                 }
@@ -498,7 +501,7 @@ namespace cs.HoLMod.TaskCheat
                     {
                         // 清除配置文件后，立即清空内存中的待添加任务列表
                         RepetitiveTaskHandler.ToBeAdded.Clear();
-                        Logger.LogInfo("已清空内存中的待添加任务列表");
+                        TaskCheat.Log?.LogInfo("已清空内存中的待添加任务列表");
                         ShowNotification("配置文件已清除成功！");
                     }
                     else
@@ -509,14 +512,14 @@ namespace cs.HoLMod.TaskCheat
                 else
                 {
                     // 存储标识无效，显示确认清除所有配置的对话框
-                    Logger.LogWarning("存储标识无效或对应配置不存在，显示确认清除所有配置对话框");
+                    TaskCheat.Log?.LogWarning("存储标识无效或对应配置不存在，显示确认清除所有配置对话框");
                     showConfirmClearAllDialog = true;
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("尝试清除配置文件时出错: " + ex.Message);
-                Logger.LogError("异常堆栈: " + ex.StackTrace);
+                TaskCheat.Log?.LogError("尝试清除配置文件时出错: " + ex.Message);
+                TaskCheat.Log?.LogError("异常堆栈: " + ex.StackTrace);
                 ShowNotification("操作失败: " + ex.Message);
                 // 出错时也显示确认对话框，让用户选择是否清除所有配置
                 showConfirmClearAllDialog = true;
@@ -567,7 +570,7 @@ namespace cs.HoLMod.TaskCheat
                 {
                     // 清除所有配置后，立即清空内存中的待添加任务列表
                     RepetitiveTaskHandler.ToBeAdded.Clear();
-                    Logger.LogInfo("已清空内存中的待添加任务列表");
+                    TaskCheat.Log?.LogInfo("已清空内存中的待添加任务列表");
                     ShowNotification("所有配置已清除成功！");
                 }
                 else
@@ -635,7 +638,7 @@ namespace cs.HoLMod.TaskCheat
             }
             catch (Exception ex)
             {
-                Logger.LogError("确认任务选择时出错: " + ex.Message);
+                TaskCheat.Log?.LogError("确认任务选择时出错: " + ex.Message);
                 ShowNotification("确认任务选择失败!");
             }
         }
@@ -662,7 +665,7 @@ namespace cs.HoLMod.TaskCheat
             }
             catch (Exception ex)
             {
-                Logger.LogError("打开任务添加窗口时出错: " + ex.Message);
+                TaskCheat.Log?.LogError("打开任务添加窗口时出错: " + ex.Message);
                 ShowNotification("打开任务添加窗口失败!");
             }
         }
@@ -747,7 +750,7 @@ namespace cs.HoLMod.TaskCheat
                         }
                         catch (Exception ex)
                         {
-                            Logger.LogError("格式化任务显示文本时出错: " + ex.Message);
+                            TaskCheat.Log?.LogError("格式化任务显示文本时出错: " + ex.Message);
                         }
                         
                         // 绘制多选框
@@ -811,7 +814,7 @@ namespace cs.HoLMod.TaskCheat
             }
             catch (Exception ex)
             {
-                Logger.LogError("确认任务添加时出错: " + ex.Message);
+                TaskCheat.Log?.LogError("确认任务添加时出错: " + ex.Message);
                 ShowNotification("确认任务添加失败!");
             }
         }
@@ -826,42 +829,120 @@ namespace cs.HoLMod.TaskCheat
         {
             try
             {
-                // 获取当前存储标识
-                string saveId = Mainload.CunDangIndex_now;
+                // 获取当前存档位置（不再作为存储标识使用）
+                string archiveLocation = Mainload.CunDangIndex_now;
                 
                 if (TaskCheat.Instance != null)
                 {
-                    // 验证存储标识是否有效
-                    if (string.IsNullOrEmpty(saveId))
+                    // 验证存档位置是否有效
+                    if (string.IsNullOrEmpty(archiveLocation))
                     {
-                        TaskCheat.Log?.LogWarning("存储标识为空，无法加载特定存档的配置文件");
+                        TaskCheat.Log?.LogWarning("存档位置为空，无法加载特定存档的配置文件");
+                        return;
+                    }
+                    
+                    TaskCheat.Log?.LogInfo($"读取存档数据后，根据存档位置 {archiveLocation} 开始查找匹配的配置文件");
+                    
+                    // 清空待添加任务列表，准备根据配置重新添加
+                    RepetitiveTaskHandler.ToBeAdded = new List<List<int>>();
+                    
+                    // 遍历查找所有可能的存储标识，寻找与当前存档匹配的配置
+                    bool foundMatchingConfig = false;
+                    
+                    // 获取当前完整存储标识（包含郡县、家族等信息，但与存档位置明确区分）
+                    string storageIdentifier = TaskCheatConfig.GetStorageIdentifier();
+                    
+                    // 记录当前存储标识信息
+                    TaskCheat.Log?.LogInfo($"当前存储标识: '{storageIdentifier}'");
+                    
+                    // 如果存储标识不为空且不为默认值，则检查是否包含当前存档位置信息
+                    if (!string.IsNullOrEmpty(storageIdentifier) && 
+                        storageIdentifier != TaskCheatConfig.DefaultStorageIdentifier &&
+                        storageIdentifier.Contains(archiveLocation))
+                    {
+                        TaskCheat.Log?.LogInfo("找到与当前存档位置匹配的存储标识，尝试加载配置");
+                        // 尝试加载配置
+                        try
+                        {
+                            List<int> selectedTaskIndices = TaskCheatConfig.LoadRepetitiveTaskSelection();
+                            
+                            if (selectedTaskIndices.Count > 0)
+                            {
+                                // 将索引转换为RepetitiveTaskHandler.ToBeAdded所需的List<List<int>>格式
+                                List<List<string>> tasksToAdd = new List<List<string>>();
+                                foreach (int index in selectedTaskIndices)
+                                {
+                                    tasksToAdd.Add(new List<string> { index.ToString() });
+                                }
+                                
+                                // 添加到待添加列表
+                                RepetitiveTaskHandler.AddSelectedTasks(tasksToAdd);
+                                foundMatchingConfig = true;
+                                TaskCheat.Log?.LogInfo($"成功加载匹配的配置文件，添加了 {RepetitiveTaskHandler.ToBeAdded.Count} 个任务");
+                                TaskCheat.Instance?.ShowNotification($"已加载 {RepetitiveTaskHandler.ToBeAdded.Count} 个重复任务配置");
+                            }
+                            else
+                            {
+                                TaskCheat.Log?.LogInfo("存储标识存在，但没有找到选中的任务配置");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // 如果格式错误，则删除该标识的配置
+                            TaskCheat.Log?.LogError($"配置格式错误，删除存储标识 '{storageIdentifier}' 的配置: " + ex.Message);
+                            TaskCheat.Log?.LogError(ex.StackTrace);
+                            bool cleared = TaskCheatConfig.ClearConfigByStorageIdentifier(storageIdentifier);
+                            if (cleared)
+                            {
+                                TaskCheat.Log?.LogInfo("配置已成功清除，下次启动将使用默认设置");
+                                TaskCheat.Instance?.ShowNotification("配置格式错误，已清除，请重新配置任务");
+                            }
+                        }
                     }
                     else
                     {
-                        TaskCheat.Log?.LogInfo($"读取存档数据后，根据存储标识 {saveId} 加载配置文件");
-                        
-                        // 只有当存储标识完全一致时才加载配置
-                        // 首先获取完整的存储标识（包含郡县、家族等信息）
-                        string fullStorageIdentifier = TaskCheatConfig.GetStorageIdentifier();
-                        
-                        // 检查存储标识是否有效且不为默认值，同时验证存档位置是否匹配
-                        if (!string.IsNullOrEmpty(fullStorageIdentifier) && 
-                            fullStorageIdentifier != TaskCheatConfig.DefaultStorageIdentifier &&
-                            fullStorageIdentifier.Contains(saveId))
+                        // 记录为什么没有匹配的原因
+                        if (string.IsNullOrEmpty(storageIdentifier))
                         {
-                            TaskCheat.Instance.LoadRepetitiveTaskConfig();
+                            TaskCheat.Log?.LogWarning("存储标识为空");
                         }
-                        else
+                        else if (storageIdentifier == TaskCheatConfig.DefaultStorageIdentifier)
                         {
-                            TaskCheat.Log?.LogWarning("存储标识无效或为默认值，不加载配置文件");
+                            TaskCheat.Log?.LogWarning("当前使用默认存储标识，不会加载特定存档的配置");
+                        }
+                        else if (!storageIdentifier.Contains(archiveLocation))
+                        {
+                            TaskCheat.Log?.LogWarning($"存储标识 '{storageIdentifier}' 不包含当前存档位置 '{archiveLocation}'");
                         }
                     }
+                    
+                    // 如果没有找到匹配的配置
+                    if (!foundMatchingConfig)
+                    {
+                        // 返回默认空数组给tobeadded（已在开头清空）
+                        TaskCheat.Log?.LogInfo("未找到匹配的存储标识配置，ToBeAdded保持为空");
+                        // 显示通知给用户
+                        TaskCheat.Instance?.ShowNotification("未找到匹配的任务配置，请在任务编辑器中设置");
+                    }
+                }
+                else
+                {
+                    TaskCheat.Log?.LogError("TaskCheat.Instance为null，无法加载配置");
                 }
             }
             catch (Exception ex)
             {
                 TaskCheat.Log?.LogError("在ReadGameData后加载配置时出错: " + ex.Message);
                 TaskCheat.Log?.LogError(ex.StackTrace);
+                
+                // 出错时确保ToBeAdded为空
+                RepetitiveTaskHandler.ToBeAdded = new List<List<int>>();
+                
+                // 显示错误通知
+                if (TaskCheat.Instance != null)
+                {
+                    TaskCheat.Instance?.ShowNotification("加载任务配置时出错，请查看日志了解详情");
+                }
             }
         }
     }

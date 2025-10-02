@@ -909,7 +909,7 @@ namespace cs.HoLMod.TaskCheat
                 var mainload = GameObject.Find("Mainload");
                 if (mainload == null)
                 {
-                    Logger.LogWarning("TaskCheat: 未找到Mainload对象");
+                    TaskCheat.Log?.LogWarning("TaskCheat: 未找到Mainload对象");
                     return;
                 }
 
@@ -925,7 +925,7 @@ namespace cs.HoLMod.TaskCheat
                 }
                 else
                 {
-                    Logger.LogWarning("TaskCheat: 未找到Mainload.Text_AllTaskOrder字段");
+                    TaskCheat.Log?.LogWarning("TaskCheat: 未找到Mainload.Text_AllTaskOrder字段");
                 }
 
                 // 读取Mainload.AllTaskOrderData
@@ -940,12 +940,12 @@ namespace cs.HoLMod.TaskCheat
                 }
                 else
                 {
-                    Logger.LogWarning("TaskCheat: 未找到Mainload.AllTaskOrderData字段");
+                    TaskCheat.Log?.LogWarning("TaskCheat: 未找到Mainload.AllTaskOrderData字段");
                 }
             }
             catch (System.Exception ex)
             {
-                Logger.LogError("TaskCheat: 更新任务数据时发生错误: " + ex.Message);
+                TaskCheat.Log?.LogError("TaskCheat: 更新任务数据时发生错误: " + ex.Message);
             }
         }
 
@@ -977,7 +977,7 @@ namespace cs.HoLMod.TaskCheat
                 }
             }
 
-            Logger.LogInfo($"TaskCheat: {taskType} 更新完成 - 添加了 {addedCount} 个新任务");
+            TaskCheat.Log?.LogInfo($"TaskCheat: {taskType} 更新完成 - 添加了 {addedCount} 个新任务");
         }
 
         // 比较两个任务是否相同

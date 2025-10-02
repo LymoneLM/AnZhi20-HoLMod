@@ -135,7 +135,8 @@ namespace cs.HoLMod.TaskCheat
             if (checkIntervalSeconds == -1)
             {
                 checkIntervalSeconds = TaskCheatConfig.LoadCheckInterval();
-                return; // 首次加载配置后不立即执行添加
+                lastAddTime = GetCurrentDateTime();
+                return;
             }
 
             // 获取当前时间（使用各国默认时间或北京时间）
@@ -180,6 +181,76 @@ namespace cs.HoLMod.TaskCheat
                 // 记录异常信息
                 TaskCheat.Log?.LogError("TaskAdd方法执行异常: " + ex.Message);
                 TaskCheat.Log?.LogError(ex.StackTrace);
+            }
+            finally
+            {
+                // 确保任务添加后清空ToBeAdded列表
+                if (ToBeAdded != null)
+                {
+                    ToBeAdded.Clear();
+                    TaskCheat.Log?.LogInfo("任务添加后已清空ToBeAdded列表");
+
+                    /// <summary>
+                    /// 检查是否处于游戏中
+                    /// </summary>
+                    
+                    // 加载当前场景并用|分割
+                    string[] array = Mainload.SceneID.Split(new char[]
+                    {
+                        '|'
+                    });
+
+                    // 读取场景类型，M府邸、Z封地、S郡、H皇宫
+                    string SceneClass = array[0];
+                    
+                    // 在清空后重新根据配置文件读取并添加tobeadded
+                    if (SceneClass == "M" || SceneClass == "Z" || SceneClass == "S" || SceneClass == "H")
+                    {
+                        try
+                        {
+                            TaskCheat.Log?.LogInfo("开始重新从配置文件读取任务");
+                            List<int> selectedTaskIndices = TaskCheatConfig.LoadRepetitiveTaskSelection();
+
+                            if (selectedTaskIndices.Count > 0)
+                            {
+                                // 转换为RepetitiveTaskHandler需要的格式
+                                List<List<string>> tasksToAdd = new List<List<string>>();
+                                foreach (int index in selectedTaskIndices)
+                                {
+                                    tasksToAdd.Add(new List<string> { index.ToString(), "0" });
+                                }
+
+                                // 直接添加到ToBeAdded列表，不调用AddSelectedTasks避免循环调用
+                                foreach (var task in tasksToAdd)
+                                {
+                                    List<int> intTask = new List<int>();
+                                    foreach (var item in task)
+                                    {
+                                        if (int.TryParse(item, out int result))
+                                        {
+                                            intTask.Add(result);
+                                        }
+                                    }
+                                    if (intTask.Count > 0)
+                                    {
+                                        ToBeAdded.Add(intTask);
+                                    }
+                                }
+
+                                TaskCheat.Log?.LogInfo(string.Format("重新从配置文件加载了 {0} 个任务到ToBeAdded列表", ToBeAdded.Count));
+                            }
+                            else
+                            {
+                                TaskCheat.Log?.LogInfo("配置文件中没有找到任务，ToBeAdded保持为空");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            TaskCheat.Log?.LogError("重新从配置文件读取任务时出错: " + ex.Message);
+                            TaskCheat.Log?.LogError(ex.StackTrace);
+                        }
+                    }
+                }
             }
         }
     }
