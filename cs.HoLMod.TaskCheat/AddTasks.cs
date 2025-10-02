@@ -76,10 +76,12 @@ namespace cs.HoLMod.TaskCheat
                         {
                             TaskCheat.Instance.ShowNotification(string.Format("成功添加了 {0} 个任务！", addedCount));
                         }
+                        /*
                         else
                         {
                             TaskCheat.Instance.ShowNotification("没有添加新任务，可能已全部存在！");
                         }
+                        */
                     }
                 }
             }

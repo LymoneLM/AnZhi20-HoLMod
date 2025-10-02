@@ -13,6 +13,85 @@ namespace cs.HoLMod.TaskCheat
         /// 待重复添加的任务列表
         /// </summary>
         public static List<List<int>> ToBeAdded = new List<List<int>>();
+
+        /// <summary>
+        /// 添加选中的任务到待添加列表
+        /// </summary>
+        /// <param name="selectedTasks">选中的任务列表</param>
+        public static void AddSelectedTasks(List<List<string>> selectedTasks)
+        {
+            try
+            {
+                // 参数校验
+                if (selectedTasks == null)
+                {
+                    TaskCheat.Log?.LogWarning("传入的任务列表为null");
+                    return;
+                }
+                
+                // 清空现有任务
+                ToBeAdded.Clear();
+                
+                // 添加选中的任务，将string类型转换为int类型
+                if (selectedTasks.Count > 0)
+                {
+                    int successfullyAdded = 0;
+                    int failedConversions = 0;
+                    
+                    foreach (var task in selectedTasks)
+                    {
+                        if (task == null || task.Count == 0)
+                        {
+                            failedConversions++;
+                            continue;
+                        }
+                        
+                        List<int> intTask = new List<int>();
+                        bool taskValid = false;
+                        
+                        foreach (var item in task)
+                        {
+                            if (int.TryParse(item, out int result))
+                            {
+                                intTask.Add(result);
+                                taskValid = true;
+                            }
+                            else if (!string.IsNullOrEmpty(item))
+                            {
+                                // 记录转换失败的项
+                                TaskCheat.Log?.LogWarning(string.Format("无法将字符串 \"{0}\" 转换为整数", item));
+                            }
+                        }
+                        
+                        if (taskValid)
+                        {
+                            ToBeAdded.Add(intTask);
+                            successfullyAdded++;
+                        }
+                        else
+                        {
+                            failedConversions++;
+                        }
+                    }
+                    
+                    // 记录添加结果
+                    if (successfullyAdded > 0)
+                    {
+                        TaskCheat.Log?.LogInfo(string.Format("成功添加 {0} 个任务到待添加列表", successfullyAdded));
+                    }
+                    
+                    if (failedConversions > 0)
+                    {
+                        TaskCheat.Log?.LogWarning(string.Format("有 {0} 个任务转换失败或无效", failedConversions));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TaskCheat.Log?.LogError("添加选中任务时出错: " + ex.Message);
+                TaskCheat.Log?.LogError(ex.StackTrace);
+            }
+        }
         
         // 保存上一次添加任务的现实时间
         private static DateTime lastAddTime = DateTime.MinValue;
@@ -69,119 +148,31 @@ namespace cs.HoLMod.TaskCheat
                 lastAddTime = currentTime;
             }
         }
-        
-        /// <summary>
-        /// 添加选中的任务到待添加列表
-        /// </summary>
-        /// <param name="selectedTasks">选中的任务列表</param>
-        public static void AddSelectedTasks(List<List<string>> selectedTasks)
-        {
-            try
-            {
-                // 清空现有任务
-                ToBeAdded.Clear();
-                
-                // 添加选中的任务，将string类型转换为int类型
-                if (selectedTasks != null && selectedTasks.Count > 0)
-                {
-                    foreach (var task in selectedTasks)
-                    {
-                        List<int> intTask = new List<int>();
-                        foreach (var item in task)
-                        {
-                            if (int.TryParse(item, out int result))
-                            {
-                                intTask.Add(result);
-                            }
-                        }
-                        if (intTask.Count > 0)
-                        {
-                            ToBeAdded.Add(intTask);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                TaskCheat.Log?.LogError("添加选中任务时出错: " + ex.Message);
-                TaskCheat.Log?.LogError(ex.StackTrace);
-            }
-        }
 
         /// <summary>
-        /// 检查两个任务是否相同
-        /// </summary>
-        /// <param name="task1">第一个任务</param>
-        /// <param name="task2">第二个任务</param>
-        /// <returns>如果任务相同则返回true，否则返回false</returns>
-        private static bool AreTasksEqual(List<int> task1, List<int> task2)
-        {
-            if (task1 == null || task2 == null || task1.Count != task2.Count)
-            {
-                return false;
-            }
-            
-            for (int i = 0; i < task1.Count; i++)
-            {
-                if (task1[i] != task2[i])
-                {
-                    return false;
-                }
-            }
-            
-            return true;
-        }
-
-        /// <summary>
-        /// 添加重复任务到当前任务列表
+        /// 添加待添加列表中的任务
         /// </summary>
         public static void TaskAdd()
         {
             try
             {
-                // 读取当前任务列表
-                List<List<int>> Add_TaskOrderData_Now = Mainload.TaskOrderData_Now;
-                
-                if (Add_TaskOrderData_Now == null)
+                // 检查是否有待添加的任务
+                if (ToBeAdded != null && ToBeAdded.Count > 0)
                 {
-                    Add_TaskOrderData_Now = new List<List<int>>();
-                }
-                
-                // 添加待添加任务，如果任务不存在则添加
-                if (ToBeAdded.Count > 0)
-                {
-                    int addedCount = 0; // 记录成功添加的任务数量
-                    
-                    foreach (var taskToAdd in ToBeAdded)
+                    // 将List<List<int>>转换为List<List<string>>
+                    List<List<string>> stringTasks = new List<List<string>>();
+                    foreach (var intTask in ToBeAdded)
                     {
-                        bool taskExists = false;
-                        
-                        // 检查任务是否已经存在（只比较第一个元素）
-                        foreach (var existingTask in Add_TaskOrderData_Now)
+                        List<string> stringTask = new List<string>();
+                        foreach (var item in intTask)
                         {
-                            if (existingTask != null && existingTask.Count > 0 && taskToAdd != null && taskToAdd.Count > 0 && existingTask[0] == taskToAdd[0])
-                            {
-                                taskExists = true;
-                                break;
-                            }
+                            stringTask.Add(item.ToString());
                         }
-                        
-                        // 如果任务不存在，则添加
-                        if (!taskExists)
-                        {
-                            Add_TaskOrderData_Now.Add(taskToAdd);
-                            addedCount++;
-                        }
+                        stringTasks.Add(stringTask);
                     }
-                    
-                    // 更新Mainload中的任务列表
-                    Mainload.TaskOrderData_Now = Add_TaskOrderData_Now;
-                    
-                    // 显示成功提示（只有当有新任务被添加时才显示）
-                    if (TaskCheat.Instance != null && addedCount > 0)
-                    {
-                        TaskCheat.Instance.ShowNotification($"成功添加了 {addedCount} 个任务！");
-                    }
+
+                    // 使用AddTasks.cs中的添加逻辑
+                    AddTaskHandler.AddTasksToCurrent(stringTasks);
                 }
             }
             catch (Exception ex)
@@ -189,12 +180,6 @@ namespace cs.HoLMod.TaskCheat
                 // 记录异常信息
                 TaskCheat.Log?.LogError("TaskAdd方法执行异常: " + ex.Message);
                 TaskCheat.Log?.LogError(ex.StackTrace);
-                
-                // 显示错误提示
-                if (TaskCheat.Instance != null)
-                {
-                    TaskCheat.Instance.ShowNotification("任务添加失败！");
-                }
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using UnityEngine;
 using System.Collections.Generic;
@@ -50,6 +51,9 @@ namespace cs.HoLMod.TaskCheat
         private bool showConfirmClearAllDialog = false;
         private Rect confirmDialogRect = new Rect(200, 200, 300, 300);
         private int confirmDialogID = 4000;
+        
+        // 使用BepInEx配置系统管理任务检查间隔
+        public static ConfigEntry<int> TaskCheckInterval { get; private set; }
 
         private void Awake()
         {
@@ -58,6 +62,9 @@ namespace cs.HoLMod.TaskCheat
             
             Log = Logger;
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+            
+            // 使用BepInEx配置系统初始化任务检查间隔
+            TaskCheckInterval = Config.Bind<int>("重复任务设置", "任务检查间隔（秒）", 10, "设置重复任务的检查时间间隔，范围：1-10秒");
             
             // 初始化Harmony补丁
             Harmony.CreateAndPatchAll(typeof(TaskCheat));
@@ -73,6 +80,18 @@ namespace cs.HoLMod.TaskCheat
         {
             try
             {
+                // 获取当前的存储标识
+                string storageIdentifier = TaskCheatConfig.GetStorageIdentifier();
+                
+                // 检查存储标识是否有效且不为默认值
+                if (string.IsNullOrEmpty(storageIdentifier) || storageIdentifier == TaskCheatConfig.DefaultStorageIdentifier)
+                {
+                    Logger.LogWarning("存储标识无效或为默认值，不加载重复任务配置");
+                    // 清空待添加任务列表，防止使用旧的任务配置
+                    RepetitiveTaskHandler.ToBeAdded.Clear();
+                    return;
+                }
+                
                 // 从配置文件加载选中的任务索引
                 List<int> selectedTaskIndices = TaskCheatConfig.LoadRepetitiveTaskSelection();
                 
@@ -92,6 +111,8 @@ namespace cs.HoLMod.TaskCheat
                 else
                 {
                     Logger.LogInfo("未加载到重复任务配置，ToBeAdded列表为空");
+                    // 确保待添加任务列表为空
+                    RepetitiveTaskHandler.ToBeAdded.Clear();
                 }
             }
             catch (Exception ex)
@@ -818,10 +839,23 @@ namespace cs.HoLMod.TaskCheat
                     else
                     {
                         TaskCheat.Log?.LogInfo($"读取存档数据后，根据存储标识 {saveId} 加载配置文件");
+                        
+                        // 只有当存储标识完全一致时才加载配置
+                        // 首先获取完整的存储标识（包含郡县、家族等信息）
+                        string fullStorageIdentifier = TaskCheatConfig.GetStorageIdentifier();
+                        
+                        // 检查存储标识是否有效且不为默认值，同时验证存档位置是否匹配
+                        if (!string.IsNullOrEmpty(fullStorageIdentifier) && 
+                            fullStorageIdentifier != TaskCheatConfig.DefaultStorageIdentifier &&
+                            fullStorageIdentifier.Contains(saveId))
+                        {
+                            TaskCheat.Instance.LoadRepetitiveTaskConfig();
+                        }
+                        else
+                        {
+                            TaskCheat.Log?.LogWarning("存储标识无效或为默认值，不加载配置文件");
+                        }
                     }
-                    
-                    // 无论存储标识是否有效，都尝试加载配置
-                    TaskCheat.Instance.LoadRepetitiveTaskConfig();
                 }
             }
             catch (Exception ex)

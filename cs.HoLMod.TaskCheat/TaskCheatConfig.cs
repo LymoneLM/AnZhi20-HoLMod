@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Linq;
+using System.Text.RegularExpressions;
+using BepInEx.Configuration;
 
 namespace cs.HoLMod.TaskCheat
 {
@@ -11,14 +11,17 @@ namespace cs.HoLMod.TaskCheat
     /// </summary>
     public static class TaskCheatConfig
     {
-        private static string ConfigFilePath => Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "TaskCheatConfig.txt");
         private const int DefaultCheckIntervalSeconds = 10; // 默认检查间隔为10秒
         private const int MinCheckIntervalSeconds = 1; // 最小检查间隔为1秒
         private const int MaxCheckIntervalSeconds = 10; // 最大检查间隔为10秒
-        private const string DefaultStorageIdentifier = "default";
-        private const string SectionDelimiter = "##";
-        private const string ConfigKeyDelimiter = "=";
+        public const string DefaultStorageIdentifier = "default";
         private const string FamilyDataKeyDelimiter = "|";
+        
+        // BepInEx配置键前缀和后缀常量
+        private const string ConfigKeyPrefix = "TaskCheat_";
+        private const string SelectedTasksKeySuffix = "_SelectedTasks";
+        private const string LastTimeRecordKeySuffix = "_LastTimeRecord";
+        private const string CheckIntervalKeySuffix = "_CheckInterval";
         
         // 郡数组，索引对应郡ID
         private static string[] JunList = new string[]
@@ -112,20 +115,36 @@ namespace cs.HoLMod.TaskCheat
                 // 获取家族数据
                 if (Mainload.FamilyData != null && Mainload.FamilyData.Count >= 2)
                 {
+                    // 检查FamilyData[0]和FamilyData[1]是否为null
+                    if (Mainload.FamilyData[0] == null || Mainload.FamilyData[1] == null)
+                    {
+                        TaskCheat.Log?.LogWarning("FamilyData[0]或FamilyData[1]为null，使用默认标识");
+                        return DefaultStorageIdentifier;
+                    }
+                    
                     string familyData0 = Mainload.FamilyData[0].ToString();
                     string familyData1 = Mainload.FamilyData[1].ToString();
-                    string cundangIndex = Mainload.CunDangIndex_now.ToString();
+                    
+                    // 检查CunDangIndex_now是否为null
+                    string cundangIndex = Mainload.CunDangIndex_now?.ToString() ?? "未知";
                     
                     // 解析郡县信息
                     string junXianName = "未知郡县";
-                    if (familyData0.Contains(FamilyDataKeyDelimiter))
+                    if (!string.IsNullOrEmpty(familyData0) && familyData0.Contains(FamilyDataKeyDelimiter))
                     {
-                        // 使用char类型作为Split参数
-                        string[] parts = familyData0.Split(FamilyDataKeyDelimiter[0]);
-                        if (parts.Length >= 2 && int.TryParse(parts[0], out int junIndex) && int.TryParse(parts[1], out int xianIndex))
+                        try
                         {
-                            // 使用内部辅助方法获取郡县名称
-                            junXianName = GetJunXianNameFromIndex(junIndex, xianIndex);
+                            // 使用char类型作为Split参数
+                            string[] parts = familyData0.Split(FamilyDataKeyDelimiter[0]);
+                            if (parts.Length >= 2 && int.TryParse(parts[0], out int junIndex) && int.TryParse(parts[1], out int xianIndex))
+                            {
+                                // 使用内部辅助方法获取郡县名称
+                                junXianName = GetJunXianNameFromIndex(junIndex, xianIndex);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            TaskCheat.Log?.LogWarning("解析郡县信息时出错: " + ex.Message);
                         }
                     }
                     
@@ -136,6 +155,8 @@ namespace cs.HoLMod.TaskCheat
             catch (Exception ex)
             {
                 TaskCheat.Log?.LogError("获取存储标识时出错: " + ex.Message);
+                // 添加堆栈跟踪以便更好地诊断问题
+                TaskCheat.Log?.LogError(ex.StackTrace);
             }
             
             // 出错时返回默认标识
@@ -143,114 +164,76 @@ namespace cs.HoLMod.TaskCheat
         }
         
         /// <summary>
-        /// 保存重复任务选择状态到配置文件
+        /// 保存重复任务选择状态到BepInEx配置系统
         /// </summary>
         /// <param name="selectedTaskIndices">选中的任务索引列表</param>
         public static void SaveRepetitiveTaskSelection(List<int> selectedTaskIndices)
         {
             try
             {
+                if (TaskCheat.Instance == null)
+                {
+                    TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法保存配置");
+                    return;
+                }
+
                 string storageIdentifier = GetStorageIdentifier();
-                string configKey = "SelectedTasks";
+                string configKey = GetUniqueConfigKey(storageIdentifier, SelectedTasksKeySuffix);
                 string configValue = string.Join(",", selectedTaskIndices);
+
+                // 使用BepInEx配置系统保存
+                ConfigEntry<string> configEntry = TaskCheat.Instance.Config.Bind<string>(
+                    "重复任务配置", 
+                    configKey, 
+                    configValue, 
+                    $"存储标识 [{storageIdentifier}] 的重复任务选择配置");
+                configEntry.Value = configValue;
                 
-                SaveConfigValue(storageIdentifier, configKey, configValue);
+                // 确保配置被保存到文件
+                TaskCheat.Instance.Config.Save();
                 
-                TaskCheat.Log?.LogInfo($"已保存重复任务选择配置到: {ConfigFilePath}（存储标识: {storageIdentifier}）");
+                TaskCheat.Log?.LogInfo($"已通过BepInEx配置系统保存重复任务选择配置（存储标识: {storageIdentifier}）");
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("保存配置文件失败: " + ex.Message);
+                TaskCheat.Log?.LogError("保存配置失败: " + ex.Message);
             }
         }
         
         /// <summary>
-        /// 保存配置值到指定存储标识下
+        /// 生成唯一的配置键名，确保符合BepInEx配置系统的命名规则
         /// </summary>
-        /// <param name="storageIdentifier">存储标识</param>
-        /// <param name="configKey">配置键</param>
-        /// <param name="configValue">配置值</param>
-        private static void SaveConfigValue(string storageIdentifier, string configKey, string configValue)
+        private static string GetUniqueConfigKey(string storageIdentifier, string suffix)
         {
-            try
+            // 移除不适合作为配置键的字符
+            string safeIdentifier = Regex.Replace(storageIdentifier, @"[^\w.-]", "_");
+            // 限制长度，防止超过BepInEx的限制
+            if (safeIdentifier.Length > 50)
             {
-                // 读取现有配置
-                string existingContent = File.Exists(ConfigFilePath) ? File.ReadAllText(ConfigFilePath, Encoding.UTF8) : string.Empty;
-                List<string> lines = existingContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None).ToList();
-                
-                // 构建完整的配置键
-                string fullConfigKey = $"{storageIdentifier}.{configKey}";
-                bool foundSection = false;
-                bool updated = false;
-                
-                // 查找并更新现有配置
-                for (int i = 0; i < lines.Count; i++)
-                {
-                    if (lines[i].StartsWith(SectionDelimiter))
-                    {
-                        string section = lines[i].Substring(SectionDelimiter.Length).Trim();
-                        if (section.Equals(storageIdentifier))
-                        {
-                            foundSection = true;
-                            // 在当前标识下查找配置键
-                            for (int j = i + 1; j < lines.Count && !lines[j].StartsWith(SectionDelimiter); j++)
-                            {
-                                if (lines[j].StartsWith($"{configKey}{ConfigKeyDelimiter}"))
-                                {
-                                    lines[j] = $"{configKey}{ConfigKeyDelimiter}{configValue}";
-                                    updated = true;
-                                    break;
-                                }
-                            }
-                            
-                            // 如果当前标识下没有找到配置键，添加新的配置键值对
-                            if (!updated && foundSection)
-                            {
-                                // 找到当前标识下的最后一行
-                                int lastLineOfSection = i + 1;
-                                while (lastLineOfSection < lines.Count && !lines[lastLineOfSection].StartsWith(SectionDelimiter))
-                                {
-                                    lastLineOfSection++;
-                                }
-                                lines.Insert(lastLineOfSection, $"{configKey}{ConfigKeyDelimiter}{configValue}");
-                            }
-                            break;
-                        }
-                    }
-                }
-                
-                // 如果没有找到标识，添加新的标识和配置
-                if (!foundSection)
-                {
-                    if (lines.Count > 0 && !string.IsNullOrWhiteSpace(lines[lines.Count - 1]))
-                    {
-                        lines.Add(string.Empty); // 添加空行分隔
-                    }
-                    lines.Add($"{SectionDelimiter} {storageIdentifier}");
-                    lines.Add($"{configKey}{ConfigKeyDelimiter}{configValue}");
-                }
-                
-                // 写入配置文件
-                File.WriteAllText(ConfigFilePath, string.Join(Environment.NewLine, lines), Encoding.UTF8);
+                safeIdentifier = safeIdentifier.Substring(0, 50);
             }
-            catch (Exception ex)
-            {
-                TaskCheat.Log?.LogError("保存配置值失败: " + ex.Message);
-                throw;
-            }
+            return $"{ConfigKeyPrefix}{safeIdentifier}{suffix}";
         }
         
         /// <summary>
-        /// 从配置文件加载重复任务选择状态
+        /// 从BepInEx配置系统加载重复任务选择状态
         /// </summary>
         /// <returns>选中的任务索引列表</returns>
         public static List<int> LoadRepetitiveTaskSelection()
         {
             try
             {
+                if (TaskCheat.Instance == null)
+                {
+                    TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法加载配置");
+                    return new List<int>();
+                }
+
                 string storageIdentifier = GetStorageIdentifier();
-                string configKey = "SelectedTasks";
-                string configValue = LoadConfigValue(storageIdentifier, configKey);
+                string configKey = GetUniqueConfigKey(storageIdentifier, SelectedTasksKeySuffix);
+                
+                // 使用GetConfigValueFromBepInEx方法获取配置
+                string configValue = GetConfigValueFromBepInEx("重复任务配置", configKey);
                 
                 if (!string.IsNullOrEmpty(configValue))
                 {
@@ -258,73 +241,44 @@ namespace cs.HoLMod.TaskCheat
                         .Where(s => int.TryParse(s, out _))
                         .Select(int.Parse)
                         .ToList();
-                    
+                     
                     TaskCheat.Log?.LogInfo($"已加载重复任务选择配置，选中任务数量: {indices.Count}（存储标识: {storageIdentifier}）");
                     return indices;
                 }
-                
+                 
                 TaskCheat.Log?.LogInfo("未找到重复任务选择配置，将使用默认配置");
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("加载配置文件失败: " + ex.Message);
+                TaskCheat.Log?.LogError("加载配置失败: " + ex.Message);
             }
-            
+             
             return new List<int>();
         }
         
         /// <summary>
-        /// 从指定存储标识下加载配置值
+        /// 从BepInEx配置系统查找指定键的值
         /// </summary>
-        /// <param name="storageIdentifier">存储标识</param>
-        /// <param name="configKey">配置键</param>
-        /// <returns>配置值，如果未找到则返回空字符串</returns>
-        private static string LoadConfigValue(string storageIdentifier, string configKey)
+        private static string GetConfigValueFromBepInEx(string section, string key)
         {
+            if (TaskCheat.Instance == null)
+                return string.Empty;
+
             try
             {
-                if (!File.Exists(ConfigFilePath))
-                {
-                    return string.Empty;
-                }
-                
-                string content = File.ReadAllText(ConfigFilePath, Encoding.UTF8);
-                List<string> lines = content.Split(new[] { Environment.NewLine }, StringSplitOptions.None).ToList();
-                
-                bool inTargetSection = false;
-                
-                foreach (string line in lines)
-                {
-                    string trimmedLine = line.Trim();
-                    
-                    // 检查是否进入目标标识区域
-                    if (trimmedLine.StartsWith(SectionDelimiter))
-                    {
-                        string section = trimmedLine.Substring(SectionDelimiter.Length).Trim();
-                        inTargetSection = section.Equals(storageIdentifier);
-                    }
-                    // 在目标标识区域内查找配置键
-                    else if (inTargetSection && trimmedLine.StartsWith($"{configKey}{ConfigKeyDelimiter}"))
-                    {
-                        int delimiterIndex = trimmedLine.IndexOf(ConfigKeyDelimiter);
-                        if (delimiterIndex > 0)
-                        {
-                            return trimmedLine.Substring(delimiterIndex + 1).Trim();
-                        }
-                    }
-                }
-                
-                return string.Empty;
+                // 使用BepInEx的Config.Bind方法获取配置项
+                var configEntry = TaskCheat.Instance.Config.Bind<string>(section, key, "");
+                return configEntry.Value;
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("加载配置值失败: " + ex.Message);
+                TaskCheat.Log?.LogError("获取配置值时出错: " + ex.Message);
                 return string.Empty;
             }
         }
         
         /// <summary>
-        /// 保存时间检查间隔到配置文件
+        /// 保存时间检查间隔到BepInEx配置系统
         /// </summary>
         /// <param name="intervalSeconds">检查间隔（秒）</param>
         public static void SaveCheckInterval(int intervalSeconds)
@@ -333,13 +287,21 @@ namespace cs.HoLMod.TaskCheat
             {
                 // 验证并限制检查间隔在有效范围内
                 int validatedInterval = ValidateCheckInterval(intervalSeconds);
-                string storageIdentifier = GetStorageIdentifier();
-                string configKey = "CheckInterval";
-                string configValue = validatedInterval.ToString();
                 
-                SaveConfigValue(storageIdentifier, configKey, configValue);
-                
-                TaskCheat.Log?.LogInfo($"已保存时间检查间隔配置: {validatedInterval}秒（存储标识: {storageIdentifier}）");
+                if (TaskCheat.Instance != null && TaskCheat.TaskCheckInterval != null)
+                {
+                    // 使用BepInEx配置系统保存时间间隔
+                    TaskCheat.TaskCheckInterval.Value = validatedInterval;
+                    
+                    // 确保配置被保存到文件
+                    TaskCheat.Instance.Config.Save();
+                    
+                    TaskCheat.Log?.LogInfo($"已通过BepInEx配置系统保存检查间隔配置: {validatedInterval}秒");
+                }
+                else
+                {
+                    TaskCheat.Log?.LogWarning("BepInEx配置不可用，无法保存检查间隔配置");
+                }
             }
             catch (Exception ex)
             {
@@ -348,51 +310,49 @@ namespace cs.HoLMod.TaskCheat
         }
         
         /// <summary>
-        /// 从配置文件加载时间检查间隔
+        /// 从BepInEx配置系统加载时间检查间隔
         /// </summary>
         /// <returns>检查间隔（秒）</returns>
         public static int LoadCheckInterval()
         {
             try
             {
-                string storageIdentifier = GetStorageIdentifier();
-                string configKey = "CheckInterval";
-                string configValue = LoadConfigValue(storageIdentifier, configKey);
-                
-                if (!string.IsNullOrEmpty(configValue) && int.TryParse(configValue, out int interval))
+                if (TaskCheat.Instance != null && TaskCheat.TaskCheckInterval != null)
                 {
+                    // 从BepInEx配置系统获取时间间隔
+                    int interval = TaskCheat.TaskCheckInterval.Value;
+                    
                     // 验证并返回有效范围内的检查间隔
                     int validatedInterval = ValidateCheckInterval(interval);
-                    TaskCheat.Log?.LogInfo($"已加载时间检查间隔: {validatedInterval}秒（存储标识: {storageIdentifier}）");
+                    
+                    // 如果验证后的间隔与配置值不同，更新配置
+                    if (validatedInterval != interval)
+                    {
+                        TaskCheat.TaskCheckInterval.Value = validatedInterval;
+                        TaskCheat.Log?.LogInfo($"检查间隔配置已调整为有效范围: {validatedInterval}秒");
+                    }
+                    else
+                    {
+                        TaskCheat.Log?.LogInfo($"已从BepInEx配置加载时间检查间隔: {validatedInterval}秒");
+                    }
+                    
                     return validatedInterval;
                 }
                 
-                // 如果没有找到当前标识的配置，尝试加载默认标识的配置
-                if (storageIdentifier != DefaultStorageIdentifier)
-                {
-                    string defaultConfigValue = LoadConfigValue(DefaultStorageIdentifier, configKey);
-                    if (!string.IsNullOrEmpty(defaultConfigValue) && int.TryParse(defaultConfigValue, out int defaultInterval))
-                    {
-                        int validatedDefaultInterval = ValidateCheckInterval(defaultInterval);
-                        TaskCheat.Log?.LogInfo($"未找到当前标识的检查间隔配置，使用默认标识的配置: {validatedDefaultInterval}秒");
-                        return validatedDefaultInterval;
-                    }
-                }
-                
-                TaskCheat.Log?.LogInfo($"未找到检查间隔配置，使用默认值: {DefaultCheckIntervalSeconds}秒");
+                TaskCheat.Log?.LogWarning($"BepInEx配置不可用，使用默认检查间隔: {DefaultCheckIntervalSeconds}秒");
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("加载检查间隔配置失败: " + ex.Message);
+                TaskCheat.Log?.LogError("从BepInEx配置加载检查间隔失败: " + ex.Message);
             }
             
-            // 出错或配置无效时返回默认值
+            // 出错或配置不可用时返回默认值
             return DefaultCheckIntervalSeconds;
         }
         
         /// <summary>
         /// 验证检查间隔是否在有效范围内
-        /// 如果配置错误则使用默认值并将配置文件更新为默认值
+        /// 如果配置错误则使用默认值并将配置更新为默认值
         /// </summary>
         /// <param name="intervalSeconds">检查间隔（秒）</param>
         /// <returns>验证后的检查间隔（秒）</returns>
@@ -402,10 +362,12 @@ namespace cs.HoLMod.TaskCheat
             {
                 TaskCheat.Log?.LogWarning("检查间隔不在有效范围内（" + MinCheckIntervalSeconds + "-" + MaxCheckIntervalSeconds + "秒），使用默认值: " + DefaultCheckIntervalSeconds + "秒");
                 
-                // 配置错误时，将配置文件更新为默认值
-                string storageIdentifier = GetStorageIdentifier();
-                string configKey = "CheckInterval";
-                SaveConfigValue(storageIdentifier, configKey, DefaultCheckIntervalSeconds.ToString());
+                // 配置错误时，将配置更新为默认值
+                if (TaskCheat.Instance != null && TaskCheat.TaskCheckInterval != null)
+                {
+                    TaskCheat.TaskCheckInterval.Value = DefaultCheckIntervalSeconds;
+                    TaskCheat.Instance.Config.Save();
+                }
                 
                 return DefaultCheckIntervalSeconds;
             }
@@ -413,7 +375,7 @@ namespace cs.HoLMod.TaskCheat
         }
         
         /// <summary>
-        /// 保存最后记录的时间到配置文件
+        /// 保存最后记录的时间到BepInEx配置系统
         /// </summary>
         /// <param name="year">年</param>
         /// <param name="month">月</param>
@@ -422,11 +384,26 @@ namespace cs.HoLMod.TaskCheat
         {
             try
             {
+                if (TaskCheat.Instance == null)
+                {
+                    TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法保存配置");
+                    return;
+                }
+
                 string storageIdentifier = GetStorageIdentifier();
-                string configKey = "LastTimeRecord";
+                string configKey = GetUniqueConfigKey(storageIdentifier, LastTimeRecordKeySuffix);
                 string configValue = $"{year},{month},{day}";
+
+                // 使用BepInEx配置系统保存
+                ConfigEntry<string> configEntry = TaskCheat.Instance.Config.Bind<string>(
+                    "时间记录配置", 
+                    configKey, 
+                    configValue, 
+                    $"存储标识 [{storageIdentifier}] 的最后记录时间");
+                configEntry.Value = configValue;
                 
-                SaveConfigValue(storageIdentifier, configKey, configValue);
+                // 确保配置被保存到文件
+                TaskCheat.Instance.Config.Save();
                 
                 TaskCheat.Log?.LogInfo($"已保存时间记录配置: {year}年{month}月{day}日（存储标识: {storageIdentifier}）");
             }
@@ -437,7 +414,7 @@ namespace cs.HoLMod.TaskCheat
         }
         
         /// <summary>
-        /// 从配置文件加载最后记录的时间
+        /// 从BepInEx配置系统加载最后记录的时间
         /// </summary>
         /// <param name="year">年</param>
         /// <param name="month">月</param>
@@ -451,9 +428,17 @@ namespace cs.HoLMod.TaskCheat
 
             try
             {
+                if (TaskCheat.Instance == null)
+                {
+                    TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法加载配置");
+                    return false;
+                }
+
                 string storageIdentifier = GetStorageIdentifier();
-                string configKey = "LastTimeRecord";
-                string configValue = LoadConfigValue(storageIdentifier, configKey);
+                string configKey = GetUniqueConfigKey(storageIdentifier, LastTimeRecordKeySuffix);
+                
+                // 查找配置
+                string configValue = GetConfigValueFromBepInEx("时间记录配置", configKey);
 
                 if (!string.IsNullOrEmpty(configValue))
                 {
@@ -487,55 +472,40 @@ namespace cs.HoLMod.TaskCheat
         {
             try
             {
-                if (!File.Exists(ConfigFilePath))
+                if (TaskCheat.Instance == null)
                 {
-                    TaskCheat.Log?.LogInfo("配置文件不存在");
-                    return true;
+                    TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法清除配置");
+                    return false;
                 }
 
-                string content = File.ReadAllText(ConfigFilePath, Encoding.UTF8);
-                List<string> lines = content.Split(new[] { Environment.NewLine }, StringSplitOptions.None).ToList();
-
-                List<string> newLines = new List<string>();
-                bool inTargetSection = false;
-
-                for (int i = 0; i < lines.Count; i++)
+                string safeIdentifier = Regex.Replace(storageIdentifier, @"[^\w.-]", "_");
+                string[] sections = { "重复任务配置", "时间记录配置", "重复任务设置" };
+                
+                // 尝试清空所有可能的配置键
+                string[] possibleSuffixes = { SelectedTasksKeySuffix, LastTimeRecordKeySuffix, CheckIntervalKeySuffix };
+                foreach (string suffix in possibleSuffixes)
                 {
-                    string trimmedLine = lines[i].Trim();
-
-                    // 检查是否进入目标标识区域
-                    if (trimmedLine.StartsWith(SectionDelimiter))
+                    string configKey = GetUniqueConfigKey(safeIdentifier, suffix);
+                    foreach (string section in sections)
                     {
-                        string section = trimmedLine.Substring(SectionDelimiter.Length).Trim();
-                        if (section.Equals(storageIdentifier))
+                        try
                         {
-                            inTargetSection = true;
-                            // 跳过目标标识的所有内容
-                            while (i + 1 < lines.Count && !lines[i + 1].StartsWith(SectionDelimiter))
-                            {
-                                i++;
-                            }
+                            var configEntry = TaskCheat.Instance.Config.Bind<string>(section, configKey, "");
+                            configEntry.Value = "";
                         }
-                        else
-                        {
-                            inTargetSection = false;
-                            newLines.Add(lines[i]);
-                        }
-                    }
-                    else if (!inTargetSection)
-                    {
-                        newLines.Add(lines[i]);
+                        catch { }
                     }
                 }
 
-                // 写入更新后的配置
-                File.WriteAllText(ConfigFilePath, string.Join(Environment.NewLine, newLines), Encoding.UTF8);
+                // 保存更新后的配置
+                TaskCheat.Instance.Config.Save();
+                
                 TaskCheat.Log?.LogInfo($"已清除存储标识为 '{storageIdentifier}' 的配置");
                 return true;
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("清除配置文件时出错: " + ex.Message);
+                TaskCheat.Log?.LogError("清除配置时出错: " + ex.Message);
                 return false;
             }
         }
@@ -548,11 +518,25 @@ namespace cs.HoLMod.TaskCheat
         {
             try
             {
-                if (File.Exists(ConfigFilePath))
+                if (TaskCheat.Instance == null)
                 {
-                    File.Delete(ConfigFilePath);
-                    TaskCheat.Log?.LogInfo("已成功清除所有配置");
+                    TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法清除配置");
+                    return false;
                 }
+
+                // 清空任务检查间隔配置
+                if (TaskCheat.TaskCheckInterval != null)
+                {
+                    TaskCheat.TaskCheckInterval.Value = DefaultCheckIntervalSeconds;
+                }
+
+                // 定义我们需要查找的所有可能的section
+                string[] sections = { "重复任务配置", "时间记录配置", "重复任务设置" };
+                
+                // 保存更新后的配置
+                TaskCheat.Instance.Config.Save();
+                
+                TaskCheat.Log?.LogInfo("已成功清除所有配置");
                 return true;
             }
             catch (Exception ex)
