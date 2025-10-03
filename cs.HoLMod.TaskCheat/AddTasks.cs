@@ -17,18 +17,31 @@ namespace cs.HoLMod.TaskCheat
         /// <param name="selectedTasks">选中的任务列表</param>
         public static void AddTasksToCurrent(List<List<string>> selectedTasks)
         {
-            /// <summary>
-            /// 检查是否处于游戏中
-            /// </summary>
-            
+            // 检查TaskCheat实例是否存在以及Mainload.SceneID是否为空
+            if (TaskCheat.Instance == null)
+            {
+                TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法添加任务");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(Mainload.SceneID))
+            {
+                TaskCheat.Log?.LogWarning("Mainload.SceneID为空，无法确定当前场景");
+                if (TaskCheat.Instance != null)
+                {
+                    TaskCheat.Instance.ShowNotification("无法确定当前场景，任务添加失败！");
+                }
+                return;
+            }
+
             // 加载当前场景并用|分割
-            string[] array = Mainload.SceneID.Split(new char[]
+            string[] arrayadd = Mainload.SceneID.Split(new char[]
             {
                 '|'
             });
 
             // 读取场景类型，M府邸、Z封地、S郡、H皇宫
-            string SceneClass = array[0];
+            string SceneClass = arrayadd[0];
 
             // 检查场景类型是否为有效类型，只要有一个为有效类型，就认为是游戏中，那么继续执行
             if (SceneClass == "M" || SceneClass == "Z" || SceneClass == "S" || SceneClass == "H" )
@@ -113,6 +126,9 @@ namespace cs.HoLMod.TaskCheat
                         TaskCheat.Instance.ShowNotification("任务添加失败！");
                     }
                 }
+                
+                // 清空array数组
+                arrayadd = null;
             }
         }
     }
