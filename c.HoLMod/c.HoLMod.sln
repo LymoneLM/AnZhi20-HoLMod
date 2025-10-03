@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.AutoArchives", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.TaskCheat", "..\cs.HoLMod.TaskCheat\cs.HoLMod.TaskCheat.csproj", "{79682419-F06C-465F-BF65-4C8CEEF269EB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.MorePopulation", "..\cs.HoLMod.MorePopulation\cs.HoLMod.MorePopulation.csproj", "{D1E8EBB6-3E94-4AC1-A0A1-BCBC5BDC0FF2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{79682419-F06C-465F-BF65-4C8CEEF269EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79682419-F06C-465F-BF65-4C8CEEF269EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79682419-F06C-465F-BF65-4C8CEEF269EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1E8EBB6-3E94-4AC1-A0A1-BCBC5BDC0FF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1E8EBB6-3E94-4AC1-A0A1-BCBC5BDC0FF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1E8EBB6-3E94-4AC1-A0A1-BCBC5BDC0FF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1E8EBB6-3E94-4AC1-A0A1-BCBC5BDC0FF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
