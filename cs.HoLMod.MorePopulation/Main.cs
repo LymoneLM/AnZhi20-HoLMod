@@ -13,7 +13,7 @@ namespace cs.HoLMod.MorePopulation
     {
         public const string PLUGIN_GUID = "cs.HoLMod.MorePopulation.AnZhi20";
         public const string PLUGIN_NAME = "HoLMod.MorePopulation";
-        public const string PLUGIN_VERSION = "1.0.0";
+        public const string PLUGIN_VERSION = "1.3.0";
     }
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Main : BaseUnityPlugin
@@ -31,7 +31,7 @@ namespace cs.HoLMod.MorePopulation
             Instance = this;
             
             // 读取配置文件中的人口修正倍率
-            PopulationCheatRate = Config.Bind("倍率调整", "自然增加人口修正", 1, "每月自然增加人口修正倍数，填1为默认修正值").Value;
+            PopulationCheatRate = Config.Bind("倍率调整(Adjustment)", "自然增加人口修正(Population Correction)", 1, "每月自然增加人口修正倍数，填1为默认修正值。(Monthly natural population growth correction factor, set to 1 for default value).").Value;
         }
 
         // 人口相关变量
