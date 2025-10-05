@@ -41,12 +41,12 @@ namespace cs.HoLMod.AddItem
             {"添加", ("添加", "Add")},
             {"使用说明:", ("使用说明:", "Instructions:")},
             {"1. 请在点击添加前先保存游戏，以便回档", ("1. 请在点击添加前先保存游戏，以便回档", "1. Please save the game before adding items for rollback")},
-            {"2. 按F2键显示/隐藏窗口", ("2. Press F2 to show/hide window", "2. Press F2 to show/hide window")},
-            {"3. 切换模式选择：物品模式/货币模式/话本模式/地图模式", ("3. Switch modes: Items/Currency/Stories/Map", "3. Switch modes: Items/Currency/Stories/Map")},
-            {"4. 输入部分字符可搜索物品或话本", ("4. Enter partial characters to search items or stories", "4. Enter partial characters to search items or stories")},
-            {"5. 选择项目并选择或输入数量后点击添加按钮", ("5. Select item, choose/enter quantity, then click Add", "5. Select item, choose/enter quantity, then click Add")},
+            {"2. 按F2键显示/隐藏窗口", ("2. 按F2键显示/隐藏窗口。", "2. Press F2 to show/hide window")},
+            {"3. 切换模式选择：物品模式/货币模式/话本模式/地图模式", ("3. 切换模式选择：物品模式/货币模式/话本模式/地图模式。", "3. Switch modes: Items/Currency/Stories/Map")},
+            {"4. 输入部分字符可搜索物品或话本", ("4. 输入部分字符可搜索物品或话本。", "4. Enter partial characters to search items or stories")},
+            {"5. 选择项目并选择或输入数量后点击添加按钮", ("5. 选择项目并选择或输入数量后点击添加按钮。", "5. Select item, choose/enter quantity, then click Add")},
             {"Mod作者：AnZhi20", ("Mod作者：AnZhi20", "Mod Author: AnZhi20")},
-            {"Mod版本：2.5.0", ("Mod版本：2.5.0", "Mod Version: 2.5.0")},
+            {"Mod版本：2.6.0", ("Mod版本：2.6.0", "Mod Version: 2.6.0")},
             
             // 物品分类相关
             {"特殊物品", ("特殊物品", "Special Items")},
@@ -128,19 +128,23 @@ namespace cs.HoLMod.AddItem
             {"点击下方添加按钮即可解锁选择郡的所属封地", ("点击下方添加按钮即可解锁选择郡的所属封地", "Click Add button below to unlock fiefs in selected prefecture")},
             {"未找到匹配的物品", ("未找到匹配的物品", "No matching items found")},
             
-            // 日志和配置相关
-            {"未选择郡县", ("未选择郡县", "County not selected")},
-            {"无效的县选择", ("无效的县选择", "Invalid county selection")},
-            {"未选择郡", ("未选择郡", "Prefecture not selected")},
-            {"物品添加器窗口已打开", ("物品添加器窗口已打开", "Item Adder window opened")},
-            {"物品添加器窗口已关闭", ("物品添加器窗口已关闭", "Item Adder window closed")},
-            {"用于跟踪插件版本，请勿手动修改", ("用于跟踪插件版本，请勿手动修改", "Used to track plugin version, do not modify manually")},
-            {"物品添加器已加载！", ("物品添加器已加载！", "Item Adder loaded!")},
-            {"旧配置文件已删除。", ("旧配置文件已删除。", "Old config file deleted.")},
-            {"配置文件已成功重新生成。", ("配置文件已成功重新生成。", "Config file successfully regenerated.")},
-            {"获取当前元宝数量失败", ("获取当前元宝数量失败", "Failed to get current gold ingot count")},
-            {"已添加新物品: ", ("已添加新物品: ", "New item added: ")},
-            {"索引", ("索引", " Index")}
+            // 新增状态消息翻译
+            {"{0}未解锁或郡城叛军未清剿，无法添加府邸", ("{0}未解锁或郡城叛军未清剿，无法添加府邸", "{0} not unlocked or county rebels not cleared, cannot add mansion")},
+            {"{0}未解锁或郡城叛军未清剿，无法添加农庄", ("{0}未解锁或郡城叛军未清剿，无法添加农庄", "{0} not unlocked or county rebels not cleared, cannot add farm")},
+            {"{0}-{1}已有府邸，添加失败", ("{0}-{1}已有府邸，添加失败", "{0}-{1} already has a mansion, addition failed")},
+            {"{0}-{1}已有农庄，添加失败", ("{0}-{1}已有农庄，添加失败", "{0}-{1} already has a farm, addition failed")},
+            {"{0}-{1}已有世家，添加失败", ("{0}-{1}已有世家，添加失败", "{0}-{1} already has a family, addition failed")},
+            {"已解锁农庄: {0} ({1}-{2})，面积: {3}", ("已解锁农庄: {0} ({1}-{2})，面积: {3}", "Unlocked farm: {0} ({1}-{2}), area: {3}")},
+            {"添加失败：你所选择的位置并未解锁，请解锁{0}郡再添加", ("添加失败：你所选择的位置并未解锁，请解锁{0}郡再添加", "Failed to add: The selected location is not unlocked. Please unlock {0} prefecture first")},
+            {"{0}未解锁或郡城叛军未清剿，无法解锁封地", ("{0}未解锁或郡城叛军未清剿，无法解锁封地", "{0} not unlocked or county rebels not cleared, cannot unlock fief")},
+            {"{0}的封地已解锁", ("{0}的封地已解锁", "{0}'s fief has been unlocked")},
+            {"{0}的封地数据不存在或索引错误", ("{0}的封地数据不存在或索引错误", "{0}'s fief data does not exist or index error")},
+            {"已添加{0}铜钱", ("已添加{0}铜钱", "{0} copper coins added")},
+            {"已添加{0}元宝", ("已添加{0}元宝", "{0} gold ingots added")},
+            {"添加的【{0}】数量为0，添加失败", ("添加的【{0}】数量为0，添加失败", "The quantity of [{0}] is 0, addition failed")},
+            {"已添加: {0} x {1}", ("已添加: {0} x {1}", "Added: {0} x {1}")},
+            {"已添加: {0}", ("已添加: {0}", "Added: {0}")},
+            {"话本{0}已存在，不重复添加", ("话本{0}已存在，不重复添加", "Storybook {0} already exists, not adding again")}
         };
         
         // 根据当前语言获取文本
@@ -513,19 +517,9 @@ namespace cs.HoLMod.AddItem
         // 判断当前是否为中文语言环境
         private bool IsChineseLanguage()
         {
-            // 检查系统语言是否为中文（包括简体中文、繁体中文等所有中文变体）
-            try
-            {
-                SystemLanguage language = Application.systemLanguage;
-                return language == SystemLanguage.Chinese || 
-                       language == SystemLanguage.ChineseSimplified || 
-                       language == SystemLanguage.ChineseTraditional;
-            }
-            catch
-            {
-                // 发生异常时默认返回true（中文）
-                return true;
-            }
+            // 检查系统语言是否为中文
+            string systemLanguage = Application.systemLanguage.ToString();
+            return systemLanguage.Contains("Chinese");
         }
         
         // 双语话本列表 - 结构：ID, [中文名称, 英文名称, 中文描述, 英文描述]
@@ -702,7 +696,7 @@ namespace cs.HoLMod.AddItem
 
         private void Awake()
         {
-            Logger.LogInfo(GetText("物品添加器已加载！"));
+            Logger.LogInfo("物品添加器已加载！");
             
             // 配置文件路径
             string configFilePath = Path.Combine(Paths.ConfigPath, "cs.HoLMod.AddItem.AnZhi20.cfg");
@@ -741,15 +735,16 @@ namespace cs.HoLMod.AddItem
                     if (File.Exists(configFilePath))
                     {
                         File.Delete(configFilePath);
-                        Logger.LogInfo(GetText("旧配置文件已删除。"));
+                        Logger.LogInfo("旧配置文件已删除。");
                     }
                     
                     // 只保存版本信息，不保存窗口大小配置
-                    Config.Bind("内部配置", "已加载版本", CURRENT_VERSION, GetText("用于跟踪插件版本，请勿手动修改"));
+                    Config.Bind("内部配置", "已加载版本", CURRENT_VERSION, "用于跟踪插件版本，请勿手动修改");
                     
                     // 保存新的配置文件
                     Config.Save();
-                    Logger.LogInfo(GetText("配置文件已成功重新生成。"));
+                    
+                    Logger.LogInfo("配置文件已成功重新生成。");
                 }
                 catch (Exception ex)
                 {
@@ -760,8 +755,8 @@ namespace cs.HoLMod.AddItem
             // 初始化分辨率设置
             UpdateResolutionSettings();
             
-            // 加载游戏物品到字典
-            LoadGameItemsToDictionary.LoadItems(itemList);
+            // 加载游戏物品到字典，并根据当前语言环境选择显示中文或英文名称
+            LoadGameItemsToDictionary.LoadItems(itemList, IsChineseLanguage());
             
             // 初始化筛选后的物品列表
             filteredItemIds = itemList.Keys.ToList();
@@ -783,7 +778,7 @@ namespace cs.HoLMod.AddItem
                     Mainload.isMapPanelOpen = false;
                 }
                 
-                Logger.LogInfo(showMenu ? GetText("物品添加器窗口已打开") : GetText("物品添加器窗口已关闭"));
+                Logger.LogInfo(showMenu ? "物品添加器窗口已打开" : "物品添加器窗口已关闭");
             }
             
             // 阻止游戏输入当窗口显示时（游戏会继续运行，但不允许操作游戏界面）
@@ -1080,28 +1075,7 @@ namespace cs.HoLMod.AddItem
                         bool isSelected = (i == selectedIndex);
                         GUIStyle buttonStyle = isSelected ? GUI.skin.toggle : GUI.skin.button;
                         
-                        // 根据当前语言选择显示的物品名称
-                        string displayName = itemList[filteredItemIds[i]].Item1;
-                        
-                        if (!IsChineseLanguage())
-                        {
-                            // 英文模式下尝试获取英文名称
-                            try
-                            {
-                                // 从AllText.Text_AllProp中查找英文名称
-                                if (AllText.Text_AllProp != null && filteredItemIds[i] < AllText.Text_AllProp.Count)
-                                {
-                                    List<string> itemInfo = AllText.Text_AllProp[filteredItemIds[i]];
-                                    if (itemInfo != null && itemInfo.Count >= 2)
-                                    {
-                                        displayName = itemInfo[1]; // 使用英文名称
-                                    }
-                                }
-                            }
-                            catch { }
-                        }
-                        
-                        if (GUILayout.Button(displayName, buttonStyle, new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
+                        if (GUILayout.Button(itemList[filteredItemIds[i]].Item1, buttonStyle, new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
                         {
                             selectedItemId = filteredItemIds[i];
                         }
@@ -1241,7 +1215,7 @@ namespace cs.HoLMod.AddItem
                     // 府邸自定义名字
                     GUILayout.Space(5f * scaleFactor);
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    GUILayout.Label("府邸的名字：", new GUILayoutOption[] { GUILayout.Width(120f * scaleFactor) });
+                    GUILayout.Label(GetText("府邸的名字："), new GUILayoutOption[] { GUILayout.Width(120f * scaleFactor) });
                     mansionCustomName = GUILayout.TextField(mansionCustomName, new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     GUILayout.EndHorizontal();
                     
@@ -1278,7 +1252,7 @@ namespace cs.HoLMod.AddItem
                     
                     // 生成农庄所在郡
                     GUILayout.Space(10f * scaleFactor);
-                    GUILayout.Label("生成农庄所在郡：", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("生成农庄所在郡："), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     
                     // 第一行6个郡按钮，使用固定宽度确保对齐
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
@@ -1313,7 +1287,7 @@ namespace cs.HoLMod.AddItem
                     
                     // 生成农庄所在县
                     GUILayout.Space(10f * scaleFactor);
-                    GUILayout.Label("生成农庄所在县：", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("生成农庄所在县："), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     
                     // 只有选择了郡才显示县按钮
                     if (selectedJunIndex >= 0 && selectedJunIndex < XianList.Length)
@@ -1346,18 +1320,18 @@ namespace cs.HoLMod.AddItem
                     // 显示选择的郡县
                     GUILayout.Space(10f * scaleFactor);
                     string displayPrefectureCounty = string.IsNullOrEmpty(selectedPrefecture) || string.IsNullOrEmpty(selectedCounty) ? "--" : $"{selectedPrefecture}-{selectedCounty}";
-                    GUILayout.Label($"生成农庄所在的郡县：{displayPrefectureCounty}", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("生成农庄所在的郡县：") + displayPrefectureCounty, new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     
                     // 农庄自定义名字
                     GUILayout.Space(5f * scaleFactor);
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    GUILayout.Label("农庄的名字：", new GUILayoutOption[] { GUILayout.Width(120f * scaleFactor) });
+                    GUILayout.Label(GetText("农庄的名字："), new GUILayoutOption[] { GUILayout.Width(120f * scaleFactor) });
                         farmCustomName = GUILayout.TextField(farmCustomName, new GUILayoutOption[] { GUILayout.ExpandWidth(true), GUILayout.MinWidth(250f * scaleFactor) });
                     GUILayout.EndHorizontal();
                     
                     // 农庄面积选择
                     GUILayout.Space(5f * scaleFactor);
-                    GUILayout.Label("农庄面积选择：", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("农庄面积选择："), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     if (GUILayout.Button("4", new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
                     {
@@ -1383,7 +1357,7 @@ namespace cs.HoLMod.AddItem
                     
                     // 生成封地所在郡
                     GUILayout.Space(10f * scaleFactor);
-                    GUILayout.Label("选择要解锁的郡：", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("选择要解锁的郡："), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     
                     // 第一行6个郡按钮，使用固定宽度确保对齐
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
@@ -1419,7 +1393,7 @@ namespace cs.HoLMod.AddItem
                     // 显示选择的郡
                     GUILayout.Space(10f * scaleFactor);
                     string displayPrefecture = string.IsNullOrEmpty(selectedPrefecture) ? "--" : selectedPrefecture;
-                    GUILayout.Label($"当前选择的郡：{displayPrefecture}", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("当前选择的郡：") + displayPrefecture, new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     
                     GUILayout.Space(10f * scaleFactor);
                     GUILayout.Label(GetText("点击下方添加按钮即可解锁选择郡的所属封地"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
@@ -1430,7 +1404,7 @@ namespace cs.HoLMod.AddItem
                     
                     // 生成世家所在郡
                     GUILayout.Space(10f * scaleFactor);
-                    GUILayout.Label("生成世家所在郡：", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("生成世家所在郡："), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     
                     // 第一行6个郡按钮，使用固定宽度确保对齐
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
@@ -1465,7 +1439,7 @@ namespace cs.HoLMod.AddItem
                     
                     // 生成世家所在县
                     GUILayout.Space(10f * scaleFactor);
-                    GUILayout.Label("生成世家所在县：", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("生成世家所在县："), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     
                     // 只有选择了郡才显示县按钮
                     if (selectedJunIndex >= 0 && selectedJunIndex < XianList.Length)
@@ -1498,7 +1472,7 @@ namespace cs.HoLMod.AddItem
                     // 显示选择的郡县
                     GUILayout.Space(10f * scaleFactor);
                     string displayPrefectureCounty = string.IsNullOrEmpty(selectedPrefecture) || string.IsNullOrEmpty(selectedCounty) ? "--" : $"{selectedPrefecture}-{selectedCounty}";
-                    GUILayout.Label($"生成世家所在的郡县：{displayPrefectureCounty}", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("生成世家所在的郡县：") + displayPrefectureCounty, new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                 }
                 
                 GUILayout.EndScrollView();
@@ -1517,7 +1491,7 @@ namespace cs.HoLMod.AddItem
             {
                 // 数量输入
                 GUILayout.BeginHorizontal();
-                GUILayout.Label("数量:", new GUILayoutOption[] { GUILayout.Width(100f * scaleFactor) });
+                GUILayout.Label(GetText("数量:"), new GUILayoutOption[] { GUILayout.Width(100f * scaleFactor) });
                 string newCountInput = GUILayout.TextField(countInput, new GUILayoutOption[] { GUILayout.Width(200f * scaleFactor) });
                 if (newCountInput != countInput)
                 {
@@ -1567,7 +1541,7 @@ namespace cs.HoLMod.AddItem
             
             // MOD作者及版本号说明
             GUILayout.Label(GetText("Mod作者：AnZhi20"));
-            GUILayout.Label("Mod版本：2.5.0");
+            GUILayout.Label(GetText("Mod版本：2.6.0"));
             GUILayout.EndVertical();
             
             GUILayout.EndVertical();
@@ -1652,7 +1626,7 @@ namespace cs.HoLMod.AddItem
                         if (string.IsNullOrEmpty(selectedPrefecture) || string.IsNullOrEmpty(selectedCounty))
                         {
                             statusMessage = GetText("请先选择府邸所在的郡县");
-                        Logger.LogError(GetText("未选择郡县"));
+                            Logger.LogError("未选择郡县");
                             return;
                         }
                         
@@ -1675,7 +1649,7 @@ namespace cs.HoLMod.AddItem
                         if (xianIndex < 0)
                         {
                             statusMessage = GetText("找不到选择的县");
-                        Logger.LogError(GetText("无效的县选择"));
+                            Logger.LogError("无效的县选择");
                             return;
                         }
                         
@@ -1702,7 +1676,7 @@ namespace cs.HoLMod.AddItem
                                             if (parts.Length > 0 && parts[0] != "-1")
                                             {
                                                 // 势力名称不为-1，不添加府邸
-                                                statusMessage = string.Format("{0}未解锁或郡城叛军未清剿，无法添加府邸", selectedPrefecture);
+                                                statusMessage = string.Format(GetText("{0}未解锁或郡城叛军未清剿，无法添加府邸"), selectedPrefecture);
                                                 Logger.LogWarning(statusMessage);
                                                   
                                                 // 显示提示信息
@@ -1737,7 +1711,7 @@ namespace cs.HoLMod.AddItem
                          
                         if (mansionExists)
                         {
-                            statusMessage = $"{selectedPrefecture}-{selectedCounty}已有府邸，添加失败";
+                            statusMessage = string.Format(GetText("{0}-{1}已有府邸，添加失败"), selectedPrefecture, selectedCounty);
                             Logger.LogWarning(statusMessage);
                              
                             // 显示提示信息
@@ -1750,7 +1724,7 @@ namespace cs.HoLMod.AddItem
                           
                         if (farmExists)
                         {
-                            statusMessage = $"{selectedPrefecture}-{selectedCounty}已有农庄，添加失败";
+                            statusMessage = string.Format(GetText("{0}-{1}已有农庄，添加失败"), selectedPrefecture, selectedCounty);
                             Logger.LogWarning(statusMessage);
                               
                             // 显示提示信息
@@ -1774,7 +1748,7 @@ namespace cs.HoLMod.AddItem
                          
                         if (shiJiaExists)
                         {
-                            statusMessage = $"{selectedPrefecture}-{selectedCounty}已有世家，添加失败";
+                            statusMessage = string.Format(GetText("{0}-{1}已有世家，添加失败"), selectedPrefecture, selectedCounty);
                             Logger.LogWarning(statusMessage);
                              
                             // 显示提示信息
@@ -1875,7 +1849,7 @@ namespace cs.HoLMod.AddItem
                         if (string.IsNullOrEmpty(selectedPrefecture) || string.IsNullOrEmpty(selectedCounty))
                         {
                             statusMessage = GetText("请先选择农庄所在的郡县");
-                        Logger.LogError(GetText("未选择郡县"));
+                            Logger.LogError("未选择郡县");
                             return;
                         }
                         
@@ -1898,7 +1872,7 @@ namespace cs.HoLMod.AddItem
                         if (xianIndex < 0)
                         {
                             statusMessage = GetText("找不到选择的县");
-                        Logger.LogError(GetText("无效的县选择"));
+                            Logger.LogError("无效的县选择");
                             return;
                         }
                         
@@ -1925,7 +1899,7 @@ namespace cs.HoLMod.AddItem
                                             if (parts.Length > 0 && parts[0] != "-1")
                                             {
                                                 // 势力名称不为-1，不添加农庄
-                                                statusMessage = string.Format("{0}未解锁或郡城叛军未清剿，无法添加农庄", selectedPrefecture);
+                                                statusMessage = string.Format(GetText("{0}未解锁或郡城叛军未清剿，无法添加农庄"), selectedPrefecture);
                                                 Logger.LogWarning(statusMessage);
                                                   
                                                 // 显示提示信息
@@ -1981,7 +1955,7 @@ namespace cs.HoLMod.AddItem
                          
                         if (mansionExists)
                         {
-                            statusMessage = $"{selectedPrefecture}-{selectedCounty}已有府邸，添加失败";
+                            statusMessage = string.Format(GetText("{0}-{1}已有府邸，添加失败"), selectedPrefecture, selectedCounty);
                             Logger.LogWarning(statusMessage);
                              
                             // 显示提示信息
@@ -2005,7 +1979,7 @@ namespace cs.HoLMod.AddItem
                          
                         if (shiJiaExists)
                         {
-                            statusMessage = $"{selectedPrefecture}-{selectedCounty}已有世家，添加失败";
+                            statusMessage = string.Format(GetText("{0}-{1}已有世家，添加失败"), selectedPrefecture, selectedCounty);
                             Logger.LogWarning(statusMessage);
                              
                             // 添加显示信息
@@ -2146,8 +2120,8 @@ namespace cs.HoLMod.AddItem
                         // 封地子模式 - 解锁封地
                         if (string.IsNullOrEmpty(selectedPrefecture))
                         { 
-                            statusMessage = GetText("请先选择要解锁的郡");
-                        Logger.LogError(GetText("未选择郡")); 
+                            statusMessage = GetText("请先选择要解锁的郡"); 
+                            Logger.LogError("未选择郡"); 
                             return; 
                         } 
                         
@@ -2189,7 +2163,7 @@ namespace cs.HoLMod.AddItem
                                                 if (parts.Length > 0 && parts[0] != "-1") 
                                                 { 
                                                     // 势力名称不为-1，不解锁封地
-                                                    statusMessage = string.Format("{0}未解锁或郡城叛军未清剿，无法解锁封地", selectedPrefecture); 
+                                                    statusMessage = string.Format(GetText("{0}未解锁或郡城叛军未清剿，无法解锁封地"), selectedPrefecture); 
                                                     Logger.LogWarning(statusMessage); 
                                                      
                                                     // 显示提示信息
@@ -2214,7 +2188,7 @@ namespace cs.HoLMod.AddItem
                                         // 检查封地是否已解锁 (第一个元素为0表示未解锁)
                                         if (fengDiData[0] == "1")
                                         {
-                                            statusMessage = string.Format("{0}的封地已解锁", selectedPrefecture);
+                                            statusMessage = string.Format(GetText("{0}的封地已解锁"), selectedPrefecture);
                                             Logger.LogInfo(statusMessage);
                                             return;
                                         }
@@ -2222,14 +2196,14 @@ namespace cs.HoLMod.AddItem
                                         {
                                             // 解锁封地
                                             fengDiData[0] = "1";
-                                            statusMessage = string.Format("{0}的封地已解锁", selectedPrefecture);
+                                            statusMessage = string.Format(GetText("{0}的封地已解锁"), selectedPrefecture);
                                             Logger.LogInfo(statusMessage);
                                         }
                                     }  
                                 }
                                 else
                                 {
-                                    statusMessage = string.Format("{0}的封地数据不存在或索引错误", selectedPrefecture);
+                                    statusMessage = string.Format(GetText("{0}的封地数据不存在或索引错误"), selectedPrefecture);
                                     Logger.LogWarning(statusMessage);
                                 }
                             } 
@@ -2273,7 +2247,7 @@ namespace cs.HoLMod.AddItem
                     {
                         // 添加铜钱
                         FormulaData.ChangeCoins(currencyValue);
-                        statusMessage = string.Format("已添加{0}铜钱", currencyValue);
+                        statusMessage = string.Format(GetText("已添加{0}铜钱"), currencyValue);
                         Logger.LogInfo(statusMessage);
                     }
                     else if (selectedCurrencyType == 1)
@@ -2282,13 +2256,13 @@ namespace cs.HoLMod.AddItem
                         if (int.TryParse(Mainload.CGNum[1], out int currentYuanBao))
                         {
                             Mainload.CGNum[1] = (currentYuanBao + currencyValue).ToString();
-                            statusMessage = string.Format("已添加{0}元宝", currencyValue);
+                            statusMessage = string.Format(GetText("已添加{0}元宝"), currencyValue);
                             Logger.LogInfo(statusMessage);
                         }
                         else
                         {
                             statusMessage = GetText("获取当前元宝数量失败");
-                            Logger.LogError(statusMessage);
+                            Logger.LogError("获取当前元宝数量失败");
                             return;
                         }
                     }
@@ -2402,9 +2376,9 @@ namespace cs.HoLMod.AddItem
         private void ShowItemAddedMessage(int itemId, int quantity)
         {
             string itemName = itemList[itemId].Item1;
-            string message = string.Format("已添加: {0} x {1}", itemName, quantity);
+            string message = string.Format(GetText("已添加: {0} x {1}"), itemName, quantity);
             ShowTipMessage(message);
-            statusMessage = string.Format("已添加物品: {0} x {1}", itemName, quantity);
+            statusMessage = string.Format(GetText("已添加物品: {0} x {1}"), itemName, quantity);
             Logger.LogInfo(statusMessage);
         }
         
@@ -2486,7 +2460,7 @@ namespace cs.HoLMod.AddItem
             string displayName = IsChineseLanguage() ? bookList[bookId][0] : bookList[bookId][1];
             
             // 显示添加失败提示
-            string errorMessage = string.Format(IsChineseLanguage() ? "添加失败: 话本{0}已存在" : "Failed to add: Book {0} already exists", displayName);
+            string errorMessage = string.Format(GetText("添加失败: 话本{0}已存在"), displayName);
             ShowTipMessage(errorMessage);
         }
         

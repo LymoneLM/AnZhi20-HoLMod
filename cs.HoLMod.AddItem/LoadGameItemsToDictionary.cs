@@ -20,7 +20,8 @@ namespace cs.HoLMod.AddItem
         /// 从Text_AllProp加载游戏物品到itemList
         /// </summary>
         /// <param name="itemList">要添加物品的字典</param>
-        public static void LoadItems(Dictionary<int, (string, string)> itemList)
+        /// <param name="isChineseLanguage">是否为中文语言环境</param>
+        public static void LoadItems(Dictionary<int, (string, string)> itemList, bool isChineseLanguage)
         {
             try
             {
@@ -45,41 +46,28 @@ namespace cs.HoLMod.AddItem
                     string chineseName = itemInfo[0];
                     string englishName = itemInfo[1];
 
+                    // 根据语言选择显示名称
+                    string displayName = isChineseLanguage ? chineseName : englishName;
+
                     // 检查物品是否已存在于itemList中
-                    bool itemExists = itemList.Values.Any(item => item.Item1 == chineseName);
+                    bool itemExists = itemList.Values.Any(item => item.Item1 == displayName);
 
                     // 如果物品不存在，则添加到itemList中
                     if (!itemExists)
                     {
                         // 与AllText.Text_AllProp[]的索引保持一致
                         int newId = i;
-                        
+                         
                         // 如果ID已存在，记录警告并跳过添加，以保持索引一致性
                         if (itemList.ContainsKey(newId))
                         {
-                            UnityEngine.Debug.LogWarning("物品ID冲突: 索引 " + i + " (" + chineseName + ") 已存在，跳过添加以保持索引一致性");
+                            UnityEngine.Debug.LogWarning("物品ID冲突: 索引 " + i + " (" + displayName + ") 已存在，跳过添加以保持索引一致性");
                             continue;
                         }
 
                         // 添加新物品，分类为"新增物品"
-                        itemList.Add(newId, (chineseName, "新增物品"));
-                        
-                        // 简单的语言判断逻辑
-                        string prefix = "已添加新物品: ";
-                        string indexText = "索引";
-                        try
-                        {
-                            if (UnityEngine.Application.systemLanguage != UnityEngine.SystemLanguage.Chinese &&
-                                UnityEngine.Application.systemLanguage != UnityEngine.SystemLanguage.ChineseSimplified &&
-                                UnityEngine.Application.systemLanguage != UnityEngine.SystemLanguage.ChineseTraditional)
-                            {
-                                prefix = "New item added: ";
-                                indexText = " Index";
-                            }
-                        }
-                        catch { }
-                        
-                        UnityEngine.Debug.Log(prefix + chineseName + indexText + newId);
+                        itemList.Add(newId, (displayName, "新增物品"));
+                        UnityEngine.Debug.Log("已添加新物品: " + displayName + "索引" + newId);
                     }
                 }
             }
@@ -87,6 +75,16 @@ namespace cs.HoLMod.AddItem
             {
                 UnityEngine.Debug.LogError("加载游戏物品到字典时出错: " + ex.Message);
             }
+        }
+
+        /// <summary>
+        /// 从Text_AllProp加载游戏物品到itemList（兼容旧版本调用）
+        /// </summary>
+        /// <param name="itemList">要添加物品的字典</param>
+        public static void LoadItems(Dictionary<int, (string, string)> itemList)
+        {
+            // 默认使用中文
+            LoadItems(itemList, true);
         }
     }
 }
