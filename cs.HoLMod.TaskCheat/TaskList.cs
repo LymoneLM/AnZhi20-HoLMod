@@ -12,6 +12,7 @@ namespace cs.HoLMod.TaskCheat
         //任务文本
         public static List<List<string>> Text_AllTaskOrder = new List<List<string>>
         {
+            // 每个数组的第一个元素结构为中文的任务|中文的任务描述，第二个元素为英文的任务|英文的任务描述
             new List<string>
             {
                 "【任务】为城中路人代写书信^次|寻找城中街道来往行人中头顶【求信】标识者，为其代写书信赚取钱财。",

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
+using System;
 
 namespace cs.HoLMod.TaskCheat
 {
@@ -26,58 +27,58 @@ namespace cs.HoLMod.TaskCheat
         // 郡数组，索引对应郡ID
         private static string[] JunList = new string[]
         {
-            "南郡",     // 0
-            "三川郡",   // 1
-            "蜀郡",     // 2
-            "丹阳郡",   // 3
-            "陈留郡",   // 4
-            "长沙郡",   // 5
-            "会稽郡",   // 6
-            "广陵郡",   // 7
-            "太原郡",   // 8
-            "益州郡",   // 9
-            "南海郡",   // 10
-            "云南郡"    // 11
+            LanguageManager.GetText("JunNan"),     // 0
+            LanguageManager.GetText("JunSanChuan"),   // 1
+            LanguageManager.GetText("JunShu"),     // 2
+            LanguageManager.GetText("JunDanYang"),   // 3
+            LanguageManager.GetText("JunChenLiu"),   // 4
+            LanguageManager.GetText("JunChangSha"),   // 5
+            LanguageManager.GetText("JunHuiJi"),   // 6
+            LanguageManager.GetText("JunGuangLing"),   // 7
+            LanguageManager.GetText("JunTaiYuan"),   // 8
+            LanguageManager.GetText("JunYiZhou"),   // 9
+            LanguageManager.GetText("JunNanHai"),   // 10
+            LanguageManager.GetText("JunYunNan")    // 11
         };
 
         // 二维县数组，第一维是郡索引，第二维是县索引
         private static string[][] XianList = new string[][]
         {
             // 南郡 (索引0)
-            new string[] { "临沮", "襄樊", "宜城", "麦城", "华容", "郢亭", "江陵", "夷陵" },
+            new string[] { LanguageManager.GetText("XianLinJu"), LanguageManager.GetText("XianXiangFan"), LanguageManager.GetText("XianYiCheng"), LanguageManager.GetText("XianMaiCheng"), LanguageManager.GetText("XianHuaRong"), LanguageManager.GetText("XianYingTing"), LanguageManager.GetText("XianJiangLing"), LanguageManager.GetText("XianYiLing") },
             
             // 三川郡 (索引1)
-            new string[] { "平阳", "荥阳", "原武", "阳武", "新郑", "宜阳" },
+            new string[] { LanguageManager.GetText("XianPingYang"), LanguageManager.GetText("XianXingYang"), LanguageManager.GetText("XianYuanWu"), LanguageManager.GetText("XianYangWu"), LanguageManager.GetText("XianXinZheng"), LanguageManager.GetText("XianYiYang") },
             
             // 蜀郡 (索引2)
-            new string[] { "邛崃", "郫县", "什邡", "绵竹", "新都", "成都" },
+            new string[] { LanguageManager.GetText("XianQiongLai"), LanguageManager.GetText("XianPiXian"), LanguageManager.GetText("XianShiFang"), LanguageManager.GetText("XianMianZhu"), LanguageManager.GetText("XianXinDu"), LanguageManager.GetText("XianChengDu") },
             
             // 丹阳郡 (索引3)
-            new string[] { "秣陵", "江乘", "江宁", "溧阳", "建邺", "永世" },
+            new string[] { LanguageManager.GetText("XianMoLing"), LanguageManager.GetText("XianJiangCheng"), LanguageManager.GetText("XianJiangNing"), LanguageManager.GetText("XianLiYang"), LanguageManager.GetText("XianJianYe"), LanguageManager.GetText("XianYongShi") },
             
             // 陈留郡 (索引4)
-            new string[] { "长垣", "济阳", "成武", "襄邑", "宁陵", "封丘" },
+            new string[] { LanguageManager.GetText("XianChangYuan"), LanguageManager.GetText("XianJiYang"), LanguageManager.GetText("XianChengWu"), LanguageManager.GetText("XianXiangYi"), LanguageManager.GetText("XianNingLing"), LanguageManager.GetText("XianFengQiu") },
             
             // 长沙郡 (索引5)
-            new string[] { "零陵", "益阳", "湘县", "袁州", "庐陵", "衡山", "建宁", "桂阳" },
+            new string[] { LanguageManager.GetText("XianLingLing"), LanguageManager.GetText("XianYiYang"), LanguageManager.GetText("XianXiangXian"), LanguageManager.GetText("XianYuanZhou"), LanguageManager.GetText("XianLuLing"), LanguageManager.GetText("XianHengShan"), LanguageManager.GetText("XianJianNing"), LanguageManager.GetText("XianGuiYang") },
             
             // 会稽郡 (索引6)
-            new string[] { "曲阿", "松江", "山阴", "余暨" },
+            new string[] { LanguageManager.GetText("XianQuA"), LanguageManager.GetText("XianSongJiang"), LanguageManager.GetText("XianShanYin"), LanguageManager.GetText("XianYuJi") },
             
             // 广陵郡 (索引7)
-            new string[] { "平安", "射阳", "海陵", "江都" },
+            new string[] { LanguageManager.GetText("XianPingAn"), LanguageManager.GetText("XianSheYang"), LanguageManager.GetText("XianHaiLing"), LanguageManager.GetText("XianJiangDu") },
             
             // 太原郡 (索引8)
-            new string[] { "大陵", "晋阳", "九原", "石城", "阳曲", "魏榆", "孟县", "中都" },
+            new string[] { LanguageManager.GetText("XianDaLing"), LanguageManager.GetText("XianJinYang"), LanguageManager.GetText("XianJiuYuan"), LanguageManager.GetText("XianShiCheng"), LanguageManager.GetText("XianYangQu"), LanguageManager.GetText("XianWeiYu"), LanguageManager.GetText("XianMengXian"), LanguageManager.GetText("XianZhongDu") },
             
             // 益州郡 (索引9)
-            new string[] { "连然", "谷昌", "同劳", "昆泽", "滇池", "俞元", "胜休", "南安" },
+            new string[] { LanguageManager.GetText("XianLianRan"), LanguageManager.GetText("XianGuChang"), LanguageManager.GetText("XianTongLao"), LanguageManager.GetText("XianKunZe"), LanguageManager.GetText("XianDianChi"), LanguageManager.GetText("XianYuYuan"), LanguageManager.GetText("XianShengXiu"), LanguageManager.GetText("XianNanAn") },
             
             // 南海郡 (索引10)
-            new string[] { "四会", "阳山", "龙川", "揭岭", "罗阳", "善禺" },
+            new string[] { LanguageManager.GetText("XianSiHui"), LanguageManager.GetText("XianYangShan"), LanguageManager.GetText("XianLongChuan"), LanguageManager.GetText("XianJieLing"), LanguageManager.GetText("XianLuoYang"), LanguageManager.GetText("XianShanYu") },
             
             // 云南郡 (索引11)
-            new string[] { "云平", "叶榆", "永宁", "遂久", "姑复", "蜻陵", "弄栋", "邪龙" }
+            new string[] { LanguageManager.GetText("XianYunPing"), LanguageManager.GetText("XianYeYu"), LanguageManager.GetText("XianYongNing"), LanguageManager.GetText("XianSuiJiu"), LanguageManager.GetText("XianGuFu"), LanguageManager.GetText("XianQingLing"), LanguageManager.GetText("XianNongDong"), LanguageManager.GetText("XianXieLong") }
         };
         
         /// <summary>
@@ -95,12 +96,12 @@ namespace cs.HoLMod.TaskCheat
                 {
                     return $"{JunList[junIndex]}{XianList[junIndex][xianIndex]}";
                 }
-                return "未知郡县";
-            }
+                return LanguageManager.GetText("未知郡县");
+                }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("获取郡县名称失败: " + ex.Message);
-                return "未知郡县";
+                TaskCheat.Log?.LogError(LanguageManager.GetText("获取郡县名称失败: ") + ex.Message);
+                return LanguageManager.GetText("未知郡县");
             }
         }
         
@@ -119,8 +120,8 @@ namespace cs.HoLMod.TaskCheat
                     if (Mainload.FamilyData[0] == null || Mainload.FamilyData[1] == null)
                     {
                         // 为空时返回"无相关配置"，保持重复任务逻辑初始状态
-                        TaskCheat.Log?.LogWarning("FamilyData[0]或FamilyData[1]为null，返回无相关配置");
-                        return "无相关配置";
+                        TaskCheat.Log?.LogWarning(LanguageManager.GetText("FamilyDataNullOrEmptyWarning"));
+                        return LanguageManager.GetText("无相关配置");
                     }
                     
                     string familyData0 = Mainload.FamilyData[0].ToString();
@@ -145,7 +146,7 @@ namespace cs.HoLMod.TaskCheat
                         }
                         catch (Exception ex)
                         {
-                            TaskCheat.Log?.LogWarning("解析郡县信息时出错: " + ex.Message);
+                            TaskCheat.Log?.LogWarning(LanguageManager.GetText("ParseCountyInfoError") + ex.Message);
                         }
                     }
                     
@@ -155,13 +156,13 @@ namespace cs.HoLMod.TaskCheat
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("获取存储标识时出错: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetText("GetStorageIdentifierError") + ex.Message);
                 // 添加堆栈跟踪以便更好地诊断问题
                 TaskCheat.Log?.LogError(ex.StackTrace);
             }
             
             // 出错时返回"无相关配置"，保持重复任务逻辑初始状态
-            return "无相关配置";
+            return LanguageManager.GetText("无相关配置");
         }
         
         /// <summary>
@@ -174,7 +175,7 @@ namespace cs.HoLMod.TaskCheat
             {
                 if (TaskCheat.Instance == null)
                 {
-                    TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法保存配置");
+                    TaskCheat.Log?.LogWarning(LanguageManager.GetText("TaskCheatInstanceIsNull"));
                     return;
                 }
 
@@ -193,11 +194,11 @@ namespace cs.HoLMod.TaskCheat
                 // 确保配置被保存到文件
                 TaskCheat.Instance.Config.Save();
                 
-                TaskCheat.Log?.LogInfo($"已通过BepInEx配置系统保存重复任务选择配置（存储标识: {storageIdentifier}）");
+                TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("SavedRepetitiveTaskSelectionConfig", storageIdentifier));
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("保存配置失败: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetText("SaveConfigFailed") + ex.Message);
             }
         }
         
@@ -226,7 +227,7 @@ namespace cs.HoLMod.TaskCheat
             {
                 if (TaskCheat.Instance == null)
                 {
-                    TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法加载配置");
+                    TaskCheat.Log?.LogWarning(LanguageManager.GetText("TaskCheatInstanceIsNull"));
                     return new List<int>();
                 }
 
@@ -235,20 +236,20 @@ namespace cs.HoLMod.TaskCheat
                 // 当存储标识为"无相关配置"时，保持重复任务逻辑初始化状态
                 if (storageIdentifier == "无相关配置")
                 {
-                    TaskCheat.Log?.LogInfo("存储标识为'无相关配置'，重复任务相关逻辑保持初始化状态");
+                    TaskCheat.Log?.LogInfo(LanguageManager.GetText("StorageIdentifierIsDefaultValue"));
                     return new List<int>();
                 }
                 
                 string configKey = GetUniqueConfigKey(storageIdentifier, SelectedTasksKeySuffix);
                 
                 // 增加详细日志记录
-                TaskCheat.Log?.LogInfo($"尝试加载重复任务配置 - 存储标识: {storageIdentifier}, 配置键: {configKey}");
+                TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("TryLoadRepetitiveTaskConfig", storageIdentifier, configKey));
                 
                 // 使用GetConfigValueFromBepInEx方法获取配置
                 string configValue = GetConfigValueFromBepInEx("重复任务配置", configKey);
                 
                 // 增加获取到的配置值日志
-                TaskCheat.Log?.LogInfo($"获取到的配置值: '{configValue}'");
+                TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("RetrievedConfigValue", configValue));
                 
                 if (!string.IsNullOrEmpty(configValue))
                 {
@@ -256,16 +257,16 @@ namespace cs.HoLMod.TaskCheat
                         .Where(s => int.TryParse(s, out _))
                         .Select(int.Parse)
                         .ToList();
-                      
-                    TaskCheat.Log?.LogInfo($"已加载重复任务选择配置，选中任务数量: {indices.Count}（存储标识: {storageIdentifier}）");
+                       
+                    TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("LoadedRepetitiveTaskConfig", indices.Count, storageIdentifier));
                     return indices;
                 }
                   
-                TaskCheat.Log?.LogInfo("未找到重复任务选择配置，将使用默认配置");
+                TaskCheat.Log?.LogInfo(LanguageManager.GetText("NoRepetitiveTaskSelectionConfigFound"));
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("加载配置失败: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetText("LoadConfigFailed") + ex.Message);
                 TaskCheat.Log?.LogError(ex.StackTrace);
             }
               
@@ -288,7 +289,7 @@ namespace cs.HoLMod.TaskCheat
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("获取配置值时出错: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetText("GetConfigValueError") + ex.Message);
                 return string.Empty;
             }
         }
@@ -306,7 +307,7 @@ namespace cs.HoLMod.TaskCheat
                 
                 if (TaskCheat.Instance == null)
                 {
-                    TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法保存配置");
+                    TaskCheat.Log?.LogWarning(LanguageManager.GetText("TaskCheatInstanceIsNull"));
                     return;
                 }
                 
@@ -315,20 +316,20 @@ namespace cs.HoLMod.TaskCheat
                 
                 // 使用BepInEx配置系统保存，每个存储标识一个配置键
                 ConfigEntry<int> configEntry = TaskCheat.Instance.Config.Bind<int>(
-                    "重复任务设置", 
+                    LanguageManager.GetText("重复任务设置"), 
                     configKey, 
                     validatedInterval, 
-                    $"存储标识 [{storageIdentifier}] 的任务检查间隔（秒）");
+                    LanguageManager.GetFormattedText("存储标识 [{0}] 的任务检查间隔（秒）", storageIdentifier));
                 configEntry.Value = validatedInterval;
                 
                 // 确保配置被保存到文件
                 TaskCheat.Instance.Config.Save();
                 
-                TaskCheat.Log?.LogInfo($"已通过BepInEx配置系统保存检查间隔配置: {validatedInterval}秒（存储标识: {storageIdentifier}）");
+                TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("SavedCheckIntervalConfig", validatedInterval, storageIdentifier));
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("保存检查间隔配置失败: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetText("SaveCheckIntervalConfigFailed") + ex.Message);
                 TaskCheat.Log?.LogError(ex.StackTrace);
             }
         }
@@ -343,7 +344,7 @@ namespace cs.HoLMod.TaskCheat
             {
                 if (TaskCheat.Instance == null)
                 {
-                    TaskCheat.Log?.LogWarning($"TaskCheat.Instance为null，使用默认检查间隔: {DefaultCheckIntervalSeconds}秒");
+                    TaskCheat.Log?.LogWarning(LanguageManager.GetFormattedText("TaskCheatInstanceIsNullUsingDefaultInterval", DefaultCheckIntervalSeconds));
                     return DefaultCheckIntervalSeconds;
                 }
                 
@@ -352,10 +353,10 @@ namespace cs.HoLMod.TaskCheat
                 
                 // 从BepInEx配置系统获取时间间隔
                 ConfigEntry<int> configEntry = TaskCheat.Instance.Config.Bind<int>(
-                    "重复任务设置", 
+                    LanguageManager.GetText("重复任务设置"), 
                     configKey, 
                     DefaultCheckIntervalSeconds, 
-                    $"存储标识 [{storageIdentifier}] 的任务检查间隔（秒）");
+                    LanguageManager.GetFormattedText("存储标识 [{0}] 的任务检查间隔（秒）", storageIdentifier));
                 
                 int interval = configEntry.Value;
                 
@@ -367,18 +368,18 @@ namespace cs.HoLMod.TaskCheat
                 {
                     configEntry.Value = validatedInterval;
                     TaskCheat.Instance.Config.Save();
-                    TaskCheat.Log?.LogInfo($"检查间隔配置已调整为有效范围: {validatedInterval}秒（存储标识: {storageIdentifier}）");
+                    TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("CheckIntervalAdjustedToValidRange", validatedInterval, storageIdentifier));
                 }
                 else
                 {
-                    TaskCheat.Log?.LogInfo($"已从BepInEx配置加载时间检查间隔: {validatedInterval}秒（存储标识: {storageIdentifier}）");
+                    TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("LoadedCheckIntervalFromBepInEx", validatedInterval, storageIdentifier));
                 }
                 
                 return validatedInterval;
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("从BepInEx配置加载检查间隔失败: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetText("LoadCheckIntervalFromBepInExFailed") + ex.Message);
                 TaskCheat.Log?.LogError(ex.StackTrace);
             }
             
@@ -396,7 +397,7 @@ namespace cs.HoLMod.TaskCheat
         {
             if (intervalSeconds < MinCheckIntervalSeconds || intervalSeconds > MaxCheckIntervalSeconds)
             {
-                TaskCheat.Log?.LogWarning("检查间隔不在有效范围内（" + MinCheckIntervalSeconds + "-" + MaxCheckIntervalSeconds + "秒），使用默认值: " + DefaultCheckIntervalSeconds + "秒");
+                TaskCheat.Log?.LogWarning(LanguageManager.GetFormattedText("CheckIntervalOutOfValidRange", MinCheckIntervalSeconds, MaxCheckIntervalSeconds, DefaultCheckIntervalSeconds));
                 return DefaultCheckIntervalSeconds;
             }
             return intervalSeconds;
@@ -414,7 +415,7 @@ namespace cs.HoLMod.TaskCheat
             {
                 if (TaskCheat.Instance == null)
                 {
-                    TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法保存配置");
+                    TaskCheat.Log?.LogWarning(LanguageManager.GetText("TaskCheatInstanceIsNull"));
                     return;
                 }
 
@@ -433,11 +434,11 @@ namespace cs.HoLMod.TaskCheat
                 // 确保配置被保存到文件
                 TaskCheat.Instance.Config.Save();
                 
-                TaskCheat.Log?.LogInfo($"已保存时间记录配置: {year}年{month}月{day}日（存储标识: {storageIdentifier}）");
+                TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("SavedTimeRecordConfig", year, month, day, storageIdentifier));
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("保存时间记录配置失败: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetText("SaveTimeRecordConfigFailed") + ex.Message);
             }
         }
         
@@ -458,7 +459,7 @@ namespace cs.HoLMod.TaskCheat
             {
                 if (TaskCheat.Instance == null)
                 {
-                    TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法加载配置");
+                    TaskCheat.Log?.LogWarning(LanguageManager.GetText("TaskCheatInstanceIsNull"));
                     return false;
                 }
 
@@ -476,16 +477,16 @@ namespace cs.HoLMod.TaskCheat
                         int.TryParse(parts[1], out month) && 
                         int.TryParse(parts[2], out day))
                     {
-                        TaskCheat.Log?.LogInfo($"已加载时间记录配置: {year}年{month}月{day}日（存储标识: {storageIdentifier}）");
+                        TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("LoadedTimeRecordConfig", year, month, day, storageIdentifier));
                         return true;
                     }
                 }
 
-                TaskCheat.Log?.LogInfo("未找到时间记录配置");
+                TaskCheat.Log?.LogInfo(LanguageManager.GetText("NoTimeRecordConfigFound"));
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("加载时间记录配置失败: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetText("LoadTimeRecordConfigFailed") + ex.Message);
             }
 
             return false;
@@ -502,7 +503,7 @@ namespace cs.HoLMod.TaskCheat
             {
                 if (TaskCheat.Instance == null)
                 {
-                    TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法清除配置");
+                    TaskCheat.Log?.LogWarning(LanguageManager.GetText("TaskCheatInstanceIsNull"));
                     return false;
                 }
 
@@ -528,12 +529,12 @@ namespace cs.HoLMod.TaskCheat
                 // 保存更新后的配置
                 TaskCheat.Instance.Config.Save();
                 
-                TaskCheat.Log?.LogInfo($"已清除存储标识为 '{storageIdentifier}' 的配置");
+                TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("ClearedConfigByStorageIdentifier", storageIdentifier));
                 return true;
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("清除配置时出错: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetText("ClearConfigError") + ex.Message);
                 return false;
             }
         }
@@ -548,7 +549,7 @@ namespace cs.HoLMod.TaskCheat
             {
                 if (TaskCheat.Instance == null)
                 {
-                    TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法清除配置");
+                    TaskCheat.Log?.LogWarning(LanguageManager.GetText("TaskCheatInstanceIsNull"));
                     return false;
                 }
 
@@ -591,15 +592,14 @@ namespace cs.HoLMod.TaskCheat
                             foreach (string key in keysToRemove)
                             {
                                 configData.Remove(key);
-                                TaskCheat.Log?.LogInfo($"已清除配置节: {key}");
+                                TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("ClearedConfigSection", key));
                             }
-
 
                         }
                     }
                     catch (Exception reflectionEx)
                     {
-                        TaskCheat.Log?.LogWarning("使用反射清除配置失败: " + reflectionEx.Message);
+                        TaskCheat.Log?.LogWarning(LanguageManager.GetText("ReflectionClearConfigFailed") + reflectionEx.Message);
                     }
                 }
 
@@ -617,27 +617,27 @@ namespace cs.HoLMod.TaskCheat
                         
                         // 强制删除配置文件
                         System.IO.File.Delete(configFilePath);
-                        TaskCheat.Log?.LogInfo($"已强制删除配置文件: {configFilePath}");
-                         
+                        TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("ForceDeletedConfigFile", configFilePath));
+                          
                         // 重新创建一个空的配置文件
                         TaskCheat.Instance.Config.Save();
-                        TaskCheat.Log?.LogInfo("已重新创建空配置文件");
+                        TaskCheat.Log?.LogInfo(LanguageManager.GetText("RecreatedEmptyConfigFile"));
                     }
                 }
                 catch (Exception fileEx)
                 {
-                    TaskCheat.Log?.LogWarning("强制删除配置文件失败: " + fileEx.Message);
+                    TaskCheat.Log?.LogWarning(LanguageManager.GetText("ForceDeleteConfigFileFailed") + fileEx.Message);
                 }
                 
                 // 保存更新后的配置
                 TaskCheat.Instance.Config.Save();
                 
-                TaskCheat.Log?.LogInfo("已成功清除所有配置");
+                TaskCheat.Log?.LogInfo(LanguageManager.GetText("SuccessfullyClearedAllConfig"));
                 return true;
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("清除所有配置时出错: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetText("ClearAllConfigError") + ex.Message);
                 TaskCheat.Log?.LogError(ex.StackTrace);
                 return false;
             }

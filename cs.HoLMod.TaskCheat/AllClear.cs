@@ -19,18 +19,18 @@ namespace cs.HoLMod.TaskCheat
                 {
                     // 使用新创建的空列表，而不是重用可能有问题的静态列表
                     Mainload.TaskOrderData_Now = new List<List<int>>();
-                    TaskCheat.Log?.LogInfo("所有任务已成功清除！");
+                    TaskCheat.Log?.LogInfo(LanguageManager.GetText("AllTasksCleared"));
                 }
                 else
                 {
                     // 如果Mainload.TaskOrderData_Now为null，创建一个新的空列表并赋值
                     Mainload.TaskOrderData_Now = new List<List<int>>();
-                    TaskCheat.Log?.LogInfo("Mainload.TaskOrderData_Now为null，已创建新的空任务列表。");
+                    TaskCheat.Log?.LogInfo(LanguageManager.GetText("MainloadTaskOrderDataIsNull"));
                 }
             }
             catch (System.Exception ex)
             {
-                TaskCheat.Log?.LogError("清除任务时发生错误: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetText("TaskClearError") + ex.Message);
             }
         }
     }

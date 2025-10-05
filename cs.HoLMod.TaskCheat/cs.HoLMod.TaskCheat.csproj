@@ -347,6 +347,7 @@
   <ItemGroup>
     <Compile Include="AddTasks.cs" />
     <Compile Include="AllClear.cs" />
+    <Compile Include="LanguageManager.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepetitiveTask.cs" />

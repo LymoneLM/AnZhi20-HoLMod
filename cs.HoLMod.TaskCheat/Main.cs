@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using UnityEngine;
@@ -14,7 +14,7 @@ namespace cs.HoLMod.TaskCheat
     {
         public const string PLUGIN_GUID = "cs.HoLMod.TaskCheat.AnZhi20";
         public const string PLUGIN_NAME = "HoLMod.TaskCheat";
-        public const string PLUGIN_VERSION = "1.1.0";
+        public const string PLUGIN_VERSION = "2.1.0";
     }
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class TaskCheat : BaseUnityPlugin
@@ -64,7 +64,7 @@ namespace cs.HoLMod.TaskCheat
             TaskCheat.Log?.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
             
             // 使用BepInEx配置系统初始化任务检查间隔
-            TaskCheckInterval = Config.Bind<int>("重复任务设置", "任务检查间隔（秒）", 10, "设置重复任务的检查时间间隔，范围：1-10秒");
+            TaskCheckInterval = Config.Bind<int>(LanguageManager.GetText("重复任务设置"), LanguageManager.GetText("任务检查间隔（秒）"), 10, LanguageManager.GetText("设置重复任务的检查时间间隔，范围：1-10秒"));
             
             // 初始化Harmony补丁
             Harmony.CreateAndPatchAll(typeof(TaskCheat));
@@ -104,7 +104,7 @@ namespace cs.HoLMod.TaskCheat
                     
                     // 更新ToBeAdded
                     RepetitiveTaskHandler.AddSelectedTasks(tasksToAdd);
-                    TaskCheat.Log?.LogInfo("已根据配置更新待重复任务列表，共加载" + selectedTaskIndices.Count + "个任务");
+                    TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("已根据配置更新待重复任务列表，共加载{0}个任务", selectedTaskIndices.Count));
 
                     // 直接调用TaskAdd方法立即添加任务
                     RepetitiveTaskHandler.TaskAdd();
@@ -182,7 +182,7 @@ namespace cs.HoLMod.TaskCheat
                 fixedHeight = 30,
                 alignment = TextAnchor.MiddleCenter
             };
-            if (GUILayout.Button("X", closeButtonStyle))
+            if (GUILayout.Button(LanguageManager.GetText("关闭"), closeButtonStyle))
             {
                 showWindow = false;
             }
@@ -197,7 +197,7 @@ namespace cs.HoLMod.TaskCheat
                 fontStyle = FontStyle.Bold,
                 alignment = TextAnchor.MiddleCenter
             };
-            GUILayout.Label("任务编辑器", titleStyle);
+            GUILayout.Label(LanguageManager.GetText("任务编辑器"), titleStyle);
             GUILayout.Space(15);
 
             // 分类标题
@@ -210,12 +210,12 @@ namespace cs.HoLMod.TaskCheat
             // 一键清除分类
             GUILayout.BeginHorizontal();
             GUILayout.Space(20);
-            GUILayout.Label("一键清除", categoryStyle);
+            GUILayout.Label(LanguageManager.GetText("一键清除"), categoryStyle);
             GUILayout.EndHorizontal();
             GUILayout.Space(5);
             GUILayout.BeginHorizontal();
             GUILayout.Space(40);
-            if (GUILayout.Button("清除所有任务", GUILayout.Width(200), GUILayout.Height(30)))
+            if (GUILayout.Button(LanguageManager.GetText("清除所有任务"), GUILayout.Width(200), GUILayout.Height(30)))
             {
                 ClearAllTasks();
             }
@@ -225,12 +225,12 @@ namespace cs.HoLMod.TaskCheat
             // 任务添加分类
             GUILayout.BeginHorizontal();
             GUILayout.Space(20);
-            GUILayout.Label("任务添加", categoryStyle);
+            GUILayout.Label(LanguageManager.GetText("任务添加"), categoryStyle);
             GUILayout.EndHorizontal();
             GUILayout.Space(5);
             GUILayout.BeginHorizontal();
             GUILayout.Space(40);
-            if (GUILayout.Button("选择需要添加的任务", GUILayout.Width(200), GUILayout.Height(30)))
+            if (GUILayout.Button(LanguageManager.GetText("选择需要添加的任务"), GUILayout.Width(200), GUILayout.Height(30)))
             {
                 OpenAddTaskWindow();
             }
@@ -240,12 +240,12 @@ namespace cs.HoLMod.TaskCheat
             // 重复任务分类
             GUILayout.BeginHorizontal();
             GUILayout.Space(20);
-            GUILayout.Label("重复任务", categoryStyle);
+            GUILayout.Label(LanguageManager.GetText("重复任务"), categoryStyle);
             GUILayout.EndHorizontal();
             GUILayout.Space(5);
             GUILayout.BeginHorizontal();
             GUILayout.Space(40);
-            if (GUILayout.Button("选择需要重复的任务", GUILayout.Width(200), GUILayout.Height(30)))
+            if (GUILayout.Button(LanguageManager.GetText("选择需要重复的任务"), GUILayout.Width(200), GUILayout.Height(30)))
             {
                 OpenTaskSelectionWindow();
             }
@@ -253,7 +253,7 @@ namespace cs.HoLMod.TaskCheat
             GUILayout.Space(5);
             GUILayout.BeginHorizontal();
             GUILayout.Space(40);
-            if (GUILayout.Button("清除配置文件", GUILayout.Width(200), GUILayout.Height(30)))
+            if (GUILayout.Button(LanguageManager.GetText("清除配置文件"), GUILayout.Width(200), GUILayout.Height(30)))
             {
                 TryClearConfig();
             }
@@ -266,17 +266,17 @@ namespace cs.HoLMod.TaskCheat
             GUILayout.BeginVertical();
             
             // 使用说明标题
-            GUILayout.Label("使用说明:", UnityEngine.GUI.skin.box);
+            GUILayout.Label(LanguageManager.GetText("使用说明:"), UnityEngine.GUI.skin.box);
             
             // 使用说明
-            GUILayout.Label("1. 请在修改前先保存游戏，以便回档");
-            GUILayout.Label("2. 按F4键显示/隐藏窗口");
-            GUILayout.Label("3. 切换模式选择：一键清除/任务添加/重复任务");
+            GUILayout.Label(LanguageManager.GetText("1. 请在修改前先保存游戏，以便回档"));
+            GUILayout.Label(LanguageManager.GetText("2. 按F4键显示/隐藏窗口"));
+            GUILayout.Label(LanguageManager.GetText("3. 切换模式选择：一键清除/任务添加/重复任务"));
             GUILayout.Label("");
             
             // MOD作者及版本号说明
-            GUILayout.Label("Mod作者：AnZhi20");
-            GUILayout.Label(string.Format("Mod版本：{0}", PluginInfo.PLUGIN_VERSION));
+            GUILayout.Label(LanguageManager.GetText("Mod作者：AnZhi20"));
+            GUILayout.Label(LanguageManager.GetFormattedText("Mod版本：{0}", PluginInfo.PLUGIN_VERSION));
             GUILayout.EndVertical();
             
             // 允许拖动窗口
@@ -289,14 +289,14 @@ namespace cs.HoLMod.TaskCheat
             try
             {
                 TaskClearer.AllTaskClear();
-                TaskCheat.Log?.LogInfo("所有任务已清除!");
+                TaskCheat.Log?.LogInfo(LanguageManager.GetText("所有任务已清除!"));
                 // 显示成功提示
-                ShowNotification("任务已清除成功!");
+                ShowNotification(LanguageManager.GetText("任务已清除成功!"));
             }
             catch (System.Exception ex)
             {
                 TaskCheat.Log?.LogError("清除任务时出错: " + ex.Message);
-                ShowNotification("清除失败: " + ex.Message);
+                ShowNotification(LanguageManager.GetText("清除失败: ") + ex.Message);
             }
         }
 
@@ -316,7 +316,7 @@ namespace cs.HoLMod.TaskCheat
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError(string.Format("显示提示信息时出错: {0}", ex.Message));
+                TaskCheat.Log?.LogError(LanguageManager.GetFormattedText("显示提示信息时出错: {0}", ex.Message));
             }
         }
         
@@ -354,7 +354,7 @@ namespace cs.HoLMod.TaskCheat
             catch (Exception ex)
             {
                 TaskCheat.Log?.LogError("打开任务选择窗口时出错: " + ex.Message);
-                ShowNotification("打开任务选择窗口失败!");
+                ShowNotification(LanguageManager.GetText("打开任务选择窗口失败!"));
             }
         }
         
@@ -375,7 +375,7 @@ namespace cs.HoLMod.TaskCheat
                 fixedHeight = 30,
                 alignment = TextAnchor.MiddleCenter
             };
-            if (GUILayout.Button("X", closeButtonStyle))
+            if (GUILayout.Button(LanguageManager.GetText("关闭"), closeButtonStyle))
             {
                 showTaskSelectionWindow = false;
             }
@@ -391,7 +391,7 @@ namespace cs.HoLMod.TaskCheat
                 fontStyle = FontStyle.Bold,
                 alignment = TextAnchor.MiddleCenter
             };
-            GUILayout.Label("选择要重复添加的任务", titleStyle);
+            GUILayout.Label(LanguageManager.GetText("选择要重复添加的任务"), titleStyle);
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(10);
@@ -405,9 +405,10 @@ namespace cs.HoLMod.TaskCheat
                 {
                     if (i < taskSelectionStates.Count)
                     {
-                        string taskText = TaskList.Text_AllTaskOrder[i][0];
-                        // 提取以|分隔的前半部分
-                        string baseDisplayText = taskText.Split('|')[0];
+                        // 获取当前语言的任务文本
+                            string taskText = LanguageManager.GetTaskText(TaskList.Text_AllTaskOrder[i]);
+                            // 提取以|分隔的前半部分
+                            string baseDisplayText = taskText.Split('|')[0];
 
                         // 初始化显示文本，默认使用原始文本
                         string displayText = baseDisplayText;
@@ -432,13 +433,13 @@ namespace cs.HoLMod.TaskCheat
                                     // 替换^符号为实际次数
                                     displayText = baseDisplayText.Replace("^", times);
                                     // 添加奖励信息
-                                    displayText += $"，任务奖励：声望+{reputation}、铜钱+{money}、元宝+{gold}";
+                                    displayText += LanguageManager.GetFormattedText("，任务奖励：声望+{0}、铜钱+{1}、元宝+{2}", reputation, money, gold);
                                 }
                             }
                         }
                         catch (Exception ex)
                         {
-                            TaskCheat.Log?.LogError("格式化任务显示文本时出错: " + ex.Message);
+                            TaskCheat.Log?.LogError(LanguageManager.GetFormattedText("格式化任务显示文本时出错: {0}", ex.Message));
                         }
                         
                         // 绘制多选框，使文本居中显示
@@ -459,7 +460,7 @@ namespace cs.HoLMod.TaskCheat
             // 确认选择按钮
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("确认选择", GUILayout.Width(150), GUILayout.Height(30)))
+            if (GUILayout.Button(LanguageManager.GetText("确认选择"), GUILayout.Width(150), GUILayout.Height(30)))
             {
                 ConfirmTaskSelection();
             }
@@ -484,7 +485,7 @@ namespace cs.HoLMod.TaskCheat
                 // 增强检查：确保存储标识不为空或无效
                 if (string.IsNullOrEmpty(storageIdentifier))
                 {
-                    TaskCheat.Log?.LogWarning("存储标识为空，显示确认清除所有配置对话框");
+                    TaskCheat.Log?.LogWarning(LanguageManager.GetText("存储标识为空，显示确认清除所有配置对话框"));
                     showConfirmClearAllDialog = true;
                     return;
                 }
@@ -501,26 +502,26 @@ namespace cs.HoLMod.TaskCheat
                     {
                         // 清除配置文件后，立即清空内存中的待添加任务列表
                         RepetitiveTaskHandler.ToBeAdded.Clear();
-                        TaskCheat.Log?.LogInfo("已清空内存中的待添加任务列表");
-                        ShowNotification("配置文件已清除成功！");
+                        TaskCheat.Log?.LogInfo(LanguageManager.GetText("已清空内存中的待添加任务列表"));
+                        ShowNotification(LanguageManager.GetText("配置文件已清除成功！"));
                     }
                     else
                     {
-                        ShowNotification("配置文件清除失败！");
+                        ShowNotification(LanguageManager.GetText("配置文件清除失败！"));
                     }
                 }
                 else
                 {
                     // 存储标识无效，显示确认清除所有配置的对话框
-                    TaskCheat.Log?.LogWarning("存储标识无效或对应配置不存在，显示确认清除所有配置对话框");
+                    TaskCheat.Log?.LogWarning(LanguageManager.GetText("存储标识无效或对应配置不存在，显示确认清除所有配置对话框"));
                     showConfirmClearAllDialog = true;
                 }
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("尝试清除配置文件时出错: " + ex.Message);
-                TaskCheat.Log?.LogError("异常堆栈: " + ex.StackTrace);
-                ShowNotification("操作失败: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetFormattedText("尝试清除配置文件时出错: {0}", ex.Message));
+                TaskCheat.Log?.LogError(LanguageManager.GetFormattedText("异常堆栈: {0}", ex.StackTrace));
+                ShowNotification(LanguageManager.GetFormattedText("操作失败: {0}", ex.Message));
                 // 出错时也显示确认对话框，让用户选择是否清除所有配置
                 showConfirmClearAllDialog = true;
             }
@@ -551,10 +552,10 @@ namespace cs.HoLMod.TaskCheat
                 wordWrap = true
             };
             
-            GUILayout.Label("确认操作", titleStyle);
+            GUILayout.Label(LanguageManager.GetText("确认操作"), titleStyle);
             GUILayout.Space(10);
-            GUILayout.Label("未找到本存档的配置，可能未生成或已删除。", contentStyle, GUILayout.Height(40));
-            GUILayout.Label("是否清除所有配置？", contentStyle, GUILayout.Height(40));
+            GUILayout.Label(LanguageManager.GetText("未找到本存档的配置，可能未生成或已删除。"), contentStyle, GUILayout.Height(40));
+            GUILayout.Label(LanguageManager.GetText("是否清除所有配置？"), contentStyle, GUILayout.Height(40));
             
             GUILayout.Space(10);
             
@@ -562,31 +563,31 @@ namespace cs.HoLMod.TaskCheat
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             
-            if (GUILayout.Button("是", GUILayout.Width(80), GUILayout.Height(30)))
-            {
-                // 清除所有配置
-                bool success = TaskCheatConfig.ClearAllConfig();
-                if (success)
+            if (GUILayout.Button(LanguageManager.GetText("是"), GUILayout.Width(80), GUILayout.Height(30)))
                 {
-                    // 清除所有配置后，立即清空内存中的待添加任务列表
-                    RepetitiveTaskHandler.ToBeAdded.Clear();
-                    TaskCheat.Log?.LogInfo("已清空内存中的待添加任务列表");
-                    ShowNotification("所有配置已清除成功！");
+                    // 清除所有配置
+                    bool success = TaskCheatConfig.ClearAllConfig();
+                    if (success)
+                    {
+                        // 清除所有配置后，立即清空内存中的待添加任务列表
+                        RepetitiveTaskHandler.ToBeAdded.Clear();
+                        TaskCheat.Log?.LogInfo(LanguageManager.GetText("已清空内存中的待添加任务列表"));
+                        ShowNotification(LanguageManager.GetText("所有配置已清除成功！"));
+                    }
+                    else
+                    {
+                        ShowNotification(LanguageManager.GetText("清除所有配置失败！"));
+                    }
+                    showConfirmClearAllDialog = false;
                 }
-                else
+                
+                GUILayout.Space(20);
+                
+                if (GUILayout.Button(LanguageManager.GetText("否"), GUILayout.Width(80), GUILayout.Height(30)))
                 {
-                    ShowNotification("清除所有配置失败！");
+                    // 取消操作
+                    showConfirmClearAllDialog = false;
                 }
-                showConfirmClearAllDialog = false;
-            }
-            
-            GUILayout.Space(20);
-            
-            if (GUILayout.Button("否", GUILayout.Width(80), GUILayout.Height(30)))
-            {
-                // 取消操作
-                showConfirmClearAllDialog = false;
-            }
             
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
@@ -623,11 +624,11 @@ namespace cs.HoLMod.TaskCheat
                 if (tasksToAdd.Count > 0)
                 {
                     RepetitiveTaskHandler.AddSelectedTasks(tasksToAdd);
-                    ShowNotification(string.Format("成功选择了 {0} 个任务！", tasksToAdd.Count));
+                    ShowNotification(LanguageManager.GetFormattedText("成功选择了 {0} 个任务！", tasksToAdd.Count));
                 }
                 else
                 {
-                    ShowNotification("未选择任何任务！");
+                    ShowNotification(LanguageManager.GetText("未选择任何任务！"));
                 }
                 
                 // 保存选择状态到配置文件
@@ -638,8 +639,8 @@ namespace cs.HoLMod.TaskCheat
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("确认任务选择时出错: " + ex.Message);
-                ShowNotification("确认任务选择失败!");
+                TaskCheat.Log?.LogError(LanguageManager.GetFormattedText("确认任务选择时出错: {0}", ex.Message));
+                ShowNotification(LanguageManager.GetText("确认任务选择失败!"));
             }
         }
 
@@ -665,8 +666,8 @@ namespace cs.HoLMod.TaskCheat
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("打开任务添加窗口时出错: " + ex.Message);
-                ShowNotification("打开任务添加窗口失败!");
+                TaskCheat.Log?.LogError(LanguageManager.GetFormattedText("打开任务添加窗口时出错: {0}", ex.Message));
+                ShowNotification(LanguageManager.GetText("打开任务添加窗口失败!"));
             }
         }
         
@@ -687,9 +688,9 @@ namespace cs.HoLMod.TaskCheat
                 fixedHeight = 30,
                 alignment = TextAnchor.MiddleCenter
             };
-            if (GUILayout.Button("X", closeButtonStyle))
+            if (GUILayout.Button(LanguageManager.GetText("关闭"), closeButtonStyle))
             {
-                showTaskSelectionWindow = false;
+                showAddTaskWindow = false;
             }
             GUILayout.EndHorizontal();
             
@@ -703,7 +704,7 @@ namespace cs.HoLMod.TaskCheat
                 fontStyle = FontStyle.Bold,
                 alignment = TextAnchor.MiddleCenter
             };
-            GUILayout.Label("选择要添加的任务", titleStyle);
+            GUILayout.Label(LanguageManager.GetText("选择要添加的任务"), titleStyle);
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(10);
@@ -717,9 +718,10 @@ namespace cs.HoLMod.TaskCheat
                 {
                     if (i < addTaskSelectionStates.Count)
                     {
-                        string taskText = TaskList.Text_AllTaskOrder[i][0];
-                        // 提取以|分隔的前半部分
-                        string baseDisplayText = taskText.Split('|')[0];
+                        // 获取当前语言的任务文本
+                            string taskText = LanguageManager.GetTaskText(TaskList.Text_AllTaskOrder[i]);
+                            // 提取以|分隔的前半部分
+                            string baseDisplayText = taskText.Split('|')[0];
 
                         // 初始化显示文本，默认使用原始文本
                         string displayText = baseDisplayText;
@@ -750,7 +752,7 @@ namespace cs.HoLMod.TaskCheat
                         }
                         catch (Exception ex)
                         {
-                            TaskCheat.Log?.LogError("格式化任务显示文本时出错: " + ex.Message);
+                            TaskCheat.Log?.LogError(LanguageManager.GetFormattedText("格式化任务显示文本时出错: {0}", ex.Message));
                         }
                         
                         // 绘制多选框
@@ -770,7 +772,7 @@ namespace cs.HoLMod.TaskCheat
             // 确认选择按钮
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("确认添加", GUILayout.Width(150), GUILayout.Height(30)))
+            if (GUILayout.Button(LanguageManager.GetText("确认添加"), GUILayout.Width(150), GUILayout.Height(30)))
             {
                 ConfirmAddTaskSelection();
             }
@@ -814,8 +816,8 @@ namespace cs.HoLMod.TaskCheat
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("确认任务添加时出错: " + ex.Message);
-                ShowNotification("确认任务添加失败!");
+                TaskCheat.Log?.LogError(LanguageManager.GetFormattedText("确认任务添加时出错: {0}", ex.Message));
+                ShowNotification(LanguageManager.GetText("确认任务添加失败!"));
             }
         }
     }
@@ -837,30 +839,30 @@ namespace cs.HoLMod.TaskCheat
                     // 验证存档位置是否有效
                     if (string.IsNullOrEmpty(archiveLocation))
                     {
-                        TaskCheat.Log?.LogWarning("存档位置为空，无法加载特定存档的配置文件");
+                        TaskCheat.Log?.LogWarning(LanguageManager.GetText("存档位置为空，无法加载特定存档的配置文件"));
                         return;
                     }
                     
-                    TaskCheat.Log?.LogInfo($"读取存档数据后，根据存档位置 {archiveLocation} 开始查找匹配的配置文件");
+                    TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("读取存档数据后，根据存档位置 {0} 开始查找匹配的配置文件", archiveLocation));
                     
                     // 清空待添加任务列表，准备根据配置重新添加
                     RepetitiveTaskHandler.ToBeAdded = new List<List<int>>();
                     
                     // 遍历查找所有可能的存储标识，寻找与当前存档匹配的配置
                     bool foundMatchingConfig = false;
-                    
+
                     // 获取当前完整存储标识（包含郡县、家族等信息，但与存档位置明确区分）
                     string storageIdentifier = TaskCheatConfig.GetStorageIdentifier();
                     
                     // 记录当前存储标识信息
-                    TaskCheat.Log?.LogInfo($"当前存储标识: '{storageIdentifier}'");
+                    TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("当前存储标识: '{0}'", storageIdentifier));
                     
                     // 如果存储标识不为空且不为默认值，则检查是否包含当前存档位置信息
                     if (!string.IsNullOrEmpty(storageIdentifier) && 
                         storageIdentifier != TaskCheatConfig.DefaultStorageIdentifier &&
                         storageIdentifier.Contains(archiveLocation))
                     {
-                        TaskCheat.Log?.LogInfo("找到与当前存档位置匹配的存储标识，尝试加载配置");
+                        TaskCheat.Log?.LogInfo(LanguageManager.GetText("找到与当前存档位置匹配的存储标识，尝试加载配置"));
                         // 尝试加载配置
                         try
                         {
@@ -878,24 +880,24 @@ namespace cs.HoLMod.TaskCheat
                                 // 添加到待添加列表
                                 RepetitiveTaskHandler.AddSelectedTasks(tasksToAdd);
                                 foundMatchingConfig = true;
-                                TaskCheat.Log?.LogInfo($"成功加载匹配的配置文件，添加了 {RepetitiveTaskHandler.ToBeAdded.Count} 个任务");
-                                TaskCheat.Instance?.ShowNotification($"已加载 {RepetitiveTaskHandler.ToBeAdded.Count} 个重复任务配置");
+                                TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("成功加载匹配的配置文件，添加了 {0} 个任务", RepetitiveTaskHandler.ToBeAdded.Count));
+                                TaskCheat.Instance?.ShowNotification(LanguageManager.GetFormattedText("已加载 {0} 个重复任务配置", RepetitiveTaskHandler.ToBeAdded.Count));
                             }
                             else
                             {
-                                TaskCheat.Log?.LogInfo("存储标识存在，但没有找到选中的任务配置");
+                                TaskCheat.Log?.LogInfo(LanguageManager.GetText("存储标识存在，但没有找到选中的任务配置"));
                             }
                         }
                         catch (Exception ex)
                         {
                             // 如果格式错误，则删除该标识的配置
-                            TaskCheat.Log?.LogError($"配置格式错误，删除存储标识 '{storageIdentifier}' 的配置: " + ex.Message);
+                            TaskCheat.Log?.LogError(LanguageManager.GetFormattedText("配置格式错误，删除存储标识 '{0}' 的配置: {1}", storageIdentifier, ex.Message));
                             TaskCheat.Log?.LogError(ex.StackTrace);
                             bool cleared = TaskCheatConfig.ClearConfigByStorageIdentifier(storageIdentifier);
                             if (cleared)
                             {
-                                TaskCheat.Log?.LogInfo("配置已成功清除，下次启动将使用默认设置");
-                                TaskCheat.Instance?.ShowNotification("配置格式错误，已清除，请重新配置任务");
+                                TaskCheat.Log?.LogInfo(LanguageManager.GetText("配置已成功清除，下次启动将使用默认设置"));
+                                TaskCheat.Instance?.ShowNotification(LanguageManager.GetText("配置格式错误，已清除，请重新配置任务"));
                             }
                         }
                     }
@@ -904,15 +906,15 @@ namespace cs.HoLMod.TaskCheat
                         // 记录为什么没有匹配的原因
                         if (string.IsNullOrEmpty(storageIdentifier))
                         {
-                            TaskCheat.Log?.LogWarning("存储标识为空");
+                            TaskCheat.Log?.LogWarning(LanguageManager.GetText("存储标识为空"));
                         }
                         else if (storageIdentifier == TaskCheatConfig.DefaultStorageIdentifier)
                         {
-                            TaskCheat.Log?.LogWarning("当前使用默认存储标识，不会加载特定存档的配置");
+                            TaskCheat.Log?.LogWarning(LanguageManager.GetText("当前使用默认存储标识，不会加载特定存档的配置"));
                         }
                         else if (!storageIdentifier.Contains(archiveLocation))
                         {
-                            TaskCheat.Log?.LogWarning($"存储标识 '{storageIdentifier}' 不包含当前存档位置 '{archiveLocation}'");
+                            TaskCheat.Log?.LogWarning(LanguageManager.GetFormattedText("存储标识 '{0}' 不包含当前存档位置 '{1}'", storageIdentifier, archiveLocation));
                         }
                     }
                     
@@ -920,19 +922,19 @@ namespace cs.HoLMod.TaskCheat
                     if (!foundMatchingConfig)
                     {
                         // 返回默认空数组给tobeadded（已在开头清空）
-                        TaskCheat.Log?.LogInfo("未找到匹配的存储标识配置，ToBeAdded保持为空");
+                        TaskCheat.Log?.LogInfo(LanguageManager.GetText("未找到匹配的存储标识配置，ToBeAdded保持为空"));
                         // 显示通知给用户
                         TaskCheat.Instance?.ShowNotification("未找到匹配的任务配置，请在任务编辑器中设置");
                     }
                 }
                 else
                 {
-                    TaskCheat.Log?.LogError("TaskCheat.Instance为null，无法加载配置");
+                    TaskCheat.Log?.LogError(LanguageManager.GetText("TaskCheat.Instance为null，无法加载配置"));
                 }
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("在ReadGameData后加载配置时出错: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetFormattedText("在ReadGameData后加载配置时出错: {0}", ex.Message));
                 TaskCheat.Log?.LogError(ex.StackTrace);
                 
                 // 出错时确保ToBeAdded为空
@@ -941,7 +943,7 @@ namespace cs.HoLMod.TaskCheat
                 // 显示错误通知
                 if (TaskCheat.Instance != null)
                 {
-                    TaskCheat.Instance?.ShowNotification("加载任务配置时出错，请查看日志了解详情");
+                    TaskCheat.Instance?.ShowNotification(LanguageManager.GetText("加载任务配置时出错，请查看日志了解详情"));
                 }
             }
         }

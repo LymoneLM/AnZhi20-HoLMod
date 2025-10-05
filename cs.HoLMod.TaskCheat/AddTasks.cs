@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,20 +19,20 @@ namespace cs.HoLMod.TaskCheat
         {
             // 检查TaskCheat实例是否存在以及Mainload.SceneID是否为空
             if (TaskCheat.Instance == null)
-            {
-                TaskCheat.Log?.LogWarning("TaskCheat.Instance为null，无法添加任务");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(Mainload.SceneID))
-            {
-                TaskCheat.Log?.LogWarning("Mainload.SceneID为空，无法确定当前场景");
-                if (TaskCheat.Instance != null)
                 {
-                    TaskCheat.Instance.ShowNotification("无法确定当前场景，任务添加失败！");
+                    TaskCheat.Log?.LogWarning(LanguageManager.GetText("TaskCheatInstanceIsNull"));
+                    return;
                 }
-                return;
-            }
+
+                if (string.IsNullOrEmpty(Mainload.SceneID))
+                {
+                    TaskCheat.Log?.LogWarning(LanguageManager.GetText("MainloadSceneIDIsNull"));
+                    if (TaskCheat.Instance != null)
+                    {
+                        TaskCheat.Instance.ShowNotification(LanguageManager.GetText("CannotDetermineScene"));
+                    }
+                    return;
+                }
 
             // 加载当前场景并用|分割
             string[] arrayadd = Mainload.SceneID.Split(new char[]
@@ -47,16 +47,16 @@ namespace cs.HoLMod.TaskCheat
             if (SceneClass == "M" || SceneClass == "Z" || SceneClass == "S" || SceneClass == "H" )
             {
                 try
+            {
+                // 读取当前任务列表
+                List<List<int>> currentTasks = Mainload.TaskOrderData_Now;
+                
+                if (currentTasks == null)
                 {
-                    // 读取当前任务列表
-                    List<List<int>> currentTasks = Mainload.TaskOrderData_Now;
-                    
-                    if (currentTasks == null)
-                    {
-                        currentTasks = new List<List<int>>();
-                    }
-                    
-                    int addedCount = 0;
+                    currentTasks = new List<List<int>>();
+                }
+                
+                int addedCount = 0;
                     
                     // 处理选中的任务
                     if (selectedTasks != null && selectedTasks.Count > 0)
@@ -99,31 +99,31 @@ namespace cs.HoLMod.TaskCheat
                         Mainload.TaskOrderData_Now = currentTasks;
                         
                         // 显示成功提示
-                        if (TaskCheat.Instance != null)
-                        {
-                            if (addedCount > 0)
+                            if (TaskCheat.Instance != null)
                             {
-                                TaskCheat.Instance.ShowNotification(string.Format("成功添加了 {0} 个任务！", addedCount));
+                                if (addedCount > 0)
+                                {
+                                    TaskCheat.Instance.ShowNotification(LanguageManager.GetFormattedText("SuccessfullyAddedTasks", addedCount));
+                                }
+                                /*
+                                else
+                                {
+                                    TaskCheat.Instance.ShowNotification(LanguageManager.GetText("NoNewTasksAdded"));
+                                }
+                                */
                             }
-                            /*
-                            else
-                            {
-                                TaskCheat.Instance.ShowNotification("没有添加新任务，可能已全部存在！");
-                            }
-                            */
-                        }
                     }
                 }
                 catch (Exception ex)
                 {
                     // 记录异常信息
-                    TaskCheat.Log?.LogError("添加任务时出错: " + ex.Message);
+                    TaskCheat.Log?.LogError(LanguageManager.GetText("TaskAddError") + ex.Message);
                     TaskCheat.Log?.LogError(ex.StackTrace);
                     
                     // 显示错误提示
                     if (TaskCheat.Instance != null)
                     {
-                        TaskCheat.Instance.ShowNotification("任务添加失败！");
+                        TaskCheat.Instance.ShowNotification(LanguageManager.GetText("TaskAddFailed"));
                     }
                 }
                 

@@ -9,14 +9,106 @@ using BepInEx.Configuration;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Globalization;
 
 
 
 namespace MenKeConverter
 {
-    [BepInPlugin("cs.HoLMod.CustomGenerationMenKe.AnZhi20", "HoLMod.CustomGenerationMenKe", "1.2.0")]
+    [BepInPlugin("cs.HoLMod.CustomGenerationMenKe.AnZhi20", "HoLMod.CustomGenerationMenKe", "1.3.0")]
     public class CustomGenerationMenKe : BaseUnityPlugin
     {
+        // 语言管理内部类
+        internal class LanguageManager
+        {
+            private static bool isChinese = true;
+            private static Dictionary<string, string> translations = new Dictionary<string, string>()
+            {
+                // 窗口标题
+                {"WindowTitle", "门客自定义生成器|Custom MenKe Generator"},
+                
+                // 状态信息
+                {"Status", "状态: |Status: "},
+                {"Ready", "准备就绪|Ready"},
+                {"Generating", "正在生成门客数据...|Generating MenKe data..."},
+                {"Adding", "正在添加到游戏中...|Adding to game..."},
+                {"AddedSuccess", "成功添加 {0} 条门客数据到游戏中|Successfully added {0} MenKe data to the game"},
+                {"GameDataNotLoaded", "游戏数据未加载，无法实时添加门客|Game data not loaded, cannot add MenKe in real-time"},
+                
+                // 错误信息
+                {"ErrorCountRange", "错误: 生成数量必须在1到1000之间！|Error: Generation count must be between 1 and 1000!"},
+                {"ErrorAgeRange", "错误: 门客年龄必须在18到60之间！|Error: MenKe age must be between 18 and 60!"},
+                {"ErrorAddFailed", "添加失败: |Failed to add: "},
+                
+                // UI元素
+                {"MenKeGender", "门客性别:|MenKe Gender:"},
+                {"Female", "女|Female"},
+                {"Male", "男|Male"},
+                {"MenKeTalent", "门客天赋:|MenKe Talent:"},
+                {"MenKeSkill", "门客技能:|MenKe Skill:"},
+                {"MenKeAge", "门客年龄:|MenKe Age:"},
+                {"GenerateCount", "生成数量:|Generate Count:"},
+                
+                // 按钮
+                {"AddToGame", "实时添加到游戏|Add to Game Now"},
+                
+                // 使用说明
+                {"Instructions", "使用说明:|Instructions:"},
+                {"Instruction1", "1. 请在点击添加前先保存游戏，以便回档|1. Please save the game before clicking add to allow for rollback"},
+                {"Instruction2", "2. 按F1键显示 / 隐藏菜单|2. Press F1 to show/hide the menu"},
+                {"Instruction3", "3. 选择门客性别、天赋和技能|3. Select MenKe gender, talent, and skill"},
+                {"Instruction4", "4. 选择门客年龄|4. Select MenKe age"},
+                {"Instruction5", "5. 输入要生成的门客数量|5. Enter the number of MenKe to generate"},
+                {"Instruction6", "6. 点击'实时添加到游戏'按钮直接添加到当前游戏中|6. Click 'Add to Game Now' button to add directly to the current game"},
+                {"Instruction7", "7. 本mod作者：AnZhi20|7. Mod author: AnZhi20"},
+                {"Instruction8", "8. 本mod版本：1.2.0|8. Mod version: 1.2.0"},
+                
+                // 天赋和技能
+                {"Empty", "空|None"},
+                {"TalentLiterary", "文|Literary"},
+                {"TalentMartial", "武|Martial"},
+                {"TalentBusiness", "商|Business"},
+                {"TalentArt", "艺|Art"},
+                {"SkillWitch", "巫|Witch"},
+                {"SkillDoctor", "医|Doctor"},
+                {"SkillPhysiognomy", "相|Physiognomy"},
+                {"SkillDivination", "卜|Divination"},
+                {"SkillCharm", "魅|Charm"},
+                {"SkillCraftsman", "工|Craftsman"}
+            };
+
+            static LanguageManager()
+            {
+                // 检测系统语言
+                try
+                {
+                    CultureInfo culture = CultureInfo.CurrentCulture;
+                    isChinese = culture.Name.Contains("zh");
+                }
+                catch
+                {
+                    // 如果无法获取系统语言，默认使用中文
+                    isChinese = true;
+                }
+            }
+
+            public static string GetText(string key)
+            {
+                if (translations.TryGetValue(key, out string value))
+                {
+                    string[] parts = value.Split('|');
+                    return isChinese && parts.Length > 0 ? parts[0] : (parts.Length > 1 ? parts[1] : key);
+                }
+                return key;
+            }
+
+            public static string GetText(string key, params object[] args)
+            {
+                string text = GetText(key);
+                return string.Format(text, args);
+            }
+        }
+
         // 窗口及配置文件设置
         private ConfigEntry<float> menuWidth;
         private ConfigEntry<float> menuHeight;
@@ -43,7 +135,7 @@ namespace MenKeConverter
         private string Alentin = "空"; // 天赋
         private string Skillsin = "空"; // 技能
         private int generateCount = 1;
-        private string statusMessage = "准备就绪";
+        private string statusMessage = LanguageManager.GetText("Ready");
         private int customAge = 18;    // 年龄 
         
         // 当前插件版本
@@ -66,8 +158,28 @@ namespace MenKeConverter
         static readonly List<string> Namenv = new List<string> { "清", "嘉", "逸", "平", "雪", "安", "琛", "思", "初", "静", "慧", "淑", "晨", "岚", "涵", "秀", "翠", "琳", "绮", "代", "欢", "夜", "以", "悦", "心", "书", "半", "和", "妙", "梓", "天", "飞", "山", "丹", "萍", "昕", "绿", "芫", "雅", "冰", "灵", "玲", "尔", "念", "婉", "蔓", "欣", "雯", "娅", "轩", "千", "新", "寄", "吉", "笑", "芷", "芝", "晴", "醉", "谷", "智", "觅", "湛", "绣", "芳", "幼", "惜", "米", "凝", "鸣", "紫", "雨", "合", "莹", "丝", "含", "凡", "今", "珍", "舒", "听", "兰", "语", "格", "梦", "怡", "丽", "易", "忆", "艳", "雁", "晓", "香", "宛", "古", "润", "如", "碧", "媛", "水", "望", "霞", "子", "秋", "巧", "从", "驰", "玛", "沛", "寒", "友", "诗", "迎", "瑾", "慕", "春", "畅", "依", "明", "任", "琬", "采", "白", "菱", "亦", "素", "冷", "盼", "云", "献", "家", "幻", "星", "柔", "忻", "宜", "可", "冬", "芃", "向", "美", "北", "问", "娟", "长", "言", "红", "寻", "运", "元", "孤", "瑜", "惠", "英", "斐", "隽", "洛", "蕴", "奕", "典", "妞", "夏", "琼", "南", "晶", "梅", "月", "杰", "浩", "熙", "弘", "朵", "河", "密", "若", "梧", "燕", "君", "暄", "修", "玉", "恬", "好", "芮", "洁", "玮", "菁", "施", "松", "芸", "彦", "哲", "映", "情", "湘", "彤", "彩", "品", "轶", "菀", "布", "华", "茉", "偲", "琲", "琴", "湉", "佳", "青", "音", "歌", "喜", "贝", "晗", "怿", "方", "怀", "乐", "杏", "浓", "楚", "悠", "流", "皓", "苇", "馨", "洮", "仪", "端", "韵", "之", "倩", "沙", "淳", "朝", "沈", "令", "蓓", "贞", "蓉", "骏", "芬", "琇", "娴", "齐", "彗", "金", "雍", "蝶", "笛", "真", "心", "淑", "美", "晓", "荷", "云", "蓝", "雅", "丽", "贤", "风", "岚", "绿", "阳", "溪", "南", "天", "悦", "霁", "卉", "冬", "怡", "宜", "雁", "雪", "静", "梦", "蓓", "媛", "兰", "英", "琴", "韵", "丹", "月", "竹", "华", "春", "妍", "柏", "珊", "双", "秋", "然", "槐", "蕾", "枫", "凡", "清", "菁", "笑", "玟", "慧", "秀", "素", "梅", "灵", "桃", "寒", "蝶", "波", "惠", "玉", "宸", "晴", "娟", "蓉", "菱", "远", "帆", "莉", "彤", "乐", "馨", "意", "容", "琇", "卓", "翠", "琪", "爱", "巧", "雨", "莲", "豫", "芹", "泽", "涵", "蕊", "格", "易", "洁", "语", "珠", "逸", "芳", "露", "凝", "和", "瑶", "曦", "辞", "微", "菡", "文", "丝", "欣", "白", "青", "莹", "暖", "霜", "薇", "芬", "荣", "煦", "恩", "星", "真", "山", "飞", "若", "婕", "歌", "妙", "慕", "松", "旋", "楠", "愉", "燕", "芃", "安", "怀", "蕙", "辰", "娥", "绮", "宁", "萱", "夏", "柔", "俊", "宇", "旭", "苗", "君", "敏", "义", "娴", "畅", "骄", "妞", "之", "烟", "辉", "茵", "香", "朗", "芙", "颖", "思", "臻", "桐", "冰", "婷", "舞", "珏", "艺", "亦", "璟", "琲", "欢", "奇", "霏", "晨", "照", "红", "艳", "仪", "艾", "嘉", "霞", "珺", "恺", "芝", "菀", "采", "偲", "湉", "佳", "筠", "融", "蔓", "农", "虹", "诗", "可", "念", "彩", "音", "丰", "明", "如", "画", "洮", "瑜", "婉", "珑", "暎", "优", "昕", "阑", "婧", "枝", "花" };
 
         // 天赋和技能列表
-        static readonly List<string> Alent = new List<string> { "空", "文", "武", "商", "艺" };
-        static readonly List<string> Skills = new List<string> { "空", "巫", "医", "相", "卜", "魅", "工" };
+        static List<string> Alent = new List<string>();
+        static List<string> Skills = new List<string>();
+
+        // 初始化语言相关列表
+        private void InitializeLanguageLists()
+        {
+            Alent.Clear();
+            Alent.Add(LanguageManager.GetText("Empty"));
+            Alent.Add(LanguageManager.GetText("TalentLiterary"));
+            Alent.Add(LanguageManager.GetText("TalentMartial"));
+            Alent.Add(LanguageManager.GetText("TalentBusiness"));
+            Alent.Add(LanguageManager.GetText("TalentArt"));
+
+            Skills.Clear();
+            Skills.Add(LanguageManager.GetText("Empty"));
+            Skills.Add(LanguageManager.GetText("SkillWitch"));
+            Skills.Add(LanguageManager.GetText("SkillDoctor"));
+            Skills.Add(LanguageManager.GetText("SkillPhysiognomy"));
+            Skills.Add(LanguageManager.GetText("SkillDivination"));
+            Skills.Add(LanguageManager.GetText("SkillCharm"));
+            Skills.Add(LanguageManager.GetText("SkillCraftsman"));
+        }
 
         
         // 界面控制变量
@@ -78,6 +190,8 @@ namespace MenKeConverter
         private void Awake()
         {
             Logger.LogInfo("门客自定义生成器已加载！");
+            // 初始化语言相关列表
+            InitializeLanguageLists();
             
             // 版本检查配置
             var loadedVersion = Config.Bind("内部配置（Internal Settings）", "已加载版本（Loaded Version）", "", "用于跟踪插件版本，请勿手动修改").Value;
@@ -86,14 +200,14 @@ namespace MenKeConverter
             bool isVersionUpdated = loadedVersion != CURRENT_VERSION;
             
             // 配置窗口大小
-            menuWidth = Config.Bind<float>("窗口设置（Window Settings）", "窗口宽度（Menu Width）", 400f, "修改器主菜单宽度");
-            menuHeight = Config.Bind<float>("窗口设置（Window Settings）", "窗口高度（Menu Height）", 700f, "修改器主菜单高度");
+            menuWidth = Config.Bind<float>("窗口设置（Window Settings）", "窗口宽度（Menu Width）", 400f, "修改器主菜单宽度（Modifier main menu width）");
+            menuHeight = Config.Bind<float>("窗口设置（Window Settings）", "窗口高度（Menu Height）", 700f, "修改器主菜单高度（Modifier main menu height）");
             
             // 配置门客工资
-            menKeSalary = Config.Bind<string>("门客设置（MenKe Settings）", "门客月薪（MenKe Salary）", "50000", "门客的属性都这样了，月薪50k不过分吧？当然你也可以修改一下让门客当黑奴！（注意：门客的月薪不能超过100w，因为它不值这个价）");
+            menKeSalary = Config.Bind<string>("门客设置（MenKe Settings）", "门客月薪（MenKe Salary）", "50000", "门客的属性都这样了，月薪50k不过分吧？当然你也可以修改一下让门客当黑奴！（注意：门客的月薪不能超过100w，因为它不值这个价）（The attributes of the gatekeeper are all like this, isn't a monthly salary of 50k excessive? Of course, you can also modify it to make the servants black slaves! (Note: The monthly salary of a gatekeeper cannot exceed 100000 RMB, as it is not worth the price.)）");
             
             // 配置门客超模技能点
-            MenKeMaxSkillPoints = Config.Bind<string>("门客设置（MenKe Settings）", "门客超模技能点（MenKe Max Skill Points）", "10", "门客属性点，默认值为10");
+            MenKeMaxSkillPoints = Config.Bind<string>("门客设置（MenKe Settings）", "门客超模技能点（MenKe Max Skill Points）", "10", "门客属性点，默认值为10（MenKe attribute points, default value is 10）");
             
             // 如果版本更新，重新生成配置文件
             if (isVersionUpdated)
@@ -106,9 +220,9 @@ namespace MenKeConverter
                     Config.Clear();
                     
                     // 重新绑定所有配置项
-                    menuWidth = Config.Bind<float>("窗口设置（Window Settings）", "窗口宽度（Menu Width）", 400f, "修改器主菜单宽度");
-                    menuHeight = Config.Bind<float>("窗口设置（Window Settings）", "窗口高度（Menu Height）", 700f, "修改器主菜单高度");
-                    menKeSalary = Config.Bind<string>("门客设置（MenKe Settings）", "门客月薪（MenKe Salary）", "50000", "门客的属性都这样了，月薪50k不过分吧？当然你也可以修改一下让门客当黑奴！（注意：门客的月薪不能超过100w，因为它不值这个价）");
+                    menuWidth = Config.Bind<float>("窗口设置（Window Settings）", "窗口宽度（Menu Width）", 400f, "修改器主菜单宽度（Modifier main menu width）");
+                    menuHeight = Config.Bind<float>("窗口设置（Window Settings）", "窗口高度（Menu Height）", 700f, "修改器主菜单高度（Modifier main menu height）");
+                    menKeSalary = Config.Bind<string>("门客设置（MenKe Settings）", "门客月薪（MenKe Salary）", "50000", "门客的属性都这样了，月薪50k不过分吧？当然你也可以修改一下让门客当黑奴！（注意：门客的月薪不能超过100w，因为它不值这个价）（The attributes of the gatekeeper are all like this, isn't a monthly salary of 50k excessive? Of course, you can also modify it to make the servants black slaves! (Note: The monthly salary of a gatekeeper cannot exceed 100000 RMB, as it is not worth the price.)）");
                     MenKeMaxSkillPoints = Config.Bind<string>("门客设置（MenKe Settings）", "门客超模技能点（MenKe Max Skill Points）", "10", "门客属性点，默认值为10");
                     
                     // 保存当前版本号
@@ -175,7 +289,7 @@ namespace MenKeConverter
         {
             if (showMenu)
             {
-                windowRect = UnityEngine.GUI.Window(0, windowRect, DrawWindow, "门客自定义生成器", UnityEngine.GUI.skin.window);
+                windowRect = UnityEngine.GUI.Window(0, windowRect, DrawWindow, LanguageManager.GetText("WindowTitle"), UnityEngine.GUI.skin.window);
             }
         }
         
@@ -185,31 +299,31 @@ namespace MenKeConverter
             UnityEngine.GUILayout.Space(10f);
             
             // 显示状态信息
-            UnityEngine.GUILayout.Label("状态: " + statusMessage, UnityEngine.GUI.skin.box, new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Height(50f) });
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("Status") + statusMessage, UnityEngine.GUI.skin.box, new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Height(50f) });
             UnityEngine.GUILayout.Space(10f);
             
             // 性别选择
             UnityEngine.GUILayout.BeginHorizontal();
-            UnityEngine.GUILayout.Label("门客性别:", new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Width(80f) });
-            selectedSex = UnityEngine.GUILayout.Toolbar(selectedSex, new string[] { "女", "男" });
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("MenKeGender"), new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Width(80f) });
+            selectedSex = UnityEngine.GUILayout.Toolbar(selectedSex, new string[] { LanguageManager.GetText("Female"), LanguageManager.GetText("Male") });
             UnityEngine.GUILayout.EndHorizontal();
             UnityEngine.GUILayout.Space(10f);
             
             // 天赋选择
             UnityEngine.GUILayout.BeginHorizontal();
-            UnityEngine.GUILayout.Label("门客天赋:", new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Width(80f) });
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("MenKeTalent"), new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Width(80f) });
             selectedAlent = UnityEngine.GUILayout.SelectionGrid(selectedAlent, Alent.ToArray(), 3);
             UnityEngine.GUILayout.EndHorizontal();
             UnityEngine.GUILayout.Space(10f);
             
             // 技能选择
             UnityEngine.GUILayout.BeginHorizontal();
-            UnityEngine.GUILayout.Label("门客技能:", new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Width(80f) });
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("MenKeSkill"), new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Width(80f) });
             selectedSkill = UnityEngine.GUILayout.SelectionGrid(selectedSkill, Skills.ToArray(), 3);
             UnityEngine.GUILayout.EndHorizontal();
             UnityEngine.GUILayout.Space(10f);
             UnityEngine.GUILayout.BeginHorizontal();
-            UnityEngine.GUILayout.Label("门客年龄:", new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Width(80f) });
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("MenKeAge"), new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Width(80f) });
             customAge = (int)UnityEngine.GUILayout.HorizontalSlider(customAge, 18, 60, new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Width(200f) });
             UnityEngine.GUILayout.Label(customAge.ToString(), new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Width(40f) });
             UnityEngine.GUILayout.EndHorizontal();
@@ -217,7 +331,7 @@ namespace MenKeConverter
             
             // 数量输入
             UnityEngine.GUILayout.BeginHorizontal();
-            UnityEngine.GUILayout.Label("生成数量:", new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Width(80f) });
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("GenerateCount"), new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Width(80f) });
             string countInput = UnityEngine.GUILayout.TextField(generateCount.ToString(), new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Width(100f) });
             if (int.TryParse(countInput, out int count))
             {
@@ -228,16 +342,16 @@ namespace MenKeConverter
             
 
             // 实时添加按钮
-            if (UnityEngine.GUILayout.Button("实时添加到游戏", new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Height(40f) }))
+            if (UnityEngine.GUILayout.Button(LanguageManager.GetText("AddToGame"), new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Height(40f) }))
             {
                 if (generateCount < 1 || generateCount > 1000)
                 {
-                    statusMessage = "错误: 生成数量必须在1到1000之间！";
+                    statusMessage = LanguageManager.GetText("ErrorCountRange");
                     Logger.LogWarning("生成数量超出范围: " + generateCount);
                 }
                 else if (customAge < 18 || customAge > 60)
                 {
-                    statusMessage = "错误: 门客年龄必须在18到60之间！";
+                    statusMessage = LanguageManager.GetText("ErrorAgeRange");
                     Logger.LogWarning("门客年龄超出范围: " + customAge);
                 }
                 else
@@ -248,16 +362,16 @@ namespace MenKeConverter
             UnityEngine.GUILayout.Space(20f);
             
             // 使用说明
-            UnityEngine.GUILayout.Label("使用说明:", UnityEngine.GUI.skin.box);
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("Instructions"), UnityEngine.GUI.skin.box);
             scrollPosition = UnityEngine.GUILayout.BeginScrollView(scrollPosition, new UnityEngine.GUILayoutOption[] { UnityEngine.GUILayout.Height(210f) });
-            UnityEngine.GUILayout.Label("1. 请在点击添加前先保存游戏，以便回档");
-            UnityEngine.GUILayout.Label("2. 按F1键显示 / 隐藏菜单"); 
-            UnityEngine.GUILayout.Label("3. 选择门客性别、天赋和技能");
-            UnityEngine.GUILayout.Label("4. 选择门客年龄");
-            UnityEngine.GUILayout.Label("5. 输入要生成的门客数量");
-            UnityEngine.GUILayout.Label("6. 点击'实时添加到游戏'按钮直接添加到当前游戏中");
-            UnityEngine.GUILayout.Label("7. 本mod作者：AnZhi20"); 
-            UnityEngine.GUILayout.Label("8. 本mod版本：1.2.0");
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("Instruction1"));
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("Instruction2")); 
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("Instruction3"));
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("Instruction4"));
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("Instruction5"));
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("Instruction6"));
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("Instruction7")); 
+            UnityEngine.GUILayout.Label(LanguageManager.GetText("Instruction8"));
             UnityEngine.GUILayout.EndScrollView();
             
             UnityEngine.GUILayout.EndVertical();
@@ -275,7 +389,7 @@ namespace MenKeConverter
         {
             try
             {
-                statusMessage = "正在生成门客数据...";
+                statusMessage = LanguageManager.GetText("Generating");
                 Logger.LogInfo("开始实时添加门客数据");
                 
                 List<string> newMenKeData = new List<string>();
@@ -475,21 +589,21 @@ namespace MenKeConverter
                     }
                 }
 
-                statusMessage = "正在添加到游戏中...";
+                statusMessage = LanguageManager.GetText("Adding");
                 
                 if (Mainload.MenKe_Now != null)
                 {
-                    statusMessage = $"成功添加 {generateCount} 条门客数据到游戏中";
+                    statusMessage = LanguageManager.GetText("AddedSuccess", generateCount);
                 }
                 else
                 {
-                    statusMessage = "游戏数据未加载，无法实时添加门客";
+                    statusMessage = LanguageManager.GetText("GameDataNotLoaded");
                     Logger.LogWarning("Mainload.MenKe_Now 为空，无法实时添加门客");
                 }
             }
             catch (Exception e)
             {
-                statusMessage = "添加失败: " + e.Message;
+                statusMessage = LanguageManager.GetText("ErrorAddFailed") + e.Message;
                 Logger.LogError("实时添加门客失败: " + e.Message);
                 Logger.LogError("异常堆栈: " + e.StackTrace);
             }

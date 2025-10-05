@@ -15,7 +15,7 @@ using UnityEngine.SceneManagement;
 
 namespace cs.HoLMod.AddItem
 {
-    [BepInPlugin("cs.HoLMod.AddItem.AnZhi20", "HoLMod.AddItem", "2.5.0")]
+    [BepInPlugin("cs.HoLMod.AddItem.AnZhi20", "HoLMod.AddItem", "2.6.0")]
     public class AddItem : BaseUnityPlugin
     {
         // 窗口设置
@@ -23,6 +23,135 @@ namespace cs.HoLMod.AddItem
         private static bool showMenu = false;// 滚动位置
         private static Vector2 scrollPosition;
         private static bool blockGameInput = false;
+        
+        // 多语言文本字典
+        private Dictionary<string, (string, string)> langText = new Dictionary<string, (string, string)>()
+        {
+            // 主界面相关
+            {"物品添加器", ("物品添加器", "Item Adder")},
+            {"货币", ("货币", "Currency")},
+            {"物品", ("物品", "Items")},
+            {"话本", ("话本", "Stories")},
+            {"地图", ("地图", "Map")},
+            {"搜索物品:", ("搜索物品:", "Search Item:")},
+            {"搜索:", ("搜索:", "Search:")},
+            {"分类:", ("分类:", "Category:")},
+            {"清空", ("清空", "Clear")},
+            {"添加物品", ("添加物品", "Add Item")},
+            {"添加", ("添加", "Add")},
+            {"使用说明:", ("使用说明:", "Instructions:")},
+            {"1. 请在点击添加前先保存游戏，以便回档", ("1. 请在点击添加前先保存游戏，以便回档", "1. Please save the game before adding items for rollback")},
+            {"2. 按F2键显示/隐藏窗口", ("2. Press F2 to show/hide window", "2. Press F2 to show/hide window")},
+            {"3. 切换模式选择：物品模式/货币模式/话本模式/地图模式", ("3. Switch modes: Items/Currency/Stories/Map", "3. Switch modes: Items/Currency/Stories/Map")},
+            {"4. 输入部分字符可搜索物品或话本", ("4. Enter partial characters to search items or stories", "4. Enter partial characters to search items or stories")},
+            {"5. 选择项目并选择或输入数量后点击添加按钮", ("5. Select item, choose/enter quantity, then click Add", "5. Select item, choose/enter quantity, then click Add")},
+            {"Mod作者：AnZhi20", ("Mod作者：AnZhi20", "Mod Author: AnZhi20")},
+            {"Mod版本：2.5.0", ("Mod版本：2.5.0", "Mod Version: 2.5.0")},
+            
+            // 物品分类相关
+            {"特殊物品", ("特殊物品", "Special Items")},
+            {"新增物品", ("新增物品", "New Items")},
+            {"丹药", ("丹药", "Herbal Pills")},
+            {"符咒", ("符咒", "Talismans")},
+            {"毒药", ("毒药", "Poison")},
+            {"美食", ("美食", "Food")},
+            {"农产", ("农产", "Agricultural")},
+            {"布料", ("布料", "Fabric")},
+            {"矿产", ("矿产", "Minerals")},
+            {"香粉", ("香粉", "Cosmetics")},
+            {"珠宝", ("珠宝", "Jewelry")},
+            {"武器", ("武器", "Weapons")},
+            {"书法", ("书法", "Calligraphy")},
+            {"丹青", ("丹青", "Painting")},
+            {"文玩", ("文玩", "Antiques")},
+            {"乐器", ("乐器", "Musical Instruments")},
+            {"茶具", ("茶具", "Tea Sets")},
+            {"香具", ("香具", "Incense Tools")},
+            {"瓷器", ("瓷器", "Porcelain")},
+            {"美酒", ("美酒", "Wine")},
+            {"皮毛", ("皮毛", "Furs")},
+            {"书籍", ("书籍", "Books")},
+            
+            // 货币模式相关
+            {"选择货币类型:", ("选择货币类型:", "Select Currency Type:")},
+            {"铜钱", ("铜钱", "Copper Coins")},
+            {"元宝", ("元宝", "Gold Ingots")},
+            {"数值:", ("数值:", "Amount:")},
+            {"(0-10亿)", ("(0-10亿)", "(0-1,000,000,000)")},
+            {"(0-10万)", ("(0-10万)", "(0-100,000)")},
+            {"10万", ("10万", "100K")},
+            {"100万", ("100万", "1M")},
+            {"1000万", ("1000万", "10M")},
+            {"1亿", ("1亿", "100M")},
+            {"10亿", ("10亿", "1B")},
+            {"1百", ("1百", "100")},
+            {"1千", ("1千", "1K")},
+            {"1万", ("1万", "10K")},
+            {"当前铜钱: {0}", ("当前铜钱: {0}", "Current Coins: {0}")},
+            {"当前元宝: ", ("当前元宝: ", "Current Gold Ingots: ")},
+            
+            // 地图模式相关
+            {"府邸子模式", ("府邸子模式", "Mansion Submode")},
+            {"生成府邸所在郡：", ("生成府邸所在郡：", "Select Prefecture:")},
+            {"生成府邸所在县：", ("生成府邸所在县：", "Select County:")},
+            {"仅添加府邸", ("仅添加府邸", "Add Mansion Only")},
+            {"添加后进入府邸", ("添加后进入府邸", "Add & Enter Mansion")},
+            {"农庄子模式", ("农庄子模式", "Farm Submode")},
+            {"封地子模式", ("封地子模式", "Fief Submode")},
+            {"世家子模式", ("世家子模式", "Family Submode")},
+            {"府邸", ("府邸", "Mansion")},
+            {"农庄", ("农庄", "Farm")},
+            {"封地", ("封地", "Fief")},
+            {"世家", ("世家", "Family")},
+            {"请先选择一个郡", ("请先选择一个郡", "Please select a prefecture first")},
+            {"准备就绪", ("准备就绪", "Ready")},
+            {"无效的数量，请输入1-1000000范围内的整数", ("无效的数量，请输入1-1000000范围内的整数", "Invalid quantity. Please enter an integer between 1-1,000,000")},
+            {"请先选择府邸所在的郡县", ("请先选择府邸所在的郡县", "Please select the county for the mansion first")},
+            {"找不到选择的县", ("找不到选择的县", "Cannot find the selected county")},
+            {"请先选择农庄所在的郡县", ("请先选择农庄所在的郡县", "Please select the county for the farm first")},
+            {"添加失败：该处已有农庄属于【其它世家】", ("添加失败：该处已有农庄属于【其它世家】", "Failed to add: There's already a farm owned by another family here")},
+            {"添加失败：该处已有农庄属于【你】", ("添加失败：该处已有农庄属于【你】", "Failed to add: You already own a farm here")},
+            {"添加农庄失败：", ("添加农庄失败：", "Failed to add farm: ")},
+            {"请先选择要解锁的郡", ("请先选择要解锁的郡", "Please select a prefecture to unlock first")},
+            {"无效的郡选择", ("无效的郡选择", "Invalid prefecture selection")},
+            {"解锁封地失败: ", ("解锁封地失败: ", "Failed to unlock fief: ")},
+            {"添加失败：功能正在开发中", ("添加失败：功能正在开发中", "Failed to add: This feature is under development")},
+            {"请输入有效的数值", ("请输入有效的数值", "Please enter a valid number")},
+            {"获取当前元宝数量失败", ("获取当前元宝数量失败", "Failed to get current gold ingot count")},
+            {"添加物品失败: ", ("添加物品失败: ", "Failed to add item: ")},
+            {"无效的物品ID", ("无效的物品ID", "Invalid item ID")},
+            {"添加物品时发生错误: ", ("添加物品时发生错误: ", "Error occurred when adding item: ")},
+            {"无效的话本ID", ("无效的话本ID", "Invalid storybook ID")},
+            {"添加话本时发生错误: ", ("添加话本时发生错误: ", "Error occurred when adding storybook: ")},
+            {"添加府邸方式选择", ("添加府邸方式选择", "Mansion Addition Method")},
+            {"农庄的名字：", ("农庄的名字：", "Farm Name:")},
+            {"点击下方添加按钮即可解锁选择郡的所属封地", ("点击下方添加按钮即可解锁选择郡的所属封地", "Click Add button below to unlock fiefs in selected prefecture")},
+            {"未找到匹配的物品", ("未找到匹配的物品", "No matching items found")},
+            
+            // 日志和配置相关
+            {"未选择郡县", ("未选择郡县", "County not selected")},
+            {"无效的县选择", ("无效的县选择", "Invalid county selection")},
+            {"未选择郡", ("未选择郡", "Prefecture not selected")},
+            {"物品添加器窗口已打开", ("物品添加器窗口已打开", "Item Adder window opened")},
+            {"物品添加器窗口已关闭", ("物品添加器窗口已关闭", "Item Adder window closed")},
+            {"用于跟踪插件版本，请勿手动修改", ("用于跟踪插件版本，请勿手动修改", "Used to track plugin version, do not modify manually")},
+            {"物品添加器已加载！", ("物品添加器已加载！", "Item Adder loaded!")},
+            {"旧配置文件已删除。", ("旧配置文件已删除。", "Old config file deleted.")},
+            {"配置文件已成功重新生成。", ("配置文件已成功重新生成。", "Config file successfully regenerated.")},
+            {"获取当前元宝数量失败", ("获取当前元宝数量失败", "Failed to get current gold ingot count")},
+            {"已添加新物品: ", ("已添加新物品: ", "New item added: ")},
+            {"索引", ("索引", " Index")}
+        };
+        
+        // 根据当前语言获取文本
+        private string GetText(string key)
+        {
+            if (langText.ContainsKey(key))
+            {
+                return IsChineseLanguage() ? langText[key].Item1 : langText[key].Item2;
+            }
+            return key; // 如果没有找到对应的翻译，返回原文本
+        }
         
         // 物品列表 - 添加分类信息用于快捷搜索
         private Dictionary<int, (string, string)> itemList = new Dictionary<int, (string, string)>()
@@ -384,9 +513,19 @@ namespace cs.HoLMod.AddItem
         // 判断当前是否为中文语言环境
         private bool IsChineseLanguage()
         {
-            // 检查系统语言是否为中文
-            string systemLanguage = Application.systemLanguage.ToString();
-            return systemLanguage.Contains("Chinese");
+            // 检查系统语言是否为中文（包括简体中文、繁体中文等所有中文变体）
+            try
+            {
+                SystemLanguage language = Application.systemLanguage;
+                return language == SystemLanguage.Chinese || 
+                       language == SystemLanguage.ChineseSimplified || 
+                       language == SystemLanguage.ChineseTraditional;
+            }
+            catch
+            {
+                // 发生异常时默认返回true（中文）
+                return true;
+            }
         }
         
         // 双语话本列表 - 结构：ID, [中文名称, 英文名称, 中文描述, 英文描述]
@@ -489,7 +628,12 @@ namespace cs.HoLMod.AddItem
         private int count = 1;
         private string searchText = "";
         private string countInput = "1";
-        private string statusMessage = "准备就绪";
+        private string statusMessage;
+
+        public AddItem()
+        {
+            statusMessage = GetText("准备就绪");
+        }
         private List<int> filteredItemIds = new List<int>();
         // 用于组合搜索的分类过滤器
         private string selectedCategory = "";
@@ -558,7 +702,7 @@ namespace cs.HoLMod.AddItem
 
         private void Awake()
         {
-            Logger.LogInfo("物品添加器已加载！");
+            Logger.LogInfo(GetText("物品添加器已加载！"));
             
             // 配置文件路径
             string configFilePath = Path.Combine(Paths.ConfigPath, "cs.HoLMod.AddItem.AnZhi20.cfg");
@@ -597,16 +741,15 @@ namespace cs.HoLMod.AddItem
                     if (File.Exists(configFilePath))
                     {
                         File.Delete(configFilePath);
-                        Logger.LogInfo("旧配置文件已删除。");
+                        Logger.LogInfo(GetText("旧配置文件已删除。"));
                     }
                     
                     // 只保存版本信息，不保存窗口大小配置
-                    Config.Bind("内部配置", "已加载版本", CURRENT_VERSION, "用于跟踪插件版本，请勿手动修改");
+                    Config.Bind("内部配置", "已加载版本", CURRENT_VERSION, GetText("用于跟踪插件版本，请勿手动修改"));
                     
                     // 保存新的配置文件
                     Config.Save();
-                    
-                    Logger.LogInfo("配置文件已成功重新生成。");
+                    Logger.LogInfo(GetText("配置文件已成功重新生成。"));
                 }
                 catch (Exception ex)
                 {
@@ -640,7 +783,7 @@ namespace cs.HoLMod.AddItem
                     Mainload.isMapPanelOpen = false;
                 }
                 
-                Logger.LogInfo(showMenu ? "物品添加器窗口已打开" : "物品添加器窗口已关闭");
+                Logger.LogInfo(showMenu ? GetText("物品添加器窗口已打开") : GetText("物品添加器窗口已关闭"));
             }
             
             // 阻止游戏输入当窗口显示时（游戏会继续运行，但不允许操作游戏界面）
@@ -731,26 +874,26 @@ namespace cs.HoLMod.AddItem
             GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
             GUILayout.FlexibleSpace();
             GUIStyle titleStyle = new GUIStyle(GUI.skin.label);
-            GUILayout.Label("物品添加器", titleStyle, new GUILayoutOption[] { GUILayout.ExpandWidth(false) });
+            GUILayout.Label(GetText("物品添加器"), titleStyle, new GUILayoutOption[] { GUILayout.ExpandWidth(false) });
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(15f * scaleFactor);
             
             // 模式选择按钮（货币、物品、话本、地图）
             GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-            if (GUILayout.Button("货币", new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
+            if (GUILayout.Button(GetText("货币"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
             {
                 currentMode = 0;
             }
-            if (GUILayout.Button("物品", new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
+            if (GUILayout.Button(GetText("物品"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
             {
                 currentMode = 1;
             }
-            if (GUILayout.Button("话本", new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
+            if (GUILayout.Button(GetText("话本"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
             {
                 currentMode = 2;
             }
-            if (GUILayout.Button("地图", new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
+            if (GUILayout.Button(GetText("地图"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
             {
                 currentMode = 3;
             }
@@ -759,7 +902,7 @@ namespace cs.HoLMod.AddItem
             
             // 搜索文本框，支持部分搜索
             GUILayout.BeginHorizontal();
-            GUILayout.Label(currentMode == 1 ? "搜索物品:" : "搜索:", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) });
+            GUILayout.Label(currentMode == 1 ? GetText("搜索物品:") : GetText("搜索:"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) });
             string newSearchText = GUILayout.TextField(searchText, new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
             if (newSearchText != searchText)
             {
@@ -773,8 +916,8 @@ namespace cs.HoLMod.AddItem
             {
                 GUILayout.Space(10f * scaleFactor);
                 GUILayout.BeginHorizontal();
-                GUILayout.Label("分类:", new GUILayoutOption[] { GUILayout.Width(100f * scaleFactor) });
-                if (GUILayout.Button("清空", new GUILayoutOption[] { GUILayout.Width(120f * scaleFactor) }))
+                GUILayout.Label(GetText("分类:"), new GUILayoutOption[] { GUILayout.Width(100f * scaleFactor) });
+                if (GUILayout.Button(GetText("清空"), new GUILayoutOption[] { GUILayout.Width(120f * scaleFactor) }))
                 {
                     searchText = "";
                     selectedCategory = "";
@@ -785,45 +928,45 @@ namespace cs.HoLMod.AddItem
                 // 分类按钮布局 - 分多行显示
                 // 特殊物品和新增物品按钮在同一行
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button("特殊物品", new GUILayoutOption[] { GUILayout.Width(245f * scaleFactor) })) { SearchByCategory("特殊物品"); }
+                if (GUILayout.Button(GetText("特殊物品"), new GUILayoutOption[] { GUILayout.Width(245f * scaleFactor) })) { SearchByCategory("特殊物品"); }
                 GUILayout.Space(10f * scaleFactor);
-                if (GUILayout.Button("新增物品", new GUILayoutOption[] { GUILayout.Width(245f * scaleFactor) })) { SearchByCategory("新增物品"); }
+                if (GUILayout.Button(GetText("新增物品"), new GUILayoutOption[] { GUILayout.Width(245f * scaleFactor) })) { SearchByCategory("新增物品"); }
                 GUILayout.EndHorizontal();
                 
                 // 第一行：丹药、符咒、毒药、美食、农产
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button("丹药", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("丹药"); }
-                if (GUILayout.Button("符咒", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("符咒"); }
-                if (GUILayout.Button("毒药", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("毒药"); }
-                if (GUILayout.Button("美食", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("美食"); }
-                if (GUILayout.Button("农产", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("农产"); }
+                if (GUILayout.Button(GetText("丹药"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("丹药"); }
+                if (GUILayout.Button(GetText("符咒"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("符咒"); }
+                if (GUILayout.Button(GetText("毒药"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("毒药"); }
+                if (GUILayout.Button(GetText("美食"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("美食"); }
+                if (GUILayout.Button(GetText("农产"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("农产"); }
                 GUILayout.EndHorizontal();
                 
                 // 第二行：布料、矿产、香粉、珠宝、武器
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button("布料", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("布料"); }
-                if (GUILayout.Button("矿产", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("矿产"); }
-                if (GUILayout.Button("香粉", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("香粉"); }
-                if (GUILayout.Button("珠宝", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("珠宝"); }
-                if (GUILayout.Button("武器", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("武器"); }
+                if (GUILayout.Button(GetText("布料"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("布料"); }
+                if (GUILayout.Button(GetText("矿产"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("矿产"); }
+                if (GUILayout.Button(GetText("香粉"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("香粉"); }
+                if (GUILayout.Button(GetText("珠宝"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("珠宝"); }
+                if (GUILayout.Button(GetText("武器"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("武器"); }
                 GUILayout.EndHorizontal();
                 
                 // 第三行：书法、丹青、文玩、乐器、茶具
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button("书法", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("书法"); }
-                if (GUILayout.Button("丹青", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("丹青"); }
-                if (GUILayout.Button("文玩", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("文玩"); }
-                if (GUILayout.Button("乐器", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("乐器"); }
-                if (GUILayout.Button("茶具", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("茶具"); }
+                if (GUILayout.Button(GetText("书法"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("书法"); }
+                if (GUILayout.Button(GetText("丹青"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("丹青"); }
+                if (GUILayout.Button(GetText("文玩"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("文玩"); }
+                if (GUILayout.Button(GetText("乐器"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("乐器"); }
+                if (GUILayout.Button(GetText("茶具"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("茶具"); }
                 GUILayout.EndHorizontal();
                 
                 // 第四行：香具、瓷器、美酒、皮毛、书籍
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button("香具", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("香具"); }
-                if (GUILayout.Button("瓷器", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("瓷器"); }
-                if (GUILayout.Button("美酒", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("美酒"); }
-                if (GUILayout.Button("皮毛", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("皮毛"); }
-                if (GUILayout.Button("书籍", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("书籍"); }
+                if (GUILayout.Button(GetText("香具"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("香具"); }
+                if (GUILayout.Button(GetText("瓷器"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("瓷器"); }
+                if (GUILayout.Button(GetText("美酒"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("美酒"); }
+                if (GUILayout.Button(GetText("皮毛"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("皮毛"); }
+                if (GUILayout.Button(GetText("书籍"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) })) { SearchByCategory("书籍"); }
                 GUILayout.EndHorizontal();
                 GUILayout.Space(10f * scaleFactor);
             }
@@ -840,12 +983,12 @@ namespace cs.HoLMod.AddItem
                 
                 // 货币类型选择
                 GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
-                GUILayout.Label("选择货币类型:", new GUILayoutOption[] { GUILayout.Width(200f * scaleFactor) });
-                if (GUILayout.Button("铜钱", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
+                GUILayout.Label(GetText("选择货币类型:"), new GUILayoutOption[] { GUILayout.Width(200f * scaleFactor) });
+                if (GUILayout.Button(GetText("铜钱"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
                 {
                     selectedCurrencyType = 0; // 0表示铜钱
                 }
-                if (GUILayout.Button("元宝", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
+                if (GUILayout.Button(GetText("元宝"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
                 {
                     selectedCurrencyType = 1; // 1表示元宝
                 }
@@ -855,7 +998,7 @@ namespace cs.HoLMod.AddItem
                 
                 // 数值输入
                 GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
-                GUILayout.Label("数值:", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) });
+                GUILayout.Label(GetText("数值:"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) });
                 string currencyValueInput = GUILayout.TextField(currencyValue.ToString(), new GUILayoutOption[] { GUILayout.Width(200f * scaleFactor) });
                 if (int.TryParse(currencyValueInput, out int newCurrencyValue))
                 {
@@ -869,37 +1012,37 @@ namespace cs.HoLMod.AddItem
                     }
                 }
                 // 显示输入限制
-                GUILayout.Label(selectedCurrencyType == 0 ? "(0-10亿)" : "(0-10万)", new GUILayoutOption[] { GUILayout.Width(140f * scaleFactor) });
+                GUILayout.Label(selectedCurrencyType == 0 ? GetText("(0-10亿)") : GetText("(0-10万)"), new GUILayoutOption[] { GUILayout.Width(140f * scaleFactor) });
                 GUILayout.EndHorizontal();
                 
                 // 预设数值按钮
                 GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
                 if (selectedCurrencyType == 0) // 铜钱
                 {
-                    if (GUILayout.Button("100万", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
+                    if (GUILayout.Button(GetText("100万"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
                     {
                         currencyValue = 1000000;
                     }
-                    if (GUILayout.Button("1亿", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
+                    if (GUILayout.Button(GetText("1亿"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
                     {
                         currencyValue = 100000000;
                     }
-                    if (GUILayout.Button("10亿", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
+                    if (GUILayout.Button(GetText("10亿"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
                     {
                         currencyValue = 1000000000;
                     }
                 }
                 else if (selectedCurrencyType == 1) // 元宝
                 {
-                    if (GUILayout.Button("1百", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
+                    if (GUILayout.Button(GetText("1百"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
                     {
                         currencyValue = 100;
                     }
-                    if (GUILayout.Button("1千", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
+                    if (GUILayout.Button(GetText("1千"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
                     {
                         currencyValue = 1000;
                     }
-                    if (GUILayout.Button("1万", new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
+                    if (GUILayout.Button(GetText("1万"), new GUILayoutOption[] { GUILayout.Width(160f * scaleFactor) }))
                     {
                         currencyValue = 10000;
                     }
@@ -910,8 +1053,8 @@ namespace cs.HoLMod.AddItem
                 
                 // 当前货币状态显示
                 GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-                GUILayout.Label(string.Format("当前铜钱: {0}", FormulaData.GetCoinsNum()), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                GUILayout.Label("当前元宝: " + Mainload.CGNum[1], new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                GUILayout.Label(string.Format(GetText("当前铜钱: {0}"), FormulaData.GetCoinsNum()), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                GUILayout.Label(GetText("当前元宝: ") + Mainload.CGNum[1], new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                 GUILayout.EndVertical();
                 
                 GUILayout.FlexibleSpace();
@@ -937,7 +1080,28 @@ namespace cs.HoLMod.AddItem
                         bool isSelected = (i == selectedIndex);
                         GUIStyle buttonStyle = isSelected ? GUI.skin.toggle : GUI.skin.button;
                         
-                        if (GUILayout.Button(itemList[filteredItemIds[i]].Item1, buttonStyle, new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
+                        // 根据当前语言选择显示的物品名称
+                        string displayName = itemList[filteredItemIds[i]].Item1;
+                        
+                        if (!IsChineseLanguage())
+                        {
+                            // 英文模式下尝试获取英文名称
+                            try
+                            {
+                                // 从AllText.Text_AllProp中查找英文名称
+                                if (AllText.Text_AllProp != null && filteredItemIds[i] < AllText.Text_AllProp.Count)
+                                {
+                                    List<string> itemInfo = AllText.Text_AllProp[filteredItemIds[i]];
+                                    if (itemInfo != null && itemInfo.Count >= 2)
+                                    {
+                                        displayName = itemInfo[1]; // 使用英文名称
+                                    }
+                                }
+                            }
+                            catch { }
+                        }
+                        
+                        if (GUILayout.Button(displayName, buttonStyle, new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
                         {
                             selectedItemId = filteredItemIds[i];
                         }
@@ -945,7 +1109,7 @@ namespace cs.HoLMod.AddItem
                 }
                 else
                 {
-                    GUILayout.Label("未找到匹配的物品", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("未找到匹配的物品"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                 }
                 
                 GUILayout.EndScrollView();
@@ -975,19 +1139,19 @@ namespace cs.HoLMod.AddItem
                 
                 // 地图子模式选择按钮 - 仅在地图模式下显示
                 GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                if (GUILayout.Button("府邸", new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
+                if (GUILayout.Button(GetText("府邸"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
                 {
                     mapSubMode = 0;
                 }
-                if (GUILayout.Button("农庄", new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
+                if (GUILayout.Button(GetText("农庄"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
                 {
                     mapSubMode = 1;
                 }
-                if (GUILayout.Button("封地", new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
+                if (GUILayout.Button(GetText("封地"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
                 {
                     mapSubMode = 2;
                 }
-                if (GUILayout.Button("世家", new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
+                if (GUILayout.Button(GetText("世家"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
                 {
                     mapSubMode = 3;
                 }
@@ -1000,7 +1164,7 @@ namespace cs.HoLMod.AddItem
                 
                 if (mapSubMode == 0)
                 {
-                    GUILayout.Label("府邸子模式", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("府邸子模式"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     
                     // 生成府邸所在郡
                     GUILayout.Space(10f * scaleFactor);
@@ -1066,7 +1230,7 @@ namespace cs.HoLMod.AddItem
                     }
                     else
                     {
-                        GUILayout.Label("请先选择一个郡", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                        GUILayout.Label(GetText("请先选择一个郡"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     }
                     
                     // 显示选择的郡县
@@ -1098,11 +1262,11 @@ namespace cs.HoLMod.AddItem
                         buttonStyle2.fontStyle = FontStyle.Bold;
                     }
                     
-                    if (GUILayout.Button("仅添加府邸", buttonStyle1, new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
+                    if (GUILayout.Button(GetText("仅添加府邸"), buttonStyle1, new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
                     {
                         onlyAddMansion = true;
                     }
-                    if (GUILayout.Button("添加后进入府邸", buttonStyle2, new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
+                    if (GUILayout.Button(GetText("添加后进入府邸"), buttonStyle2, new GUILayoutOption[] { GUILayout.ExpandWidth(true) }))
                     {
                         onlyAddMansion = false;
                     }
@@ -1110,7 +1274,7 @@ namespace cs.HoLMod.AddItem
                 } 
                 else if (mapSubMode == 1)
                 {
-                    GUILayout.Label("农庄子模式", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("农庄子模式"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     
                     // 生成农庄所在郡
                     GUILayout.Space(10f * scaleFactor);
@@ -1176,7 +1340,7 @@ namespace cs.HoLMod.AddItem
                     }
                     else
                     {
-                        GUILayout.Label("请先选择一个郡", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                        GUILayout.Label(GetText("请先选择一个郡"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     }
                     
                     // 显示选择的郡县
@@ -1215,7 +1379,7 @@ namespace cs.HoLMod.AddItem
                 } 
                 else if (mapSubMode == 2)
                 {
-                    GUILayout.Label("封地子模式", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("封地子模式"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     
                     // 生成封地所在郡
                     GUILayout.Space(10f * scaleFactor);
@@ -1258,11 +1422,11 @@ namespace cs.HoLMod.AddItem
                     GUILayout.Label($"当前选择的郡：{displayPrefecture}", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     
                     GUILayout.Space(10f * scaleFactor);
-                    GUILayout.Label("点击下方添加按钮即可解锁选择郡的所属封地", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("点击下方添加按钮即可解锁选择郡的所属封地"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                 } 
                 else if (mapSubMode == 3)
                 {
-                    GUILayout.Label("世家子模式", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                    GUILayout.Label(GetText("世家子模式"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     
                     // 生成世家所在郡
                     GUILayout.Space(10f * scaleFactor);
@@ -1328,7 +1492,7 @@ namespace cs.HoLMod.AddItem
                     }
                     else
                     {
-                        GUILayout.Label("请先选择一个郡", new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                        GUILayout.Label(GetText("请先选择一个郡"), new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                     }
                     
                     // 显示选择的郡县
@@ -1377,7 +1541,7 @@ namespace cs.HoLMod.AddItem
             // 添加按钮
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button(currentMode == 1 ? "添加物品" : "添加", new GUILayoutOption[] { GUILayout.Width(180f * scaleFactor), GUILayout.Height(80f * scaleFactor) }))
+            if (GUILayout.Button(currentMode == 1 ? GetText("添加物品") : GetText("添加"), new GUILayoutOption[] { GUILayout.Width(180f * scaleFactor), GUILayout.Height(80f * scaleFactor) }))
             {
                 AddItemToGame();
             }
@@ -1391,18 +1555,18 @@ namespace cs.HoLMod.AddItem
             GUILayout.BeginVertical();
             
             // 使用说明标题
-            GUILayout.Label("使用说明:", UnityEngine.GUI.skin.box);
+            GUILayout.Label(GetText("使用说明:"), UnityEngine.GUI.skin.box);
             
             // 使用说明
-            GUILayout.Label("1. 请在点击添加前先保存游戏，以便回档");
-            GUILayout.Label("2. 按F2键显示/隐藏窗口");
-            GUILayout.Label("3. 切换模式选择：物品模式/货币模式/话本模式/地图模式");
-            GUILayout.Label("4. 输入部分字符可搜索物品或话本");
-            GUILayout.Label("5. 选择项目并选择或输入数量后点击添加按钮");
+            GUILayout.Label(GetText("1. 请在点击添加前先保存游戏，以便回档"));
+            GUILayout.Label(GetText("2. 按F2键显示/隐藏窗口"));
+            GUILayout.Label(GetText("3. 切换模式选择：物品模式/货币模式/话本模式/地图模式"));
+            GUILayout.Label(GetText("4. 输入部分字符可搜索物品或话本"));
+            GUILayout.Label(GetText("5. 选择项目并选择或输入数量后点击添加按钮"));
             GUILayout.Label("");
             
             // MOD作者及版本号说明
-            GUILayout.Label("Mod作者：AnZhi20");
+            GUILayout.Label(GetText("Mod作者：AnZhi20"));
             GUILayout.Label("Mod版本：2.5.0");
             GUILayout.EndVertical();
             
@@ -1464,7 +1628,7 @@ namespace cs.HoLMod.AddItem
                 // 地图模式下不需要检查数量
                 if (currentMode != 3 && (count <= 0 || count > 1000000))
                 {
-                    statusMessage = "无效的数量，请输入1-1000000范围内的整数";
+                    statusMessage = GetText("无效的数量，请输入1-1000000范围内的整数");
                     Logger.LogError("无效的数量: " + count);
                     return;
                 }
@@ -1487,8 +1651,8 @@ namespace cs.HoLMod.AddItem
                         // 府邸模式
                         if (string.IsNullOrEmpty(selectedPrefecture) || string.IsNullOrEmpty(selectedCounty))
                         {
-                            statusMessage = "请先选择府邸所在的郡县";
-                            Logger.LogError("未选择郡县");
+                            statusMessage = GetText("请先选择府邸所在的郡县");
+                        Logger.LogError(GetText("未选择郡县"));
                             return;
                         }
                         
@@ -1510,8 +1674,8 @@ namespace cs.HoLMod.AddItem
                         
                         if (xianIndex < 0)
                         {
-                            statusMessage = "找不到选择的县";
-                            Logger.LogError("无效的县选择");
+                            statusMessage = GetText("找不到选择的县");
+                        Logger.LogError(GetText("无效的县选择"));
                             return;
                         }
                         
@@ -1710,8 +1874,8 @@ namespace cs.HoLMod.AddItem
                         // 农庄子模式
                         if (string.IsNullOrEmpty(selectedPrefecture) || string.IsNullOrEmpty(selectedCounty))
                         {
-                            statusMessage = "请先选择农庄所在的郡县";
-                            Logger.LogError("未选择郡县");
+                            statusMessage = GetText("请先选择农庄所在的郡县");
+                        Logger.LogError(GetText("未选择郡县"));
                             return;
                         }
                         
@@ -1733,8 +1897,8 @@ namespace cs.HoLMod.AddItem
                         
                         if (xianIndex < 0)
                         {
-                            statusMessage = "找不到选择的县";
-                            Logger.LogError("无效的县选择");
+                            statusMessage = GetText("找不到选择的县");
+                        Logger.LogError(GetText("无效的县选择"));
                             return;
                         }
                         
@@ -1906,13 +2070,13 @@ namespace cs.HoLMod.AddItem
                                                         if (status != "0" && status != "-2")
                                                         {
                                                             // 该处已有农庄属于其它世家
-                                                            statusMessage = "添加失败：该处已有农庄属于【其它世家】";
+                                                            statusMessage = GetText("添加失败：该处已有农庄属于【其它世家】");
                                                             Logger.LogWarning(statusMessage);
                                                         }
                                                         else if (status == "-1")
                                                         {
                                                             // 该处已有农庄属于你
-                                                            statusMessage = "添加失败：该处已有农庄属于【你】";
+                                                            statusMessage = GetText("添加失败：该处已有农庄属于【你】");
                                                             Logger.LogWarning(statusMessage);
                                                         }
                                                         else
@@ -1969,7 +2133,7 @@ namespace cs.HoLMod.AddItem
                         }
                         catch (Exception ex)
                         {
-                            statusMessage = "添加农庄失败：" + ex.Message;
+                            statusMessage = GetText("添加农庄失败：") + ex.Message;
                             Logger.LogError(statusMessage);
                             return;
                         }
@@ -1982,8 +2146,8 @@ namespace cs.HoLMod.AddItem
                         // 封地子模式 - 解锁封地
                         if (string.IsNullOrEmpty(selectedPrefecture))
                         { 
-                            statusMessage = "请先选择要解锁的郡"; 
-                            Logger.LogError("未选择郡"); 
+                            statusMessage = GetText("请先选择要解锁的郡");
+                        Logger.LogError(GetText("未选择郡")); 
                             return; 
                         } 
                         
@@ -1991,7 +2155,7 @@ namespace cs.HoLMod.AddItem
                         int junIndex = selectedJunIndex; 
                         if (junIndex < 0 || junIndex >= JunList.Length) 
                         { 
-                            statusMessage = "无效的郡选择"; 
+                            statusMessage = GetText("无效的郡选择"); 
                             Logger.LogError("无效的郡索引: " + junIndex); 
                             return; 
                         } 
@@ -2076,7 +2240,7 @@ namespace cs.HoLMod.AddItem
                         }
                         catch (Exception ex)
                         {
-                            statusMessage = "解锁封地失败: " + ex.Message;
+                            statusMessage = GetText("解锁封地失败: ") + ex.Message;
                             Logger.LogError(statusMessage);
                             Logger.LogError("错误堆栈: " + ex.StackTrace);
                             return; 
@@ -2088,7 +2252,7 @@ namespace cs.HoLMod.AddItem
                     else if (mapSubMode == 3) 
                     { 
                         // 世家子模式 - 暂不实现，直接提示功能正在开发中
-                        statusMessage = "添加失败：功能正在开发中";
+                        statusMessage = GetText("添加失败：功能正在开发中");
                         Logger.LogWarning(statusMessage);
                         
                         // 显示提示信息
@@ -2100,7 +2264,7 @@ namespace cs.HoLMod.AddItem
                     // 货币模式
                     if (currencyValue <= 0)
                     {
-                        statusMessage = "请输入有效的数值";
+                        statusMessage = GetText("请输入有效的数值");
                         Logger.LogError("无效的数值: " + currencyValue);
                         return;
                     }
@@ -2123,8 +2287,8 @@ namespace cs.HoLMod.AddItem
                         }
                         else
                         {
-                            statusMessage = "获取当前元宝数量失败";
-                            Logger.LogError("获取当前元宝数量失败");
+                            statusMessage = GetText("获取当前元宝数量失败");
+                            Logger.LogError(statusMessage);
                             return;
                         }
                     }
@@ -2136,7 +2300,7 @@ namespace cs.HoLMod.AddItem
             }
             catch (Exception ex)
             {
-                statusMessage = "添加物品失败: " + ex.Message;
+                statusMessage = GetText("添加物品失败: ") + ex.Message;
                 Logger.LogError("添加物品失败: " + ex.Message);
             }
         }
@@ -2149,7 +2313,7 @@ namespace cs.HoLMod.AddItem
                 // 验证物品ID是否有效
                 if (!itemList.ContainsKey(itemId))
                 {
-                    statusMessage = "无效的物品ID";
+                    statusMessage = GetText("无效的物品ID");
                     Logger.LogError(string.Format("无效的物品ID: {0}", itemId));
                     return;
                 }
@@ -2169,7 +2333,7 @@ namespace cs.HoLMod.AddItem
             }
             catch (Exception ex)
             {
-                statusMessage = "添加物品时发生错误: " + ex.Message;
+                statusMessage = GetText("添加物品时发生错误: ") + ex.Message;
                 Logger.LogError(string.Format("添加物品失败: {0}", ex.Message));
             }
         }
@@ -2252,7 +2416,7 @@ namespace cs.HoLMod.AddItem
                 // 验证话本ID是否有效
                 if (!bookList.ContainsKey(bookId))
                 {
-                    statusMessage = "无效的话本ID";
+                    statusMessage = GetText("无效的话本ID");
                     Logger.LogError(string.Format("无效的话本ID: {0}", bookId));
                     return;
                 }
@@ -2273,7 +2437,7 @@ namespace cs.HoLMod.AddItem
             }
             catch (Exception ex)
             {
-                statusMessage = "添加话本时发生错误: " + ex.Message;
+                statusMessage = GetText("添加话本时发生错误: ") + ex.Message;
                 Logger.LogError(string.Format("添加话本失败: {0}", ex.Message));
             }
         }

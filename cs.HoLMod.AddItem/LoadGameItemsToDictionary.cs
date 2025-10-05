@@ -63,7 +63,23 @@ namespace cs.HoLMod.AddItem
 
                         // 添加新物品，分类为"新增物品"
                         itemList.Add(newId, (chineseName, "新增物品"));
-                        UnityEngine.Debug.Log("已添加新物品: " + chineseName + "索引" + newId);
+                        
+                        // 简单的语言判断逻辑
+                        string prefix = "已添加新物品: ";
+                        string indexText = "索引";
+                        try
+                        {
+                            if (UnityEngine.Application.systemLanguage != UnityEngine.SystemLanguage.Chinese &&
+                                UnityEngine.Application.systemLanguage != UnityEngine.SystemLanguage.ChineseSimplified &&
+                                UnityEngine.Application.systemLanguage != UnityEngine.SystemLanguage.ChineseTraditional)
+                            {
+                                prefix = "New item added: ";
+                                indexText = " Index";
+                            }
+                        }
+                        catch { }
+                        
+                        UnityEngine.Debug.Log(prefix + chineseName + indexText + newId);
                     }
                 }
             }

@@ -25,7 +25,7 @@ namespace cs.HoLMod.TaskCheat
                 // 参数校验
                 if (selectedTasks == null)
                 {
-                    TaskCheat.Log?.LogWarning("传入的任务列表为null");
+                    TaskCheat.Log?.LogWarning(LanguageManager.GetText("TaskListIsNull"));
                     return;
                 }
                 
@@ -59,7 +59,7 @@ namespace cs.HoLMod.TaskCheat
                             else if (!string.IsNullOrEmpty(item))
                             {
                                 // 记录转换失败的项
-                                TaskCheat.Log?.LogWarning(string.Format("无法将字符串 \"{0}\" 转换为整数", item));
+                                TaskCheat.Log?.LogWarning(LanguageManager.GetFormattedText("CannotConvertStringToInt", item));
                             }
                         }
                         
@@ -77,18 +77,18 @@ namespace cs.HoLMod.TaskCheat
                     // 记录添加结果
                     if (successfullyAdded > 0)
                     {
-                        TaskCheat.Log?.LogInfo(string.Format("成功添加 {0} 个任务到待添加列表", successfullyAdded));
+                        TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("SuccessfullyAddedToBeAddedList", successfullyAdded));
                     }
                     
                     if (failedConversions > 0)
                     {
-                        TaskCheat.Log?.LogWarning(string.Format("有 {0} 个任务转换失败或无效", failedConversions));
+                        TaskCheat.Log?.LogWarning(LanguageManager.GetFormattedText("TaskConversionFailed", failedConversions));
                     }
                 }
             }
             catch (Exception ex)
             {
-                TaskCheat.Log?.LogError("添加选中任务时出错: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetText("AddSelectedTasksError") + ex.Message);
                 TaskCheat.Log?.LogError(ex.StackTrace);
             }
         }
@@ -141,7 +141,7 @@ namespace cs.HoLMod.TaskCheat
                 if (ToBeAdded != null)
                 {
                     ToBeAdded.Clear();
-                    TaskCheat.Log?.LogInfo("重复添加执行前已清空ToBeAdded列表");
+                    TaskCheat.Log?.LogInfo(LanguageManager.GetText("ClearedToBeAddedListBeforeRepetitiveAdd"));
                 }
                 
                 // 在时间间隔判断后重新加载配置
@@ -185,7 +185,7 @@ namespace cs.HoLMod.TaskCheat
                         {
                             try
                             {
-                                TaskCheat.Log?.LogInfo("开始重新从配置文件读取任务");
+                                TaskCheat.Log?.LogInfo(LanguageManager.GetText("开始重新从配置文件读取任务"));
                                 List<int> selectedTaskIndices = TaskCheatConfig.LoadRepetitiveTaskSelection();
 
                                 if (selectedTaskIndices.Count > 0)
@@ -197,16 +197,16 @@ namespace cs.HoLMod.TaskCheat
                                         ToBeAdded.Add(intTask);
                                     }
 
-                                    TaskCheat.Log?.LogInfo(string.Format("重新从配置文件加载了 {0} 个任务到ToBeAdded列表", ToBeAdded.Count));
+                                    TaskCheat.Log?.LogInfo(LanguageManager.GetFormattedText("ReloadedTasksToBeAddedList", ToBeAdded.Count));
                                 }
                                 else
                                 {
-                                    TaskCheat.Log?.LogInfo("配置文件中没有找到任务，ToBeAdded保持为空");
+                                    TaskCheat.Log?.LogInfo(LanguageManager.GetText("NoTasksFoundInConfig"));
                                 }
                             }
                             catch (Exception ex)
                             {
-                                TaskCheat.Log?.LogError("重新从配置文件读取任务时出错: " + ex.Message);
+                                TaskCheat.Log?.LogError(LanguageManager.GetText("ReloadTasksFromConfigError") + ex.Message);
                                 TaskCheat.Log?.LogError(ex.StackTrace);
                             }
                         }
@@ -251,7 +251,7 @@ namespace cs.HoLMod.TaskCheat
                     // 加载当前场景并用|分割
                     string[] arraycheck = null;
                     string SceneClass = null;
-                    
+                     
                     // 安全地获取场景信息
                     if (!string.IsNullOrEmpty(Mainload.SceneID))
                     {
@@ -266,22 +266,22 @@ namespace cs.HoLMod.TaskCheat
                     if (TaskCheat.Instance != null && !string.IsNullOrEmpty(SceneClass))
                     {
                         AddTaskHandler.AddTasksToCurrent(stringTasks);
-                        TaskCheat.Log?.LogInfo("成功执行任务添加操作");
+                        TaskCheat.Log?.LogInfo(LanguageManager.GetText("SuccessfullyExecutedTaskAdd"));
                     }
                     else
                     {
-                        TaskCheat.Log?.LogWarning("无法添加任务: TaskCheat实例不存在或场景类型无效");
+                        TaskCheat.Log?.LogWarning(LanguageManager.GetText("CannotAddTaskInstanceOrSceneInvalid"));
                     }
                 }
                 else
                 {
-                    TaskCheat.Log?.LogInfo("ToBeAdded列表为空，无需添加任务");
+                    TaskCheat.Log?.LogInfo(LanguageManager.GetText("ToBeAddedListEmpty"));
                 }
             }
             catch (Exception ex)
             {
                 // 记录异常信息
-                TaskCheat.Log?.LogError("TaskAdd方法执行异常: " + ex.Message);
+                TaskCheat.Log?.LogError(LanguageManager.GetText("TaskAddMethodException") + ex.Message);
                 TaskCheat.Log?.LogError(ex.StackTrace);
             }
             finally
@@ -290,7 +290,7 @@ namespace cs.HoLMod.TaskCheat
                 if (ToBeAdded != null)
                 {
                     ToBeAdded.Clear();
-                    TaskCheat.Log?.LogInfo("每次重复添加执行结束后已清空ToBeAdded列表");
+                    TaskCheat.Log?.LogInfo(LanguageManager.GetText("ClearedToBeAddedListAfterRepetitiveAdd"));
                 }
                 
                 // 清空临时变量
