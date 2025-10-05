@@ -10,15 +10,16 @@ using UnityEngine;
 namespace MultifunctionalCheat
 {
     
-    [BepInPlugin("cs.HoLMod.MultifunctionalCheat.AnZhi20", "HoLMod.MultifunctionalCheat", "1.1.0")]
+    [BepInPlugin("cs.HoLMod.MultifunctionalCheat.AnZhi20", "HoLMod.MultifunctionalCheat", "1.2.0")]
     public class PluginMain : BaseUnityPlugin
     {
         // 当前插件版本
-        private const string CURRENT_VERSION = "1.1.0"; // 与BepInPlugin属性中定义的版本保持一致
+        private const string CURRENT_VERSION = "1.2.0"; // 与BepInPlugin属性中定义的版本保持一致
         
         private void Awake()
         {
-            Logger.LogInfo("多功能修改器已加载！");
+            Logger.LogInfo("多功能修改器已加载！当前版本：" + CURRENT_VERSION);
+            Logger.LogInfo("The multifunctional modifier has been loaded! Current version:" + CURRENT_VERSION);
             
             // 配置文件路径
             string configFilePath = Path.Combine(Paths.ConfigPath, "cs.HoLMod.MultifunctionalCheat.AnZhi20.cfg");
@@ -50,8 +51,10 @@ namespace MultifunctionalCheat
                     if (isVersionUpdated)
                     {
                         Logger.LogInfo($"检测到插件版本更新至 {CURRENT_VERSION}，正在删除旧的配置文件...");
+                        Logger.LogInfo($"Detected plugin version update to {CURRENT_VERSION}, deleting old configuration file...");
                         File.Delete(configFilePath);
                         Logger.LogInfo("旧配置文件已成功删除。");
+                        Logger.LogInfo("Old configuration file has been successfully deleted.");
                     }
                 }
             }
@@ -61,13 +64,13 @@ namespace MultifunctionalCheat
             }
             
             // 配置游戏倍率（无论是否删除配置文件都会执行，确保配置项存在）
-            PluginMain.城中可招门客上限倍数 = base.Config.Bind<int>("倍率调整", "城中可招门客上限倍数", 1, "城中可招募门客的数量=家族等级*2*城中可招门客上限倍数，填1为不修改");
-            PluginMain.城中可建民居上限倍数 = base.Config.Bind<int>("倍率调整", "城中可建民居上限倍数", 1, "所有城中可购买民居数量总和=家族等级*城中可建民居上限倍数，填1为不修改");
-            PluginMain.城中可建商铺上限倍数 = base.Config.Bind<int>("倍率调整", "城中可建商铺上限倍数", 1, "所有城中可建造商铺数量总和=家族等级*城中可建商铺上限倍数，填1为不修改");
-            PluginMain.全角色体力上限倍数 = base.Config.Bind<int>("倍率调整", "全角色体力上限倍数", 1, "全角色体力上限=默认上限*全角色体力上限倍数，填1为不修改");
-            PluginMain.城中商铺兑换元宝上限 = base.Config.Bind<int>("倍率调整", "城中商铺兑换元宝上限倍数", 1, "所有城中每个商铺可兑换元宝上限=钱庄等级*10*城中商铺兑换元宝上限倍数，填1为不修改");
-            PluginMain.科举人数上限 = base.Config.Bind<int>("倍率调整", "科举人数上限倍数", 1, "科举可选人数上限=家族等级*科举人数上限倍数，填1为不修改");
-            PluginMain.最大子嗣上限 = base.Config.Bind<int>("倍率调整", "最大子嗣上限倍数", 1, "每个女性可以生的子嗣上限=1（或2）*最大子嗣上限倍数，填1为不修改");
+            PluginMain.城中可招门客上限倍数 = base.Config.Bind<int>("倍率调整（Magnification）", "城中可招门客上限倍数（CityMaxRecruitableCustomersMultiplier）", 1, "城中可招募门客的数量=家族等级*2*城中可招门客上限倍数，填1为不修改（The number of potential recruits in the city = family level * 2 * CityMaxRecruitableCustomersMultiplier , default: 1）");
+            PluginMain.城中可建民居上限倍数 = base.Config.Bind<int>("倍率调整（Magnification）", "城中可建民居上限倍数（CityMaxBuildableHousesMultiplier）", 1, "所有城中可购买民居数量总和=家族等级*城中可建民居上限倍数，填1为不修改（The total number of potential buildings in the city = family level * CityMaxBuildableHousesMultiplier , default: 1）");
+            PluginMain.城中可建商铺上限倍数 = base.Config.Bind<int>("倍率调整（Magnification）", "城中可建商铺上限倍数（CityMaxBuildableShopsMultiplier）", 1, "所有城中可建造商铺数量总和=家族等级*城中可建商铺上限倍数，填1为不修改（The total number of potential shops in the city = family level * CityMaxBuildableShopsMultiplier , default: 1）");
+            PluginMain.全角色体力上限倍数 = base.Config.Bind<int>("倍率调整（Magnification）", "全角色体力上限倍数（AllCharactersMaxHealthMultiplier）", 1, "全角色体力上限=默认上限*全角色体力上限倍数，填1为不修改（The maximum health of all characters = default health * AllCharactersMaxHealthMultiplier , default: 1）");
+            PluginMain.城中商铺兑换元宝上限 = base.Config.Bind<int>("倍率调整（Magnification）", "城中商铺兑换元宝上限倍数（CityShopExchangeGoldMultiplier）", 1, "所有城中每个商铺可兑换元宝上限=钱庄等级*10*城中商铺兑换元宝上限倍数，填1为不修改（The maximum gold exchange per shop in the city = bank level * 10 * CityShopExchangeGoldMultiplier , default: 1）");
+            PluginMain.科举人数上限 = base.Config.Bind<int>("倍率调整（Magnification）", "科举人数上限倍数（ExaminationNumMaxMultiplier）", 1, "科举可选人数上限=家族等级*科举人数上限倍数，填1为不修改（The maximum number of candidates for the exam = family level * ExaminationNumMaxMultiplier , default: 1）");
+            PluginMain.最大子嗣上限 = base.Config.Bind<int>("倍率调整（Magnification）", "最大子嗣上限倍数（MaxOffspringNumMultiplier）", 1, "每个女性可以生的子嗣上限=1（或2）*最大子嗣上限倍数，填1为不修改（The maximum number of children that each woman can have = 1（or 2） * MaxOffspringNumMultiplier , default: 1）");
             
             // 保存当前版本号
             base.Config.Bind("内部配置（Internal Settings）", "已加载版本（Loaded Version）", CURRENT_VERSION, "用于跟踪插件版本，请勿手动修改");
