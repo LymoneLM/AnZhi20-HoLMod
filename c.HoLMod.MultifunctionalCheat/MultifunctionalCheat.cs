@@ -10,11 +10,11 @@ using UnityEngine;
 namespace MultifunctionalCheat
 {
     
-    [BepInPlugin("cs.HoLMod.MultifunctionalCheat.AnZhi20", "HoLMod.MultifunctionalCheat", "1.2.0")]
+    [BepInPlugin("cs.HoLMod.MultifunctionalCheat.AnZhi20", "HoLMod.MultifunctionalCheat", "1.3.0")]
     public class PluginMain : BaseUnityPlugin
     {
         // 当前插件版本
-        private const string CURRENT_VERSION = "1.2.0"; // 与BepInPlugin属性中定义的版本保持一致
+        private const string CURRENT_VERSION = "1.3.0"; // 与BepInPlugin属性中定义的版本保持一致
         
         private void Awake()
         {
@@ -71,6 +71,10 @@ namespace MultifunctionalCheat
             PluginMain.城中商铺兑换元宝上限 = base.Config.Bind<int>("倍率调整（Magnification）", "城中商铺兑换元宝上限倍数（CityShopExchangeGoldMultiplier）", 1, "所有城中每个商铺可兑换元宝上限=钱庄等级*10*城中商铺兑换元宝上限倍数，填1为不修改（The maximum gold exchange per shop in the city = bank level * 10 * CityShopExchangeGoldMultiplier , default: 1）");
             PluginMain.科举人数上限 = base.Config.Bind<int>("倍率调整（Magnification）", "科举人数上限倍数（ExaminationNumMaxMultiplier）", 1, "科举可选人数上限=家族等级*科举人数上限倍数，填1为不修改（The maximum number of candidates for the exam = family level * ExaminationNumMaxMultiplier , default: 1）");
             PluginMain.最大子嗣上限 = base.Config.Bind<int>("倍率调整（Magnification）", "最大子嗣上限倍数（MaxOffspringNumMultiplier）", 1, "每个女性可以生的子嗣上限=1（或2）*最大子嗣上限倍数，填1为不修改（The maximum number of children that each woman can have = 1（or 2） * MaxOffspringNumMultiplier , default: 1）");
+            
+            // 生育年龄相关配置
+            PluginMain.最小生育年龄 = base.Config.Bind<int>("怀孕年龄（Pregnancy Age）", "最小生育年龄（Min age）", 18, "女性可怀孕的最小年龄（The minimum age at which women can become pregnant）");
+            PluginMain.最大生育年龄 = base.Config.Bind<int>("怀孕年龄（Pregnancy Age）", "最大生育年龄（Max age）", 40, "女性可怀孕的最大年龄（The maximum age at which women can become pregnant）");
             
             // 保存当前版本号
             base.Config.Bind("内部配置（Internal Settings）", "已加载版本（Loaded Version）", CURRENT_VERSION, "用于跟踪插件版本，请勿手动修改");
@@ -191,6 +195,12 @@ namespace MultifunctionalCheat
             return false;
         }
 
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Mainload), "LoadData")]
+        public static void UpdatePregnancyAge()
+        {
+            Mainload.OldShengYu = new List<int> { PluginMain.最小生育年龄.Value, PluginMain.最大生育年龄.Value };
+        }
         
         public static ConfigEntry<int> 城中可招门客上限倍数;
         public static ConfigEntry<int> 城中可建民居上限倍数;
@@ -199,6 +209,9 @@ namespace MultifunctionalCheat
         public static ConfigEntry<int> 城中商铺兑换元宝上限;
         public static ConfigEntry<int> 科举人数上限;
         public static ConfigEntry<int> 最大子嗣上限;
-       
+        public static ConfigEntry<int> 最小生育年龄;
+        public static ConfigEntry<int> 最大生育年龄;
+        
+        
     }
 }
