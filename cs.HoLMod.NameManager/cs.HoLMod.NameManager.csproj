@@ -345,6 +345,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExistingNames.cs" />
     <Compile Include="FamilyName.cs" />
     <Compile Include="FemaleName.cs" />
     <Compile Include="LanguageManager.cs" />
