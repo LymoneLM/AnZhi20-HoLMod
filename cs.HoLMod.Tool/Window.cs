@@ -8,29 +8,39 @@ namespace cs.HoLMod.Tool
     public class Window : MonoBehaviour
     {
         // 窗口位置和大小设置
-        private Rect windowRect = new Rect(20, 20, 1200, 600);
+        private Rect windowRect = new Rect(20, 20, 1400, 600);
         private bool windowVisible = false;
 
         // 每列的宽度
-        private int columnWidth = 280;
+        private int columnWidth = 260;
         private int columnSpacing = 20;
 
         // 输入缓存，用于存储用户在修改框中的输入
         private Dictionary<string, string> inputCache = new Dictionary<string, string>();
         
         // 存储每列的滚动位置
-        private Vector2[] scrollPositions = new Vector2[4];
+        private Vector2[] scrollPositions = new Vector2[5];
 
         // 存储每一级的选中路径
         private string selectedPath1 = null;
         private string selectedPath2 = null;
         private string selectedPath3 = null;
         private string selectedPath4 = null;
+        private string selectedPath5 = null;
+
+        // 存储Mainload中的所有数据数组
+        private List<string> dataArrayNames = new List<string>();
+        
+        // 标记是否已添加列标题的语言条目
+        private bool columnTitlesAdded = false;
 
         private void Start()
         {
             // 添加热键来切换窗口显示
             Debug.Log("cs.HoLMod.Tool: 按Tab键打开/关闭数据编辑器");
+            
+            // 初始化数据数组名称
+            InitializeDataArrayNames();
         }
 
         private void Update()
@@ -46,479 +56,405 @@ namespace cs.HoLMod.Tool
         {
             if (windowVisible)
             {
-                windowRect = GUI.Window(0, windowRect, DrawWindow, "数据编辑器");
+                windowRect = GUI.Window(0, windowRect, DrawWindow, LanguageManager.Instance.GetText("windowTitle"));
+            }
+        }
+
+        private void InitializeDataArrayNames()
+        {
+            // 获取Main类中的_dataArrays字典内容
+            Type mainType = typeof(Main);
+            FieldInfo dataArraysField = mainType.GetField("_dataArrays", BindingFlags.NonPublic | BindingFlags.Static);
+            
+            if (dataArraysField != null)
+            {
+                Dictionary<string, object> dataArrays = dataArraysField.GetValue(null) as Dictionary<string, object>;
+                if (dataArrays != null)
+                {
+                    dataArrayNames = new List<string>(dataArrays.Keys);
+                }
             }
         }
 
         private void DrawWindow(int windowID)
         {
-            // 创建水平布局来放置四列窗口
+            // 语言切换按钮
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button(LanguageManager.Instance.GetText("chinese"), GUILayout.Width(80))){
+                LanguageManager.Instance.CurrentLanguage = LanguageManager.Language.Chinese;
+            }
+            if (GUILayout.Button(LanguageManager.Instance.GetText("english"), GUILayout.Width(80))){
+                LanguageManager.Instance.CurrentLanguage = LanguageManager.Language.English;
+            }
+            GUILayout.EndHorizontal();
+            
+            // 创建水平布局来放置五列窗口
             GUILayout.BeginHorizontal();
 
-            // 第一列：显示Mainload.XXX[i]
-            DrawColumn(0, selectedPath1, (path) => 
+            // 第一列：加载Mainload中的所有数据数组
+            DrawColumn(0, selectedPath1, (indexStr) => 
             {
-                selectedPath1 = path;
-                selectedPath2 = null;
-                selectedPath3 = null;
-                selectedPath4 = null;
+                if (int.TryParse(indexStr, out int index) && index >= 0 && index < dataArrayNames.Count)
+                {
+                    selectedPath1 = dataArrayNames[index]; // 使用实际的键名而非索引
+                    selectedPath2 = null;
+                    selectedPath3 = null;
+                    selectedPath4 = null;
+                    selectedPath5 = null;
+                }
             });
 
-            // 第二列：根据第一列的选择显示Mainload.XXX[i][j]
+            // 第二列：根据第一列的选择加载数据
             if (!string.IsNullOrEmpty(selectedPath1))
             {
-                object firstLevelData = GetDataByPath(selectedPath1);
-                // 只有当第一列加载的元素是数组时才加载第二列
-                if (firstLevelData is IList<object> && ((IList<object>)firstLevelData).Count > 0)
+                DrawColumn(1, selectedPath2, (path) => 
                 {
-                    DrawColumn(1, selectedPath2, (path) => 
-                    {
-                        selectedPath2 = path;
-                        selectedPath3 = null;
-                        selectedPath4 = null;
-                    }, selectedPath1);
-                }
-                else
-                {
-                    DrawEmptyColumn("无可用数据");
-                }
-            }
-            else
-            {
-                DrawEmptyColumn("请在左侧选择一个项目");
+                    selectedPath2 = path;
+                    selectedPath3 = null;
+                    selectedPath4 = null;
+                    selectedPath5 = null;
+                });
             }
 
-            // 第三列：根据第二列的选择显示Mainload.XXX[i][j][k]
-            if (!string.IsNullOrEmpty(selectedPath2))
+            // 第三列：根据第二列的选择加载数据
+            if (!string.IsNullOrEmpty(selectedPath1) && !string.IsNullOrEmpty(selectedPath2))
             {
                 DrawColumn(2, selectedPath3, (path) => 
                 {
                     selectedPath3 = path;
                     selectedPath4 = null;
-                }, selectedPath2);
-            }
-            else
-            {
-                DrawEmptyColumn("请在左侧选择一个项目");
+                    selectedPath5 = null;
+                });
             }
 
-            // 第四列：根据第三列的选择显示Mainload.XXX[i][j][k][l]
-            if (!string.IsNullOrEmpty(selectedPath3))
+            // 第四列：根据第三列的选择加载数据
+            if (!string.IsNullOrEmpty(selectedPath1) && !string.IsNullOrEmpty(selectedPath2) && !string.IsNullOrEmpty(selectedPath3))
             {
                 DrawColumn(3, selectedPath4, (path) => 
                 {
                     selectedPath4 = path;
-                }, selectedPath3);
+                    selectedPath5 = null;
+                });
             }
-            else
+
+            // 第五列：根据第四列的选择加载数据
+            if (!string.IsNullOrEmpty(selectedPath1) && !string.IsNullOrEmpty(selectedPath2) && !string.IsNullOrEmpty(selectedPath3) && !string.IsNullOrEmpty(selectedPath4))
             {
-                DrawEmptyColumn("请在左侧选择一个项目");
+                DrawColumn(4, selectedPath5, (path) => 
+                {
+                    selectedPath5 = path;
+                });
             }
 
             GUILayout.EndHorizontal();
-
+            
             // 允许窗口拖动
             GUI.DragWindow();
         }
 
-        // 绘制空列
-        private void DrawEmptyColumn(string message)
+        private void DrawColumn(int columnIndex, string selectedPath, Action<string> onSelectPath)
         {
-            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(columnWidth), GUILayout.ExpandHeight(true));
-            GUILayout.Label(message);
-            GUILayout.EndVertical();
-            GUILayout.Space(columnSpacing);
-        }
-
-        // 绘制单个列
-        private void DrawColumn(int columnIndex, string currentPath, Action<string> onPathSelected, string dataPath = null)
-        {
-            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(columnWidth), GUILayout.ExpandHeight(true));
-
-            if (columnIndex == 0)
-            {
-                // 第一列显示Mainload.XXX数组
-                GUILayout.Label("选择顶层数据", GUI.skin.label);
-                GUILayout.Space(5);
-                DrawMainLoadArrays();
+            GUILayout.BeginVertical(GUILayout.Width(columnWidth));
+            
+            // 显示列标题
+            string columnTitle = LanguageManager.Instance.GetText("column") + " " + (columnIndex + 1);
+            GUILayout.Label(columnTitle, GUILayout.Height(20));
+            
+            // 添加语言条目（如果还不存在）
+            if (!columnTitlesAdded) {
+                LanguageManager.Instance.AddLanguageEntry("column", "列", "Column");
+                columnTitlesAdded = true;
             }
-            else if (!string.IsNullOrEmpty(dataPath))
+            
+            // 添加滚动视图
+            scrollPositions[columnIndex] = GUILayout.BeginScrollView(scrollPositions[columnIndex]);
+            
+            try
             {
-                // 其他列显示选定的数据内容
-                object data = GetDataByPath(dataPath);
-                if (data != null)
+                // 如果是第一列且数据数组名称为空，尝试重新初始化
+                if (columnIndex == 0 && dataArrayNames.Count == 0)
                 {
-                    if (data is IList<object> arrayData)
+                    Debug.Log("重新初始化数据数组名称");
+                    InitializeDataArrayNames();
+                }
+                
+                // 根据列索引和选择的路径获取数据
+                object data = GetDataByPath(columnIndex, selectedPath);
+                
+                // 显示数据
+                if (data == null)
+                {
+                    // 显示加载为空
+                    GUILayout.Label(LanguageManager.Instance.GetText("emptyArray"));
+                }
+                else if (IsArrayOrList(data))
+                {
+                    // 显示为N个按钮
+                    int count = GetArrayCount(data);
+                    for (int i = 0; i < count; i++)
                     {
-                        if (arrayData.Count == 0)
+                        string buttonText = GetObjectPreview(GetArrayElement(data, i));
+                        if (GUILayout.Button(buttonText))
                         {
-                            GUILayout.Label("空数组");
+                            onSelectPath(i.ToString());
                         }
-                        else
-                        {
-                            DrawArrayItems(arrayData, dataPath, currentPath, onPathSelected, columnIndex);
-                        }
-                    }
-                    else
-                    {
-                        // 如果是基本类型，显示修改界面
-                        DrawValueEditor(dataPath, data);
                     }
                 }
                 else
                 {
-                    GUILayout.Label("数据为空");
-                }
-            }
-
-            GUILayout.EndVertical();
-            GUILayout.Space(columnSpacing);
-        }
-        
-        // 获取Mainload中的数据
-        private object GetMainLoadData()
-        {
-            try
-            {
-                // 尝试获取Mainload对象
-                Type mainType = typeof(Main);
-                FieldInfo mainLoadField = mainType.GetField("Mainload", BindingFlags.Public | BindingFlags.Static);
-                if (mainLoadField != null)
-                {
-                    return mainLoadField.GetValue(null);
-                }
-                
-                // 如果不存在Mainload静态字段，尝试获取Main实例中的Mainload属性
-                Main mainInstance = Main.Instance;
-                if (mainInstance != null)
-                {
-                    PropertyInfo mainLoadProperty = mainType.GetProperty("Mainload", BindingFlags.Public | BindingFlags.Instance);
-                    if (mainLoadProperty != null)
+                    // 显示为三列：原始值、修改文本框、修改按钮
+                    GUILayout.BeginHorizontal();
+                    
+                    // 原始值
+                    GUILayout.Label(LanguageManager.Instance.GetText("originalValue") + ": ", GUILayout.Width(80));
+                    GUILayout.Label(data.ToString(), GUILayout.Width(80));
+                    
+                    // 修改文本框
+                    string cacheKey = columnIndex + ":" + selectedPath;
+                    if (!inputCache.ContainsKey(cacheKey))
                     {
-                        return mainLoadProperty.GetValue(mainInstance, null);
+                        inputCache[cacheKey] = data.ToString();
+                    }
+                    inputCache[cacheKey] = GUILayout.TextField(inputCache[cacheKey], GUILayout.Width(80));
+                    
+                    // 修改按钮
+                    if (GUILayout.Button(LanguageManager.Instance.GetText("modify"), GUILayout.Width(60)))
+                    {
+                        // 尝试转换输入值并修改数据
+                        object newValue = ConvertInputValue(inputCache[cacheKey], data);
+                        if (newValue != null)
+                        {
+                            bool success = UpdateDataByPath(columnIndex, selectedPath, newValue);
+                            if (success)
+                            {
+                                Debug.Log("数据修改成功");
+                            }
+                        }
                     }
                     
-                    // 尝试获取字段
-                    FieldInfo instanceField = mainType.GetField("Mainload", BindingFlags.Public | BindingFlags.Instance);
-                    if (instanceField != null)
-                    {
-                        return instanceField.GetValue(mainInstance);
-                    }
+                    GUILayout.EndHorizontal();
                 }
             }
             catch (Exception e)
             {
-                Debug.LogError("获取Mainload数据失败: " + e.Message);
+                GUILayout.Label("错误: " + e.Message);
+            }
+            
+            GUILayout.EndScrollView();
+            GUILayout.EndVertical();
+        }
+
+        private object GetDataByPath(int columnIndex, string selectedPath)
+        {
+            // 第一列：显示所有数据数组名称
+            if (columnIndex == 0)
+            {
+                return dataArrayNames;
+            }
+            
+            // 第二列及以后：根据选择的路径获取数据
+            if (string.IsNullOrEmpty(selectedPath1))
+                return null;
+            
+            // 获取Main类中的_dataArrays字典
+            Type mainType = typeof(Main);
+            FieldInfo dataArraysField = mainType.GetField("_dataArrays", BindingFlags.NonPublic | BindingFlags.Static);
+            if (dataArraysField == null)
+                return null;
+            
+            Dictionary<string, object> dataArrays = dataArraysField.GetValue(null) as Dictionary<string, object>;
+            if (dataArrays == null || !dataArrays.ContainsKey(selectedPath1))
+                return null;
+            
+            // 直接从Mainload获取最新数据而非使用缓存
+            Type mainloadType = typeof(Mainload);
+            PropertyInfo propInfo = mainloadType.GetProperty(selectedPath1, BindingFlags.Public | BindingFlags.Static);
+            if (propInfo == null) return null;
+            object currentData = propInfo.GetValue(null);
+            
+            // 第二列 - 总是返回完整数组，不处理selectedPath参数
+            if (columnIndex == 1)
+            {
+                return currentData;
+            }
+            // 第三列
+            else if (columnIndex == 2 && !string.IsNullOrEmpty(selectedPath2))
+            {
+                int index2;
+                if (!int.TryParse(selectedPath2, out index2))
+                    return null;
+                
+                object level2Data = GetArrayElement(currentData, index2);
+                if (string.IsNullOrEmpty(selectedPath))
+                    return level2Data;
+                
+                int index3;
+                if (int.TryParse(selectedPath, out index3))
+                {
+                    return GetArrayElement(level2Data, index3);
+                }
+            }
+            // 第四列
+            else if (columnIndex == 3 && !string.IsNullOrEmpty(selectedPath2) && !string.IsNullOrEmpty(selectedPath3))
+            {
+                int index2;
+                int index3;
+                if (!int.TryParse(selectedPath2, out index2) || !int.TryParse(selectedPath3, out index3))
+                    return null;
+                
+                object level2Data = GetArrayElement(currentData, index2);
+                object level3Data = GetArrayElement(level2Data, index3);
+                
+                if (string.IsNullOrEmpty(selectedPath))
+                    return level3Data;
+                
+                int index4;
+                if (int.TryParse(selectedPath, out index4))
+                {
+                    return GetArrayElement(level3Data, index4);
+                }
+            }
+            // 第五列
+            else if (columnIndex == 4 && !string.IsNullOrEmpty(selectedPath2) && !string.IsNullOrEmpty(selectedPath3) && !string.IsNullOrEmpty(selectedPath4))
+            {
+                int index2;
+                int index3;
+                int index4;
+                if (!int.TryParse(selectedPath2, out index2) || !int.TryParse(selectedPath3, out index3) || !int.TryParse(selectedPath4, out index4))
+                    return null;
+                
+                object level2Data = GetArrayElement(currentData, index2);
+                object level3Data = GetArrayElement(level2Data, index3);
+                object level4Data = GetArrayElement(level3Data, index4);
+                
+                if (string.IsNullOrEmpty(selectedPath))
+                    return level4Data;
+                
+                int index5;
+                if (int.TryParse(selectedPath, out index5))
+                {
+                    return GetArrayElement(level4Data, index5);
+                }
             }
             
             return null;
         }
 
-        // 根据路径获取数据
-        private object GetDataByPath(string path)
+        private bool UpdateDataByPath(int columnIndex, string selectedPath, object newValue)
         {
-            try
+            // 获取Main类中的_dataArrays字典
+            Type mainType = typeof(Main);
+            FieldInfo dataArraysField = mainType.GetField("_dataArrays", BindingFlags.NonPublic | BindingFlags.Static);
+            if (dataArraysField == null)
+                return false;
+            
+            Dictionary<string, object> dataArrays = dataArraysField.GetValue(null) as Dictionary<string, object>;
+            if (dataArrays == null || !dataArrays.ContainsKey(selectedPath1))
+                return false;
+            
+            object currentData = dataArrays[selectedPath1];
+            
+            // 第二列
+            if (columnIndex == 1 && !string.IsNullOrEmpty(selectedPath) && int.TryParse(selectedPath, out int index))
             {
-                // 从路径解析各级索引
-                string[] parts = path.Split('.');
-                object currentData = GetMainLoadData();
-                
-                // 跳过第一个部分("Mainload")
-                for (int i = 1; i < parts.Length; i++)
-                {
-                    if (currentData == null)
-                        return null;
-                    
-                    if (int.TryParse(parts[i], out int index))
-                    {
-                        // 尝试作为数组访问
-                        if (currentData is IList<object> list)
-                        {
-                            if (index >= 0 && index < list.Count)
-                            {
-                                currentData = list[index];
-                            }
-                            else
-                            {
-                                return null;
-                            }
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    }
-                    else
-                    {
-                        // 尝试作为属性或字段访问
-                        Type type = currentData.GetType();
-                        PropertyInfo property = type.GetProperty(parts[i]);
-                        if (property != null)
-                        {
-                            currentData = property.GetValue(currentData, null);
-                        }
-                        else
-                        {
-                            FieldInfo field = type.GetField(parts[i]);
-                            if (field != null)
-                            {
-                                currentData = field.GetValue(currentData);
-                            }
-                            else
-                            {
-                                return null;
-                            }
-                        }
-                    }
-                }
-                
-                return currentData;
+                return SetArrayElement(currentData, index, newValue);
             }
-            catch (Exception e)
+            // 第三列
+            else if (columnIndex == 2 && !string.IsNullOrEmpty(selectedPath2) && !string.IsNullOrEmpty(selectedPath) &&
+                     int.TryParse(selectedPath2, out int index2) && int.TryParse(selectedPath, out int index3))
             {
-                Debug.LogError("根据路径获取数据失败: " + e.Message);
+                object level2Data = GetArrayElement(currentData, index2);
+                return SetArrayElement(level2Data, index3, newValue);
+            }
+            // 第四列
+            else if (columnIndex == 3 && !string.IsNullOrEmpty(selectedPath2) && !string.IsNullOrEmpty(selectedPath3) && !string.IsNullOrEmpty(selectedPath) &&
+                     int.TryParse(selectedPath2, out index2) && int.TryParse(selectedPath3, out index3) && int.TryParse(selectedPath, out int index4))
+            {
+                object level2Data = GetArrayElement(currentData, index2);
+                object level3Data = GetArrayElement(level2Data, index3);
+                return SetArrayElement(level3Data, index4, newValue);
+            }
+            // 第五列
+            else if (columnIndex == 4 && !string.IsNullOrEmpty(selectedPath2) && !string.IsNullOrEmpty(selectedPath3) && !string.IsNullOrEmpty(selectedPath4) && !string.IsNullOrEmpty(selectedPath) &&
+                     int.TryParse(selectedPath2, out index2) && int.TryParse(selectedPath3, out index3) && int.TryParse(selectedPath4, out index4) && int.TryParse(selectedPath, out int index5))
+            {
+                object level2Data = GetArrayElement(currentData, index2);
+                object level3Data = GetArrayElement(level2Data, index3);
+                object level4Data = GetArrayElement(level3Data, index4);
+                return SetArrayElement(level4Data, index5, newValue);
+            }
+            
+            return false;
+        }
+
+        // 检查对象是否为数组或列表（根据用户要求简化，只检查是否为数组）
+        private bool IsArrayOrList(object obj)
+        {
+            if (obj == null)
+                return false;
+            
+            // 根据用户要求：Mainload.XXX必定为数组，只需要检查是否为数组
+            return obj is Array || obj is System.Collections.IList;
+        }
+
+        // 获取数组或列表的元素数量（根据用户要求简化）
+        private int GetArrayCount(object array)
+        {
+            if (array == null)
+                return 0;
+            
+            // 根据用户要求：Mainload.XXX必定为数组
+            if (array is Array arr)
+                return arr.Length;
+            else if (array is System.Collections.IList list)
+                return list.Count;
+            
+            return 0;
+        }
+
+        // 获取数组或列表的指定索引元素（根据用户要求简化）
+        private object GetArrayElement(object array, int index)
+        {
+            if (array == null || index < 0)
                 return null;
-            }
-        }
-
-        // 绘制Mainload中的顶层数组
-        private void DrawMainLoadArrays()
-        {
-            scrollPositions[0] = GUILayout.BeginScrollView(scrollPositions[0], false, true, GUILayout.ExpandHeight(true));
-
-            object mainLoadData = GetMainLoadData();
-            if (mainLoadData != null)
-            {
-                Type mainLoadType = mainLoadData.GetType();
-                
-                // 获取所有公共属性和字段
-                PropertyInfo[] properties = mainLoadType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-                FieldInfo[] fields = mainLoadType.GetFields(BindingFlags.Public | BindingFlags.Instance);
-                
-                // 先处理属性
-                foreach (PropertyInfo property in properties)
-                {
-                    if (GUILayout.Button(property.Name, GUILayout.Height(25)))
-                    {
-                        selectedPath1 = "Mainload." + property.Name;
-                        selectedPath2 = null;
-                        selectedPath3 = null;
-                        selectedPath4 = null;
-                    }
-                }
-                
-                // 再处理字段
-                foreach (FieldInfo field in fields)
-                {
-                    if (GUILayout.Button(field.Name, GUILayout.Height(25)))
-                    {
-                        selectedPath1 = "Mainload." + field.Name;
-                        selectedPath2 = null;
-                        selectedPath3 = null;
-                        selectedPath4 = null;
-                    }
-                }
-            }
-            else
-            {
-                GUILayout.Label("无法获取Mainload数据");
-            }
-
-            GUILayout.EndScrollView();
-        }
-
-        // 绘制数组中的项目
-        private void DrawArrayItems(IList<object> array, string basePath, string currentPath, Action<string> onPathSelected, int columnIndex)
-        {
-            scrollPositions[columnIndex] = GUILayout.BeginScrollView(scrollPositions[columnIndex], false, true, GUILayout.ExpandHeight(true));
-
-            for (int i = 0; i < array.Count; i++)
-            {
-                string itemPath = $"{basePath}.{i}";
-                object item = array[i];
-
-                string buttonText = item is IList<object> ? 
-                    $"[{i}] 嵌套数组 ({((IList<object>)item).Count} 项)" : 
-                    $"[{i}] {GetObjectPreview(item)}";
-
-                if (GUILayout.Button(buttonText, GUILayout.Height(25)))
-                {
-                    if (onPathSelected != null)
-                    {
-                        onPathSelected(itemPath);
-                    }
-                }
-            }
-
-            GUILayout.EndScrollView();
-        }
-
-        // 绘制值编辑器，用于修改基本类型的值
-        private void DrawValueEditor(string dataPath, object value)
-        {
-            GUILayout.Label("原始值", GUI.skin.label);
-            GUILayout.TextField(GetObjectPreview(value), GUILayout.Height(25));
-            GUILayout.Space(10);
-
-            GUILayout.Label("新值", GUI.skin.label);
             
-            // 获取或创建输入缓存
-            string inputKey = $"{dataPath}_input";
-            if (!inputCache.ContainsKey(inputKey))
-            {
-                inputCache[inputKey] = value?.ToString() ?? "";
-            }
-            
-            inputCache[inputKey] = GUILayout.TextField(inputCache[inputKey], GUILayout.Height(25));
-            GUILayout.Space(10);
-
-            if (GUILayout.Button("修改", GUILayout.Height(30)))
-            {
-                // 尝试根据原始值的类型转换输入值
-                object newValue = ConvertInputValue(inputCache[inputKey], value);
-                if (newValue != null)
-                {
-                    if (ModifyDataByPath(dataPath, newValue))
-                    {
-                        Debug.Log($"数据已修改: {dataPath} = {newValue}");
-                    }
-                }
-            }
-        }
-
-        // 根据路径修改数据
-        private bool ModifyDataByPath(string path, object newValue)
-        {
             try
             {
-                // 从路径解析各级索引
-                string[] parts = path.Split('.');
-                object currentData = GetMainLoadData();
-                object parentData = null;
-                string lastPart = null;
-                int? lastIndex = null;
-                
-                // 跳过第一个部分("Mainload")，找到最后一级的父对象
-                for (int i = 1; i < parts.Length - 1; i++)
-                {
-                    if (currentData == null)
-                        return false;
-                    
-                    parentData = currentData;
-                    lastPart = parts[i];
-                    
-                    if (int.TryParse(parts[i], out int index))
-                    {
-                        // 作为数组访问
-                        if (currentData is IList<object> list)
-                        {
-                            if (index >= 0 && index < list.Count)
-                            {
-                                currentData = list[index];
-                                lastIndex = index;
-                            }
-                            else
-                            {
-                                return false;
-                            }
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        // 作为属性或字段访问
-                        Type type = currentData.GetType();
-                        PropertyInfo property = type.GetProperty(parts[i]);
-                        if (property != null)
-                        {
-                            currentData = property.GetValue(currentData, null);
-                            lastIndex = null;
-                        }
-                        else
-                        {
-                            FieldInfo field = type.GetField(parts[i]);
-                            if (field != null)
-                            {
-                                currentData = field.GetValue(currentData);
-                                lastIndex = null;
-                            }
-                            else
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                }
-                
-                // 处理最后一级
-                string lastPartOfPath = parts[parts.Length - 1];
-                
-                if (parentData == null)
-                {
-                    // 如果是顶层属性或字段
-                    Type mainLoadType = GetMainLoadData()?.GetType();
-                    if (mainLoadType != null)
-                    {
-                        PropertyInfo property = mainLoadType.GetProperty(lastPartOfPath);
-                        if (property != null && property.CanWrite)
-                        {
-                            property.SetValue(GetMainLoadData(), newValue, null);
-                            return true;
-                        }
-                        else
-                        {
-                            FieldInfo field = mainLoadType.GetField(lastPartOfPath);
-                            if (field != null)
-                            {
-                                field.SetValue(GetMainLoadData(), newValue);
-                                return true;
-                            }
-                        }
-                    }
-                }
-                else if (int.TryParse(lastPartOfPath, out int index))
-                {
-                    // 如果最后一级是数组索引
-                    if (currentData is IList<object> list)
-                    {
-                        if (index >= 0 && index < list.Count)
-                        {
-                            list[index] = newValue;
-                            return true;
-                        }
-                    }
-                }
-                else
-                {
-                    // 如果最后一级是属性或字段
-                    Type type = currentData.GetType();
-                    PropertyInfo property = type.GetProperty(lastPartOfPath);
-                    if (property != null && property.CanWrite)
-                    {
-                        property.SetValue(currentData, newValue, null);
-                        return true;
-                    }
-                    else
-                    {
-                        FieldInfo field = type.GetField(lastPartOfPath);
-                        if (field != null)
-                        {
-                            field.SetValue(currentData, newValue);
-                            return true;
-                        }
-                    }
-                }
-                
-                return false;
+                // 根据用户要求：Mainload.XXX必定为数组
+                if (array is Array arr && index < arr.Length)
+                    return arr.GetValue(index);
+                else if (array is System.Collections.IList list && index < list.Count)
+                    return list[index];
             }
-            catch (Exception e)
+            catch {}
+            
+            return null;
+        }
+
+        // 设置数组或列表的指定索引元素（根据用户要求简化）
+        private bool SetArrayElement(object array, int index, object value)
+        {
+            if (array == null || index < 0)
+                return false;
+            
+            try
             {
-                Debug.LogError("修改数据失败: " + e.Message);
-                return false;
+                // 根据用户要求：Mainload.XXX必定为数组
+                if (array is Array arr && index < arr.Length)
+                {
+                    arr.SetValue(value, index);
+                    return true;
+                }
+                else if (array is System.Collections.IList list && index < list.Count)
+                {
+                    list[index] = value;
+                    return true;
+                }
             }
+            catch {}
+            
+            return false;
         }
 
         // 根据原始值的类型转换输入值
