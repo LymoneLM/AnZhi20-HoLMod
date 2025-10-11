@@ -181,7 +181,7 @@ namespace cs.HoLMod.TaskCheat
                         string SceneClass = arrayrepetitive[0];
                         
                         // 根据场景类型重新从配置文件读取任务
-                        if (SceneClass == "M" || SceneClass == "Z" || SceneClass == "S" || SceneClass == "H")
+                        if (SceneClass == "M" || SceneClass == "Z" || SceneClass == "S" || SceneClass == "H" || SceneClass == "F")
                         {
                             try
                             {

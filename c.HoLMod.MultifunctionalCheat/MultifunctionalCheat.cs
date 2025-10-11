@@ -73,7 +73,7 @@ namespace MultifunctionalCheat
             PluginMain.最大子嗣上限 = base.Config.Bind<int>("倍率调整（Magnification）", "最大子嗣上限倍数（MaxOffspringNumMultiplier）", 1, "每个女性可以生的子嗣上限=1（或2）*最大子嗣上限倍数，填1为不修改（The maximum number of children that each woman can have = 1（or 2） * MaxOffspringNumMultiplier , default: 1）");
             
             // 生育年龄相关配置
-            PluginMain.最小生育年龄 = base.Config.Bind<int>("怀孕年龄（Pregnancy Age）", "最小生育年龄（Min age）", 18, "女性可怀孕的最小年龄（The minimum age at which women can become pregnant）");
+            PluginMain.最小生育年龄 = base.Config.Bind<int>("怀孕年龄（Pregnancy Age）", "最小生育年龄（Min age）", 18, "女性可怀孕的最小年龄，最好不要低于18岁，人不能至少不应该（The minimum age at which women can become pregnant,it is best not to be under 18 years old, as people should not be at least）");
             PluginMain.最大生育年龄 = base.Config.Bind<int>("怀孕年龄（Pregnancy Age）", "最大生育年龄（Max age）", 40, "女性可怀孕的最大年龄（The maximum age at which women can become pregnant）");
             
             // 保存当前版本号

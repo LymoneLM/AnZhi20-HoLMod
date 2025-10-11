@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
-using System;
 
 namespace cs.HoLMod.TaskCheat
 {
@@ -27,58 +26,58 @@ namespace cs.HoLMod.TaskCheat
         // 郡数组，索引对应郡ID
         private static string[] JunList = new string[]
         {
-            LanguageManager.GetText("JunNan"),     // 0
-            LanguageManager.GetText("JunSanChuan"),   // 1
-            LanguageManager.GetText("JunShu"),     // 2
-            LanguageManager.GetText("JunDanYang"),   // 3
-            LanguageManager.GetText("JunChenLiu"),   // 4
-            LanguageManager.GetText("JunChangSha"),   // 5
-            LanguageManager.GetText("JunHuiJi"),   // 6
-            LanguageManager.GetText("JunGuangLing"),   // 7
-            LanguageManager.GetText("JunTaiYuan"),   // 8
-            LanguageManager.GetText("JunYiZhou"),   // 9
-            LanguageManager.GetText("JunNanHai"),   // 10
-            LanguageManager.GetText("JunYunNan")    // 11
+            "南郡",     // 0
+            "三川郡",   // 1
+            "蜀郡",     // 2
+            "丹阳郡",   // 3
+            "陈留郡",   // 4
+            "长沙郡",   // 5
+            "会稽郡",   // 6
+            "广陵郡",   // 7
+            "太原郡",   // 8
+            "益州郡",   // 9
+            "南海郡",   // 10
+            "云南郡"    // 11
         };
 
         // 二维县数组，第一维是郡索引，第二维是县索引
         private static string[][] XianList = new string[][]
         {
             // 南郡 (索引0)
-            new string[] { LanguageManager.GetText("XianLinJu"), LanguageManager.GetText("XianXiangFan"), LanguageManager.GetText("XianYiCheng"), LanguageManager.GetText("XianMaiCheng"), LanguageManager.GetText("XianHuaRong"), LanguageManager.GetText("XianYingTing"), LanguageManager.GetText("XianJiangLing"), LanguageManager.GetText("XianYiLing") },
+            new string[] { "临沮", "襄樊", "宜城", "麦城", "华容", "郢亭", "江陵", "夷陵" },
             
             // 三川郡 (索引1)
-            new string[] { LanguageManager.GetText("XianPingYang"), LanguageManager.GetText("XianXingYang"), LanguageManager.GetText("XianYuanWu"), LanguageManager.GetText("XianYangWu"), LanguageManager.GetText("XianXinZheng"), LanguageManager.GetText("XianYiYang") },
+            new string[] { "平阳", "荥阳", "原武", "阳武", "新郑", "宜阳" },
             
             // 蜀郡 (索引2)
-            new string[] { LanguageManager.GetText("XianQiongLai"), LanguageManager.GetText("XianPiXian"), LanguageManager.GetText("XianShiFang"), LanguageManager.GetText("XianMianZhu"), LanguageManager.GetText("XianXinDu"), LanguageManager.GetText("XianChengDu") },
+            new string[] { "邛崃", "郫县", "什邡", "绵竹", "新都", "成都" },
             
             // 丹阳郡 (索引3)
-            new string[] { LanguageManager.GetText("XianMoLing"), LanguageManager.GetText("XianJiangCheng"), LanguageManager.GetText("XianJiangNing"), LanguageManager.GetText("XianLiYang"), LanguageManager.GetText("XianJianYe"), LanguageManager.GetText("XianYongShi") },
+            new string[] { "秣陵", "江乘", "江宁", "溧阳", "建邺", "永世" },
             
             // 陈留郡 (索引4)
-            new string[] { LanguageManager.GetText("XianChangYuan"), LanguageManager.GetText("XianJiYang"), LanguageManager.GetText("XianChengWu"), LanguageManager.GetText("XianXiangYi"), LanguageManager.GetText("XianNingLing"), LanguageManager.GetText("XianFengQiu") },
+            new string[] { "长垣", "济阳", "成武", "襄邑", "宁陵", "封丘" },
             
             // 长沙郡 (索引5)
-            new string[] { LanguageManager.GetText("XianLingLing"), LanguageManager.GetText("XianYiYang"), LanguageManager.GetText("XianXiangXian"), LanguageManager.GetText("XianYuanZhou"), LanguageManager.GetText("XianLuLing"), LanguageManager.GetText("XianHengShan"), LanguageManager.GetText("XianJianNing"), LanguageManager.GetText("XianGuiYang") },
+            new string[] { "零陵", "益阳", "湘县", "袁州", "庐陵", "衡山", "建宁", "桂阳" },
             
             // 会稽郡 (索引6)
-            new string[] { LanguageManager.GetText("XianQuA"), LanguageManager.GetText("XianSongJiang"), LanguageManager.GetText("XianShanYin"), LanguageManager.GetText("XianYuJi") },
+            new string[] { "曲阿", "松江", "山阴", "余暨" },
             
             // 广陵郡 (索引7)
-            new string[] { LanguageManager.GetText("XianPingAn"), LanguageManager.GetText("XianSheYang"), LanguageManager.GetText("XianHaiLing"), LanguageManager.GetText("XianJiangDu") },
+            new string[] { "平安", "射阳", "海陵", "江都" },
             
             // 太原郡 (索引8)
-            new string[] { LanguageManager.GetText("XianDaLing"), LanguageManager.GetText("XianJinYang"), LanguageManager.GetText("XianJiuYuan"), LanguageManager.GetText("XianShiCheng"), LanguageManager.GetText("XianYangQu"), LanguageManager.GetText("XianWeiYu"), LanguageManager.GetText("XianMengXian"), LanguageManager.GetText("XianZhongDu") },
+            new string[] { "大陵", "晋阳", "九原", "石城", "阳曲", "魏榆", "孟县", "中都" },
             
             // 益州郡 (索引9)
-            new string[] { LanguageManager.GetText("XianLianRan"), LanguageManager.GetText("XianGuChang"), LanguageManager.GetText("XianTongLao"), LanguageManager.GetText("XianKunZe"), LanguageManager.GetText("XianDianChi"), LanguageManager.GetText("XianYuYuan"), LanguageManager.GetText("XianShengXiu"), LanguageManager.GetText("XianNanAn") },
+            new string[] { "连然", "谷昌", "同劳", "昆泽", "滇池", "俞元", "胜休", "南安" },
             
             // 南海郡 (索引10)
-            new string[] { LanguageManager.GetText("XianSiHui"), LanguageManager.GetText("XianYangShan"), LanguageManager.GetText("XianLongChuan"), LanguageManager.GetText("XianJieLing"), LanguageManager.GetText("XianLuoYang"), LanguageManager.GetText("XianShanYu") },
+            new string[] { "四会", "阳山", "龙川", "揭岭", "罗阳", "善禺" },
             
             // 云南郡 (索引11)
-            new string[] { LanguageManager.GetText("XianYunPing"), LanguageManager.GetText("XianYeYu"), LanguageManager.GetText("XianYongNing"), LanguageManager.GetText("XianSuiJiu"), LanguageManager.GetText("XianGuFu"), LanguageManager.GetText("XianQingLing"), LanguageManager.GetText("XianNongDong"), LanguageManager.GetText("XianXieLong") }
+            new string[] { "云平", "叶榆", "永宁", "遂久", "姑复", "蜻陵", "弄栋", "邪龙" }
         };
         
         /// <summary>

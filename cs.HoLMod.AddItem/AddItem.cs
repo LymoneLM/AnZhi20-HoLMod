@@ -2066,6 +2066,9 @@ namespace cs.HoLMod.AddItem
                                                               
                                                             statusMessage = string.Format("已解锁农庄: {0} ({1}-{2})，面积: {3}", farmName, selectedPrefecture, selectedCounty, farmArea);
                                                             Logger.LogInfo(statusMessage);
+                                                            
+                                                            // 设置场景更新标志
+                                                            Mainload.isUpdateScene = true;
                                                         }
                                                           
                                                         // 找到后跳出所有循环

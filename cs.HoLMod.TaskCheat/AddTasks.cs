@@ -40,11 +40,11 @@ namespace cs.HoLMod.TaskCheat
                 '|'
             });
 
-            // 读取场景类型，M府邸、Z封地、S郡、H皇宫
+            // 读取场景类型，M府邸、Z各封地的各地图、S郡、H皇宫、F封地
             string SceneClass = arrayadd[0];
 
             // 检查场景类型是否为有效类型，只要有一个为有效类型，就认为是游戏中，那么继续执行
-            if (SceneClass == "M" || SceneClass == "Z" || SceneClass == "S" || SceneClass == "H" )
+            if (SceneClass == "M" || SceneClass == "Z" || SceneClass == "S" || SceneClass == "H" || SceneClass == "F")
             {
                 try
             {

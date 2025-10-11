@@ -335,7 +335,11 @@ namespace cs.HoLMod.MenberCheat
         private string H_zhuangTouLoyaltyOriginal = "0"; // 原始庄头忠诚
         private string H_zhuangTouCharacter = "0"; // 庄头品性
         private string H_zhuangTouCharacterOriginal = "0"; // 原始庄头品性
-
+        private string H_maxResidents = "0"; // 可居住上限
+        private string H_maxResidentsOriginal = "0"; // 原始可居住上限
+        
+        // 保存庄头人物编号
+        private string currentZhuangTouId = ""; // 庄头人物编号，用于判断是否存在庄头
         
         // 从游戏中获取实际数据
         private List<string> memberList = new List<string>(); // 初始化空列表，实际数据在Update或OnGUI中加载
@@ -1141,96 +1145,105 @@ namespace cs.HoLMod.MenberCheat
                     }
                     GUILayout.EndHorizontal();
                     
-                    GUILayout.Space(20f);
-                    GUILayout.Label("庄头属性:", new GUILayoutOption[] { GUILayout.Width(100f) });
-                    
-                    GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    GUILayout.Label("年龄: ", new GUILayoutOption[] { GUILayout.Width(150f) });
-                    GUILayout.Label(H_zhuangTouAgeOriginal, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
-                    GUILayout.Space(32f);
-                    GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
-                    GUILayout.Space(40f);
-                    GUILayout.Label(H_zhuangTouAge, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(80f) });
-                    GUILayout.Space(32f);
-                    string newH_zhuangTouAge = GUILayout.TextField(H_zhuangTouAge, new GUILayoutOption[] { GUILayout.Width(200f) });
-                    if (newH_zhuangTouAge != H_zhuangTouAge)
+                    // 只有当存在庄头时才显示和允许修改庄头属性
+                    if (!string.IsNullOrEmpty(currentZhuangTouId))
                     {
-                        H_zhuangTouAge = newH_zhuangTouAge;
-                    }
-                    GUILayout.EndHorizontal();
-                    
-                    GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    GUILayout.Label("管理: ", new GUILayoutOption[] { GUILayout.Width(150f) });
-                    GUILayout.Label(H_zhuangTouManagementOriginal, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
-                    GUILayout.Space(32f);
-                    GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
-                    GUILayout.Space(40f);
-                    GUILayout.Label(H_zhuangTouManagement, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(80f) });
-                    GUILayout.Space(32f);
-                    string newH_zhuangTouManagement = GUILayout.TextField(H_zhuangTouManagement, new GUILayoutOption[] { GUILayout.Width(200f) });
-                    if (newH_zhuangTouManagement != H_zhuangTouManagement)
-                    {
-                        H_zhuangTouManagement = newH_zhuangTouManagement;
-                    }
-                    GUILayout.EndHorizontal();
-                    
-                    GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    GUILayout.Label("忠诚: ", new GUILayoutOption[] { GUILayout.Width(150f) });
-                    GUILayout.Label(H_zhuangTouLoyaltyOriginal, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
-                    GUILayout.Space(32f);
-                    GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
-                    GUILayout.Space(40f);
-                    GUILayout.Label(H_zhuangTouLoyalty, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(80f) });
-                    GUILayout.Space(32f);
-                    string newH_zhuangTouLoyalty = GUILayout.TextField(H_zhuangTouLoyalty, new GUILayoutOption[] { GUILayout.Width(200f) });
-                    if (newH_zhuangTouLoyalty != H_zhuangTouLoyalty)
-                    {
-                        H_zhuangTouLoyalty = newH_zhuangTouLoyalty;
-                    }
-                    GUILayout.EndHorizontal();
-                    
-                    GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    GUILayout.Label("品性: ", new GUILayoutOption[] { GUILayout.Width(150f) });
-                    GUILayout.Label(CharacterCodeToChinese(H_zhuangTouCharacterOriginal), centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
-                    GUILayout.Space(32f);
-                    GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
-                    GUILayout.Space(40f);
-                    GUILayout.Label(CharacterCodeToChinese(H_zhuangTouCharacter), centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(80f) });
-                    GUILayout.Space(32f);
-                    
-                    // 第五列改为按钮形式（分两行显示，每行7个，0不设按钮）
-                    GUILayout.BeginVertical(new GUILayoutOption[] { GUILayout.Width(300f) });
-                    
-                    // 第一行按钮 (1-7)
-                    GUILayout.BeginHorizontal();
-                    string[] characterOptions1 = new string[] { "1", "2", "3", "4", "5", "6", "7" };
-                    string[] characterLabels1 = new string[] { "傲娇", "刚正", "活泼", "善良", "真诚", "洒脱", "高冷" };
-                    
-                    for (int i = 0; i < characterOptions1.Length; i++)
-                    {
-                        if (GUILayout.Button(characterLabels1[i], new GUILayoutOption[] { GUILayout.Width(40f), GUILayout.Height(20f) }))
+                        GUILayout.Space(20f);
+                        GUILayout.Label("庄头属性:", new GUILayoutOption[] { GUILayout.Width(100f) });
+                        
+                        GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                        GUILayout.Label("年龄: ", new GUILayoutOption[] { GUILayout.Width(150f) });
+                        GUILayout.Label(H_zhuangTouAgeOriginal, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
+                        GUILayout.Space(32f);
+                        GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
+                        GUILayout.Space(40f);
+                        GUILayout.Label(H_zhuangTouAge, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(80f) });
+                        GUILayout.Space(32f);
+                        string newH_zhuangTouAge = GUILayout.TextField(H_zhuangTouAge, new GUILayoutOption[] { GUILayout.Width(200f) });
+                        if (newH_zhuangTouAge != H_zhuangTouAge)
                         {
-                            H_zhuangTouCharacter = characterOptions1[i];
+                            H_zhuangTouAge = newH_zhuangTouAge;
                         }
-                    }
-                    GUILayout.EndHorizontal();
-                    
-                    // 第二行按钮 (8-14)
-                    GUILayout.BeginHorizontal();
-                    string[] characterOptions2 = new string[] { "8", "9", "10", "11", "12", "13", "14" };
-                    string[] characterLabels2 = new string[] { "自卑", "怯懦", "腼腆", "凶狠", "善变", "忧郁", "多疑" };
-                    
-                    for (int i = 0; i < characterOptions2.Length; i++)
-                    {
-                        if (GUILayout.Button(characterLabels2[i], new GUILayoutOption[] { GUILayout.Width(40f), GUILayout.Height(20f) }))
+                        GUILayout.EndHorizontal();
+                        
+                        GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                        GUILayout.Label("管理: ", new GUILayoutOption[] { GUILayout.Width(150f) });
+                        GUILayout.Label(H_zhuangTouManagementOriginal, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
+                        GUILayout.Space(32f);
+                        GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
+                        GUILayout.Space(40f);
+                        GUILayout.Label(H_zhuangTouManagement, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(80f) });
+                        GUILayout.Space(32f);
+                        string newH_zhuangTouManagement = GUILayout.TextField(H_zhuangTouManagement, new GUILayoutOption[] { GUILayout.Width(200f) });
+                        if (newH_zhuangTouManagement != H_zhuangTouManagement)
                         {
-                            H_zhuangTouCharacter = characterOptions2[i];
+                            H_zhuangTouManagement = newH_zhuangTouManagement;
                         }
+                        GUILayout.EndHorizontal();
+                        
+                        GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                        GUILayout.Label("忠诚: ", new GUILayoutOption[] { GUILayout.Width(150f) });
+                        GUILayout.Label(H_zhuangTouLoyaltyOriginal, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
+                        GUILayout.Space(32f);
+                        GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
+                        GUILayout.Space(40f);
+                        GUILayout.Label(H_zhuangTouLoyalty, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(80f) });
+                        GUILayout.Space(32f);
+                        string newH_zhuangTouLoyalty = GUILayout.TextField(H_zhuangTouLoyalty, new GUILayoutOption[] { GUILayout.Width(200f) });
+                        if (newH_zhuangTouLoyalty != H_zhuangTouLoyalty)
+                        {
+                            H_zhuangTouLoyalty = newH_zhuangTouLoyalty;
+                        }
+                        GUILayout.EndHorizontal();
+                        
+                        GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+                        GUILayout.Label("品性: ", new GUILayoutOption[] { GUILayout.Width(150f) });
+                        GUILayout.Label(CharacterCodeToChinese(H_zhuangTouCharacterOriginal), centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
+                        GUILayout.Space(32f);
+                        GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
+                        GUILayout.Space(40f);
+                        GUILayout.Label(CharacterCodeToChinese(H_zhuangTouCharacter), centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(80f) });
+                        GUILayout.Space(32f);
+                        
+                        // 第五列改为按钮形式（分两行显示，每行7个，0不设按钮）
+                        GUILayout.BeginVertical(new GUILayoutOption[] { GUILayout.Width(300f) });
+                        
+                        // 第一行按钮 (1-7)
+                        GUILayout.BeginHorizontal();
+                        string[] characterOptions1 = new string[] { "1", "2", "3", "4", "5", "6", "7" };
+                        string[] characterLabels1 = new string[] { "傲娇", "刚正", "活泼", "善良", "真诚", "洒脱", "高冷" };
+                        
+                        for (int i = 0; i < characterOptions1.Length; i++)
+                        {
+                            if (GUILayout.Button(characterLabels1[i], new GUILayoutOption[] { GUILayout.Width(40f), GUILayout.Height(20f) }))
+                            {
+                                H_zhuangTouCharacter = characterOptions1[i];
+                            }
+                        }
+                        GUILayout.EndHorizontal();
+                        
+                        // 第二行按钮 (8-14)
+                        GUILayout.BeginHorizontal();
+                        string[] characterOptions2 = new string[] { "8", "9", "10", "11", "12", "13", "14" };
+                        string[] characterLabels2 = new string[] { "自卑", "怯懦", "腼腆", "凶狠", "善变", "忧郁", "多疑" };
+                        
+                        for (int i = 0; i < characterOptions2.Length; i++)
+                        {
+                            if (GUILayout.Button(characterLabels2[i], new GUILayoutOption[] { GUILayout.Width(40f), GUILayout.Height(20f) }))
+                            {
+                                H_zhuangTouCharacter = characterOptions2[i];
+                            }
+                        }
+                        GUILayout.EndHorizontal();
+                        
+                        GUILayout.EndVertical();
+                        GUILayout.EndHorizontal();
                     }
-                    GUILayout.EndHorizontal();
-                    
-                    GUILayout.EndVertical();
-                    GUILayout.EndHorizontal();
+                    else
+                    {
+                        GUILayout.Space(20f);
+                        GUILayout.Label("当前农庄暂无庄头", new GUILayoutOption[] { GUILayout.Width(200f) });
+                    }
                 }
                 
                 GUILayout.EndScrollView();
@@ -3545,6 +3558,13 @@ namespace cs.HoLMod.MenberCheat
                                         H_area = farmData[5]; // 面积，索引5
                                         H_areaOriginal = H_area; // 保存原始值
 
+                                        // 加载可居住上限，索引7
+                                        if (farmData.Count > 7 && !string.IsNullOrEmpty(farmData[7]))
+                                        {
+                                            H_maxResidents = farmData[7];
+                                        }
+                                        H_maxResidentsOriginal = H_maxResidents; // 保存原始值
+
                                         // 加载农户数量（种植|养殖|手工），索引24
                                         if (farmData.Count > 24 && !string.IsNullOrEmpty(farmData[24]))
                                         {
@@ -3558,11 +3578,21 @@ namespace cs.HoLMod.MenberCheat
                                         H_farmersCraftingOriginal = H_farmersCrafting;
 
                                         // 根据农庄索引里的庄头人物编号去读取和修改相应数据
-                                        string zhuangTouId = ""; // 庄头人物编号，索引14
+                                        currentZhuangTouId = ""; // 重置庄头人物编号
+                                        currentZhuangTouData = null; // 重置庄头数据引用
+                                        H_zhuangTouAge = "0"; // 重置庄头年龄
+                                        H_zhuangTouAgeOriginal = "0";
+                                        H_zhuangTouManagement = "0"; // 重置庄头管理
+                                        H_zhuangTouManagementOriginal = "0";
+                                        H_zhuangTouLoyalty = "0"; // 重置庄头忠诚
+                                        H_zhuangTouLoyaltyOriginal = "0";
+                                        H_zhuangTouCharacter = "0"; // 重置庄头品性
+                                        H_zhuangTouCharacterOriginal = "0";
+                                        
                                         if (farmData.Count > 14 && !string.IsNullOrEmpty(farmData[14]))
                                         {
-                                            zhuangTouId = farmData[14];
-                                            LoadZhuangTouData(zhuangTouId, areaIndex, i);
+                                            currentZhuangTouId = farmData[14];
+                                            LoadZhuangTouData(currentZhuangTouId, areaIndex, i);
                                         }
 
                                         currentDataIndex = i;
@@ -3585,6 +3615,17 @@ namespace cs.HoLMod.MenberCheat
         {
             try
             {
+                // 首先重置所有庄头相关数据，确保没有残留
+                currentZhuangTouData = null;
+                H_zhuangTouAge = "0";
+                H_zhuangTouAgeOriginal = "0";
+                H_zhuangTouManagement = "0";
+                H_zhuangTouManagementOriginal = "0";
+                H_zhuangTouLoyalty = "0";
+                H_zhuangTouLoyaltyOriginal = "0";
+                H_zhuangTouCharacter = "0";
+                H_zhuangTouCharacterOriginal = "0";
+                
                 if (Mainload.ZhuangTou_now == null || Mainload.ZhuangTou_now.Count <= areaIndex)
                 {
                     return;
@@ -3592,6 +3633,12 @@ namespace cs.HoLMod.MenberCheat
                 
                 List<List<List<string>>> areaZhuangTouData = Mainload.ZhuangTou_now[areaIndex];
                 if (areaZhuangTouData == null || areaZhuangTouData.Count <= farmIndex)
+                {
+                    return;
+                }
+                
+                // 增加额外检查，确保areaZhuangTouData[farmIndex]不为空且有至少一个元素
+                if (areaZhuangTouData[farmIndex] == null || areaZhuangTouData[farmIndex].Count <= 0)
                 {
                     return;
                 }
@@ -4100,6 +4147,28 @@ namespace cs.HoLMod.MenberCheat
                     return;
                 }
                 
+                // 检查农户数量是否超过可居住上限
+                int plantingCount = 0;
+                int breedingCount = 0;
+                int craftingCount = 0;
+                int maxResidents = 0;
+                
+                // 尝试解析农户数量和可居住上限
+                int.TryParse(H_farmersPlanting, out plantingCount);
+                int.TryParse(H_farmersBreeding, out breedingCount);
+                int.TryParse(H_farmersCrafting, out craftingCount);
+                int.TryParse(H_maxResidents, out maxResidents);
+                
+                // 计算总农户数量
+                int totalFarmers = plantingCount + breedingCount + craftingCount;
+                
+                // 如果总农户数量超过可居住上限，阻止修改并显示提示
+                if (totalFarmers > maxResidents)
+                {
+                    ShowErrorMessage("可容纳农户数量不足，请升级或修建更多农房");
+                    return;
+                }
+                
                 int areaIndex = currentFarmAreaIndex;
                 
                 // 更新农庄数据
@@ -4126,8 +4195,8 @@ namespace cs.HoLMod.MenberCheat
                     }
                 }
                 
-                // 更新庄头数据
-                if (currentZhuangTouData != null)
+                // 更新庄头数据 - 只有当存在庄头时才进行修改
+                if (currentZhuangTouData != null && !string.IsNullOrEmpty(currentZhuangTouId))
                 {
                     // 更新年龄，索引3
                     if (currentZhuangTouData.Count > 3)
