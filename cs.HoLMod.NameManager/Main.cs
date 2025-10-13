@@ -55,102 +55,251 @@ namespace cs.HoLMod.NameManager
         
         private void Awake()
         {
-            Logger.LogInfo("姓名管理器已加载！当前版本：" + CURRENT_VERSION);
-            Logger.LogInfo("Name Manager has been loaded! Current version:" + CURRENT_VERSION);
-            
-            // 配置文件路径
-            string configFilePath = Path.Combine(Paths.ConfigPath, "cs.HoLMod.NameManager.AnZhi20.cfg");
-            
             try
             {
-                // 检查是否存在配置文件
-                if (File.Exists(configFilePath))
+                Logger.LogInfo("姓名管理器已加载！当前版本：" + CURRENT_VERSION);
+                Logger.LogInfo("Name Manager has been loaded! Current version:" + CURRENT_VERSION);
+                
+                // 配置文件路径
+                string configFilePath = Path.Combine(Paths.ConfigPath, "cs.HoLMod.NameManager.AnZhi20.cfg");
+                
+                try
                 {
-                    // 读取配置文件中的版本信息
-                    string loadedVersion = "";
-                    using (StreamReader reader = new StreamReader(configFilePath))
+                    // 检查是否存在配置文件
+                    if (File.Exists(configFilePath))
                     {
-                        string line;
-                        while ((line = reader.ReadLine()) != null)
+                        // 读取配置文件中的版本信息
+                        string loadedVersion = "";
+                        using (StreamReader reader = new StreamReader(configFilePath))
                         {
-                            if (line.StartsWith("## 已加载版本（Loaded Version） = "))
+                            string line;
+                            while ((line = reader.ReadLine()) != null)
                             {
-                                loadedVersion = line.Substring(33).Trim();
-                                break;
+                                if (line.StartsWith("## 已加载版本（Loaded Version） = "))
+                                {
+                                    loadedVersion = line.Substring(33).Trim();
+                                    break;
+                                }
                             }
                         }
+                        
+                        // 检查是否需要更新配置
+                        bool isVersionUpdated = loadedVersion != CURRENT_VERSION;
+                        
+                        // 如果版本更新，删除配置文件
+                        if (isVersionUpdated)
+                        {
+                            Logger.LogInfo($"检测到插件版本更新至 {CURRENT_VERSION}，正在删除旧的配置文件...");
+                            Logger.LogInfo($"Detected plugin version update to {CURRENT_VERSION}, deleting old configuration file...");
+                            File.Delete(configFilePath);
+                            Logger.LogInfo("旧配置文件已成功删除。");
+                            Logger.LogInfo("Old configuration file has been successfully deleted.");
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("读取或删除配置文件时出错: " + ex.Message);
+                }
+                
+                try
+                {
+                    // 配置自定义姓名（无论是否删除配置文件都会执行，确保配置项存在）
+                    CustomFamilyNames = base.Config.Bind<string>("自定义姓名（Custom Names）", "自定义姓氏（Custom Family Names）", "", "添加自定义姓氏，格式说明：\n" +
+                        "1. 单个姓氏格式：姓氏|拼音（例如：张|Zhang）\n" +
+                        "2. 多个姓氏之间用英文逗号分隔（例如：张|Zhang,王|Wang,李|Li）\n" +
+                        "3. 支持复姓（例如：欧阳|Ouyang,司马|Sima）\n" +
+                        "4. 拼音部分请使用标准罗马拼音，首字母大写\n" +
+                        "(Add custom family names, format instructions:\n" +
+                        "1. Single family name format: LastName|Pinyin (e.g.: 张|Zhang)\n" +
+                        "2. Separate multiple family names with commas (e.g.: 张|Zhang,王|Wang,李|Li)\n" +
+                        "3. Compound family names are supported (e.g.: 欧阳|Ouyang,司马|Sima)\n" +
+                        "4. Use standard Roman pinyin for the pinyin part, with first letter capitalized)");
+                    CustomMaleFirstNames = base.Config.Bind<string>("自定义姓名（Custom Names）", "自定义男性名字首字（Custom Male First Characters）", "", "添加自定义男性名字首字，格式说明：\n" +
+                        "1. 单个汉字格式：汉字|拼音（例如：伟|Wei）\n" +
+                        "2. 多个汉字之间用英文逗号分隔（例如：伟|Wei,强|Qiang,军|Jun）\n" +
+                        "3. 拼音部分请使用标准罗马拼音，首字母小写\n" +
+                        "(Add custom male first characters, format instructions:\n" +
+                        "1. Single character format: Character|Pinyin (e.g.: 伟|wei)\n" +
+                        "2. Separate multiple characters with commas (e.g.: 伟|wei,强|qiang,军|jun)\n" +
+                        "3. Use standard Roman pinyin for the pinyin part, with all letters lowercase)");
+                    CustomMaleSecondNames = base.Config.Bind<string>("自定义姓名（Custom Names）", "自定义男性名字末字（Custom Male Second Characters）", "", "添加自定义男性名字末字，格式说明：\n" +
+                        "1. 单个汉字格式：汉字|拼音（例如：明|ming）\n" +
+                        "2. 多个汉字之间用英文逗号分隔（例如：明|ming,杰|jie,辉|hui）\n" +
+                        "3. 拼音部分请使用标准罗马拼音，首字母小写\n" +
+                        "(Add custom male second characters, format instructions:\n" +
+                        "1. Single character format: Character|Pinyin (e.g.: 明|ming)\n" +
+                        "2. Separate multiple characters with commas (e.g.: 明|ming,杰|jie,辉|hui)\n" +
+                        "3. Use standard Roman pinyin for the pinyin part, with all letters lowercase)");
+                    CustomFemaleFirstNames = base.Config.Bind<string>("自定义姓名（Custom Names）", "自定义女性名字首字（Custom Female First Characters）", "", "添加自定义女性名字首字，格式说明：\n" +
+                        "1. 单个汉字格式：汉字|拼音（例如：丽|li）\n" +
+                        "2. 多个汉字之间用英文逗号分隔（例如：丽|li,芳|fang,娜|na）\n" +
+                        "3. 拼音部分请使用标准罗马拼音，首字母小写\n" +
+                        "(Add custom female first characters, format instructions:\n" +
+                        "1. Single character format: Character|Pinyin (e.g.: 丽|li)\n" +
+                        "2. Separate multiple characters with commas (e.g.: 丽|li,芳|fang,娜|na)\n" +
+                        "3. Use standard Roman pinyin for the pinyin part, with all letters lowercase)");
+                    CustomFemaleSecondNames = base.Config.Bind<string>("自定义姓名（Custom Names）", "自定义女性名字末字（Custom Female Second Characters）", "", "添加自定义女性名字末字，格式说明：\n" +
+                        "1. 单个汉字格式：汉字|拼音（例如：婷|ting）\n" +
+                        "2. 多个汉字之间用英文逗号分隔（例如：婷|ting,媛|yuan,琪|qi）\n" +
+                        "3. 拼音部分请使用标准罗马拼音，首字母小写\n" +
+                        "(Add custom female second characters, format instructions:\n" +
+                        "1. Single character format: Character|Pinyin (e.g.: 婷|ting)\n" +
+                        "2. Separate multiple characters with commas (e.g.: 婷|ting,媛|yuan,琪|qi)\n" +
+                        "3. Use standard Roman pinyin for the pinyin part, with all letters lowercase)");
                     
-                    // 检查是否需要更新配置
-                    bool isVersionUpdated = loadedVersion != CURRENT_VERSION;
+                    // 保存当前版本号
+                    base.Config.Bind("内部配置（Internal Settings）", "已加载版本（Loaded Version）", CURRENT_VERSION, "用于跟踪插件版本，请勿手动修改");
                     
-                    // 如果版本更新，删除配置文件
-                    if (isVersionUpdated)
+                    // 保存配置文件
+                    base.Config.Save();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("配置自定义姓名时出错: " + ex.Message);
+                }
+                
+                try
+                {
+                    // Harmony补丁创建，使用更安全的方式
+                    Logger.LogInfo("开始创建Harmony补丁...");
+                    
+                    // 使用PluginInfo.PLUGIN_GUID作为Harmony标识符
+                    Harmony harmony = new Harmony(PluginInfo.PLUGIN_GUID);
+                    
+                    // 添加更详细的错误日志和异常处理
+                    try
                     {
-                        Logger.LogInfo($"检测到插件版本更新至 {CURRENT_VERSION}，正在删除旧的配置文件...");
-                        Logger.LogInfo($"Detected plugin version update to {CURRENT_VERSION}, deleting old configuration file...");
-                        File.Delete(configFilePath);
-                        Logger.LogInfo("旧配置文件已成功删除。");
-                        Logger.LogInfo("Old configuration file has been successfully deleted.");
+                        // 避免使用PatchAll()，改为手动创建每个补丁
+                        Logger.LogInfo("开始手动创建Harmony补丁...");
+                        
+                        try
+                        {
+                            // 手动为每个方法创建补丁
+                            Type randNameType = Type.GetType("RandName");
+                            if (randNameType != null)
+                            {
+                                // 为Start方法创建补丁
+                                MethodInfo startMethod = randNameType.GetMethod("Start", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                                if (startMethod != null)
+                                {
+                                    MethodInfo patchAllNamesMethod = typeof(PluginMain).GetMethod("PatchAllNames", BindingFlags.NonPublic | BindingFlags.Static);
+                                    if (patchAllNamesMethod != null)
+                                    {
+                                        harmony.Patch(startMethod, postfix: new HarmonyMethod(patchAllNamesMethod));
+                                        Logger.LogInfo("成功为RandName.Start方法创建补丁。");
+                                    }
+                                    else
+                                    {
+                                        Logger.LogWarning("无法找到PatchAllNames方法，跳过该补丁。");
+                                    }
+                                }
+                                else
+                                {
+                                    Logger.LogWarning("无法找到RandName.Start方法，跳过该补丁。");
+                                }
+                                
+                                // 为GetMemberNameShijia方法创建补丁
+                                MethodInfo getMemberNameMethod = randNameType.GetMethod("GetMemberNameShijia", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+                                if (getMemberNameMethod != null)
+                                {
+                                    MethodInfo patchGetMemberNameMethod = typeof(PluginMain).GetMethod("PatchGetMemberNameShijia", BindingFlags.NonPublic | BindingFlags.Static);
+                                    if (patchGetMemberNameMethod != null)
+                                    {
+                                        harmony.Patch(getMemberNameMethod, postfix: new HarmonyMethod(patchGetMemberNameMethod));
+                                        Logger.LogInfo("成功为RandName.GetMemberNameShijia方法创建补丁。");
+                                    }
+                                    else
+                                    {
+                                        Logger.LogWarning("无法找到PatchGetMemberNameShijia方法，跳过该补丁。");
+                                    }
+                                }
+                                else
+                                {
+                                    Logger.LogWarning("无法找到RandName.GetMemberNameShijia方法，跳过该补丁。");
+                                }
+                            }
+                            else
+                            {
+                                Logger.LogError("无法找到RandName类型，无法创建任何补丁。");
+                            }
+                            
+                            Logger.LogInfo("Harmony补丁创建过程已完成。");
+                            Logger.LogInfo("Harmony patches creation process has been completed.");
+                        }
+                        catch (Exception patchEx)
+                        {
+                            Logger.LogError("手动创建补丁时出错: " + patchEx.Message + "\n" + patchEx.StackTrace);
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError("创建Harmony补丁时出错: " + ex.Message);
+                        Logger.LogError("堆栈跟踪: " + ex.StackTrace);
+                        
+                        // 尝试单独检查和处理每个补丁方法
+                        try
+                        {
+                            Logger.LogInfo("尝试单独检查和处理补丁方法...");
+                            
+                            // 检查RandName类型是否存在
+                            Type randNameType = Type.GetType("RandName");
+                            if (randNameType == null)
+                            {
+                                Logger.LogError("错误：无法找到RandName类型");
+                                return;
+                            }
+                            
+                            Logger.LogInfo("成功找到RandName类型");
+                            
+                            // 尝试获取Start方法
+                            MethodInfo startMethod = randNameType.GetMethod("Start", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                            if (startMethod == null)
+                            {
+                                Logger.LogError("错误：在RandName类型中无法找到Start方法");
+                            }
+                            else
+                            {
+                                Logger.LogInfo("成功找到RandName.Start方法");
+                            }
+                            
+                            // 尝试获取GetMemberNameShijia方法
+                            MethodInfo getMemberNameMethod = randNameType.GetMethod("GetMemberNameShijia", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+                            if (getMemberNameMethod == null)
+                            {
+                                Logger.LogError("错误：在RandName类型中无法找到GetMemberNameShijia方法");
+                            }
+                            else
+                            {
+                                Logger.LogInfo("成功找到RandName.GetMemberNameShijia方法");
+                            }
+                        }
+                        catch (Exception innerEx)
+                        {
+                            Logger.LogError("检查补丁方法时出错: " + innerEx.Message);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("初始化Harmony实例时出错: " + ex.Message + "\n" + ex.StackTrace);
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("读取或删除配置文件时出错: " + ex.Message);
+                Logger.LogError("PluginMain.Awake方法执行出错: " + ex.Message + "\n" + ex.StackTrace);
+                // 确保插件不会因为初始化失败而完全崩溃
+                try
+                {
+                    // 创建一个简单的Harmony实例，即使在初始化失败的情况下也能尝试工作
+                    new Harmony(PluginInfo.PLUGIN_GUID);
+                    Logger.LogInfo("已创建基本Harmony实例以确保插件不会完全崩溃");
+                }
+                catch (Exception initEx)
+                {
+                    Logger.LogError("创建基本Harmony实例时也出错: " + initEx.Message);
+                }
             }
-            
-            // 配置自定义姓名（无论是否删除配置文件都会执行，确保配置项存在）
-            CustomFamilyNames = base.Config.Bind<string>("自定义姓名（Custom Names）", "自定义姓氏（Custom Family Names）", "", "添加自定义姓氏，格式说明：\n" +
-                "1. 单个姓氏格式：姓氏|拼音（例如：张|Zhang）\n" +
-                "2. 多个姓氏之间用英文逗号分隔（例如：张|Zhang,王|Wang,李|Li）\n" +
-                "3. 支持复姓（例如：欧阳|Ouyang,司马|Sima）\n" +
-                "4. 拼音部分请使用标准罗马拼音，首字母大写\n" +
-                "(Add custom family names, format instructions:\n" +
-                "1. Single family name format: LastName|Pinyin (e.g.: 张|Zhang)\n" +
-                "2. Separate multiple family names with commas (e.g.: 张|Zhang,王|Wang,李|Li)\n" +
-                "3. Compound family names are supported (e.g.: 欧阳|Ouyang,司马|Sima)\n" +
-                "4. Use standard Roman pinyin for the pinyin part, with first letter capitalized)");
-            CustomMaleFirstNames = base.Config.Bind<string>("自定义姓名（Custom Names）", "自定义男性名字首字（Custom Male First Characters）", "", "添加自定义男性名字首字，格式说明：\n" +
-                "1. 单个汉字格式：汉字|拼音（例如：伟|Wei）\n" +
-                "2. 多个汉字之间用英文逗号分隔（例如：伟|Wei,强|Qiang,军|Jun）\n" +
-                "3. 拼音部分请使用标准罗马拼音，首字母小写\n" +
-                "(Add custom male first characters, format instructions:\n" +
-                "1. Single character format: Character|Pinyin (e.g.: 伟|wei)\n" +
-                "2. Separate multiple characters with commas (e.g.: 伟|wei,强|qiang,军|jun)\n" +
-                "3. Use standard Roman pinyin for the pinyin part, with all letters lowercase)");
-            CustomMaleSecondNames = base.Config.Bind<string>("自定义姓名（Custom Names）", "自定义男性名字末字（Custom Male Second Characters）", "", "添加自定义男性名字末字，格式说明：\n" +
-                "1. 单个汉字格式：汉字|拼音（例如：明|ming）\n" +
-                "2. 多个汉字之间用英文逗号分隔（例如：明|ming,杰|jie,辉|hui）\n" +
-                "3. 拼音部分请使用标准罗马拼音，首字母小写\n" +
-                "(Add custom male second characters, format instructions:\n" +
-                "1. Single character format: Character|Pinyin (e.g.: 明|ming)\n" +
-                "2. Separate multiple characters with commas (e.g.: 明|ming,杰|jie,辉|hui)\n" +
-                "3. Use standard Roman pinyin for the pinyin part, with all letters lowercase)");
-            CustomFemaleFirstNames = base.Config.Bind<string>("自定义姓名（Custom Names）", "自定义女性名字首字（Custom Female First Characters）", "", "添加自定义女性名字首字，格式说明：\n" +
-                "1. 单个汉字格式：汉字|拼音（例如：丽|li）\n" +
-                "2. 多个汉字之间用英文逗号分隔（例如：丽|li,芳|fang,娜|na）\n" +
-                "3. 拼音部分请使用标准罗马拼音，首字母小写\n" +
-                "(Add custom female first characters, format instructions:\n" +
-                "1. Single character format: Character|Pinyin (e.g.: 丽|li)\n" +
-                "2. Separate multiple characters with commas (e.g.: 丽|li,芳|fang,娜|na)\n" +
-                "3. Use standard Roman pinyin for the pinyin part, with all letters lowercase)");
-            CustomFemaleSecondNames = base.Config.Bind<string>("自定义姓名（Custom Names）", "自定义女性名字末字（Custom Female Second Characters）", "", "添加自定义女性名字末字，格式说明：\n" +
-                "1. 单个汉字格式：汉字|拼音（例如：婷|ting）\n" +
-                "2. 多个汉字之间用英文逗号分隔（例如：婷|ting,媛|yuan,琪|qi）\n" +
-                "3. 拼音部分请使用标准罗马拼音，首字母小写\n" +
-                "(Add custom female second characters, format instructions:\n" +
-                "1. Single character format: Character|Pinyin (e.g.: 婷|ting)\n" +
-                "2. Separate multiple characters with commas (e.g.: 婷|ting,媛|yuan,琪|qi)\n" +
-                "3. Use standard Roman pinyin for the pinyin part, with all letters lowercase)");
-            
-            // 保存当前版本号
-            base.Config.Bind("内部配置（Internal Settings）", "已加载版本（Loaded Version）", CURRENT_VERSION, "用于跟踪插件版本，请勿手动修改");
-            
-            // 保存配置文件
-            base.Config.Save();
-            
-            Harmony.CreateAndPatchAll(typeof(PluginMain), null);
         }
         
         

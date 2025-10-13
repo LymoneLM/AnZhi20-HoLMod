@@ -35,7 +35,7 @@ namespace cs.HoLMod.Tool
             GUILayout.Label("窗口B - 第二列");
             
             GUILayout.FlexibleSpace();
-            GUILayout.Label("窗口B的第二列内容", EditorStyles.centeredGreyMiniLabel);
+            DisplayData();
             GUILayout.FlexibleSpace();
             
             GUILayout.EndVertical();
@@ -48,7 +48,10 @@ namespace cs.HoLMod.Tool
             // 窗口B的更新逻辑
         }
 
-        // 根据第一列的点击，选择对应的加载方法加载第二列数据
+        // 第二列显示的内容 - 使用object类型以支持多种数据结构
+        private object TheSecondColumnData;
+
+        // 根据WindowA.cs中第一列窗口中的按钮点击，选择对应的加载方法加载第二列数据
         private void LoadTheSecondColumnData(string selectedButton)
         {
             switch (selectedButton)
@@ -266,6 +269,118 @@ namespace cs.HoLMod.Tool
                 default:
                     // 处理其他情况
                     break;
+            }
+        }
+
+        // 显示不同类型的数据
+        private void DisplayData()
+        {
+            if (TheSecondColumnData == null)
+            {
+                GUILayout.Label("没有数据可显示", EditorStyles.centeredGreyMiniLabel);
+                return;
+            }
+
+            // 根据数据类型进行不同的显示处理
+            if (TheSecondColumnData is List<int> intList)
+            {
+                DisplayIntList(intList);
+            }
+            else if (TheSecondColumnData is List<float> floatList)
+            {
+                DisplayFloatList(floatList);
+            }
+            else if (TheSecondColumnData is List<string> stringList)
+            {
+                DisplayStringList(stringList);
+            }
+            else if (TheSecondColumnData is List<List<string>> listOfStringList)
+            {
+                DisplayListOfStringList(listOfStringList);
+            }
+            else if (TheSecondColumnData is List<List<List<string>>> listOfListOfStringList)
+            {
+                DisplayListOfListOfStringList(listOfListOfStringList);
+            }
+            else if (TheSecondColumnData is List<List<List<List<string>>>> listOfListOfListOfStringList)
+            {
+                DisplayListOfListOfListOfStringList(listOfListOfListOfStringList);
+            }
+            else
+            {
+                GUILayout.Label("不支持的数据类型: " + TheSecondColumnData.GetType().Name, EditorStyles.centeredGreyMiniLabel);
+            }
+        }
+
+        // 显示整数列表
+        private void DisplayIntList(List<int> list)
+        {
+            foreach (int item in list)
+            {
+                GUILayout.Label(item.ToString());
+            }
+        }
+
+        // 显示浮点数列表
+        private void DisplayFloatList(List<float> list)
+        {
+            foreach (float item in list)
+            {
+                GUILayout.Label(item.ToString());
+            }
+        }
+
+        // 显示字符串列表
+        private void DisplayStringList(List<string> list)
+        {
+            foreach (string item in list)
+            {
+                GUILayout.Label(item);
+            }
+        }
+
+        // 显示列表的列表
+        private void DisplayListOfStringList(List<List<string>> listOfLists)
+        {
+            for (int i = 0; i < listOfLists.Count; i++)
+            {
+                GUILayout.Label("列表 " + i + ":");
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(20);
+                GUILayout.BeginVertical();
+                DisplayStringList(listOfLists[i]);
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        // 显示列表的列表的列表
+        private void DisplayListOfListOfStringList(List<List<List<string>>> listOfListOfLists)
+        {
+            for (int i = 0; i < listOfListOfLists.Count; i++)
+            {
+                GUILayout.Label("组 " + i + ":");
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(20);
+                GUILayout.BeginVertical();
+                DisplayListOfStringList(listOfListOfLists[i]);
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        // 显示列表的列表的列表的列表
+        private void DisplayListOfListOfListOfStringList(List<List<List<List<string>>>> listOfListOfListOfLists)
+        {
+            for (int i = 0; i < listOfListOfListOfLists.Count; i++)
+            {
+                GUILayout.Label("分类 " + i + ":");
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(20);
+                GUILayout.BeginVertical();
+                DisplayListOfListOfStringList(listOfListOfListOfLists[i]);
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
             }
         }
 

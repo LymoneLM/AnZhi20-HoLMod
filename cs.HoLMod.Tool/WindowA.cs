@@ -155,6 +155,5 @@ namespace cs.HoLMod.Tool
         {
             // 窗口A的更新逻辑
         }
-
-        
+    }
 }
