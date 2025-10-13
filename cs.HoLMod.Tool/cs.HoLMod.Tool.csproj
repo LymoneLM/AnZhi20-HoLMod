@@ -348,7 +348,12 @@
     <Compile Include="LanguageManager.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Window.cs" />
+    <Compile Include="WindowA.cs" />
+    <Compile Include="WindowB.cs" />
+    <Compile Include="WindowC.cs" />
+    <Compile Include="WindowD.cs" />
+    <Compile Include="WindowE.cs" />
+    <Compile Include="WindowMain.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
