@@ -346,6 +346,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddItem.cs" />
+    <Compile Include="LanguageManager.cs" />
     <Compile Include="LoadGameItemsToDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

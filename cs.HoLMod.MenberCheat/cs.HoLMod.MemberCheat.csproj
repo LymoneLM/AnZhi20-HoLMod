@@ -346,6 +346,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GuanZhi.cs" />
+    <Compile Include="LanguageManager.cs" />
     <Compile Include="MemberCheat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
