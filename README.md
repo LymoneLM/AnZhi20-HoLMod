@@ -1,11 +1,13 @@
 # 简介（Brief Introduction）  
 这是一个吾今有世家的MODS库（当然，你可以随意的浏览它们）  
 This is a mods Library of House of Legacy. (of course, you can browse them freely)  
+
 ## ***前置工具***  
 下面这些是mods需要的前置文件  
 ### 一.安装BepInEx  
-下载链接：https://dsp.thunderstore.io/package/xiaoye97/BepInEx/  
-安装方法：打开zip，点击进入BepInExPack，将BepInExPack文件夹内所有文件复制到游戏根目录（Dyson Sphere Program）下  
+下载链接：https://thunderstore.io/c/house-of-legacy/p/BepInEx/BepInExPack/  
+安装方法：打开zip，点击进入BepInExPack，将BepInExPack文件夹内所有文件复制到游戏根目录（House of Legacy）下  
+
 ### 二.MOD开发者需要的部分工具  
 #### 1.VS2019  
 下载链接：https://visualstudio.microsoft.com/zh-hans/vs/  
