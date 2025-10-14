@@ -28,8 +28,9 @@ MODS的网站链接：https://thunderstore.io/c/house-of-legacy/
 ## ***Front end tools***  
 These are the front-end files that mods needs  
 ### 一.Install BepInEx  
-Download link:https://dsp.thunderstore.io/package/xiaoye97/BepInEx/  
-Installation method:Open zip, click to enter BepInExPack, and copy all files in BepInExPack folder to Dyson Sphere Program.  
+Download link:https://thunderstore.io/c/house-of-legacy/p/BepInEx/BepInExPack/  
+Installation method:Open zip, click to enter BepInExPack, and copy all files in BepInExPack folder to House of Legacy.  
+
 ### 二.Some tools for mod developers  
 #### 1.VS2019  
 Download link:https://visualstudio.microsoft.com/zh-hans/vs/  
