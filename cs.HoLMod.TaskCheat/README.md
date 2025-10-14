@@ -1,6 +1,6 @@
-# 多功能修改 MultifunctionalCheat
+# 任务编辑器 Task Editor
 
-提供城中可招门客上限、可建民居上限、可建商铺上限、商铺兑换元宝上限与家族全角色体力上限、科举人数上限、男女生育最大子嗣上限修改和可生育年龄上下限修改。Provide modifications to the upper limits of the city's ability to recruit customers, build residential buildings, build commercial properties, exchange ingots for commercial properties, and the physical strength of all family members, as well as the maximum number of candidates for the imperial examination, the maximum number of male and female children, and the upper and lower limits of the age limit for childbirth.
+在游戏内按F4打开窗口可编辑任务。Press F4 in-game to open a window where you can editor tasks.
 
 ## 📦 安装 Installation
 
@@ -24,7 +24,7 @@
 运行一次游戏后生成配置，位于：
 
 ```shell
-BepInEx\config\cs.HoLMod.MultifunctionalCheat.AnZhi20.cfg
+BepInEx\config\cs.HoLMod.TaskCheat.AnZhi20.cfg
 ```
 
 修改完保存配置，需要重启游戏生效
@@ -34,7 +34,7 @@ BepInEx\config\cs.HoLMod.MultifunctionalCheat.AnZhi20.cfg
 The configuration file is generated after running the game once, located at:
 
 ```shell
-BepInEx\config\cs.HoLMod.MultifunctionalCheat.AnZhi20.cfg
+BepInEx\config\cs.HoLMod.TaskCheat.AnZhi20.cfg
 ```
 
 Save the changes after modification and restart the game for them to take effect.

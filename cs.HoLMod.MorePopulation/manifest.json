@@ -1,0 +1,9 @@
+{
+    "name": "MorePopulation",
+    "version_number": "1.4.0",
+    "website_url": "https://github.com/AnZhi20/AnZhi20-HoLMod",
+    "description": "可以获得更多的自然人口增长。Can achieve more natural population growth.",
+    "dependencies": [
+        "BepInEx-BepInExPack-5.4.2100"
+    ]
+}
