@@ -34,6 +34,7 @@ namespace cs.HoLMod.Tool
         private GUIStyle _normalButtonStyle;
         private GUIStyle _depthLabelStyle;
         private GUIStyle _infoLabelStyle;
+        private bool _stylesInitialized = false;
         
         // 支持的数据类型列表
         private List<string> _supportedDataTypes = new List<string>
@@ -57,8 +58,8 @@ namespace cs.HoLMod.Tool
         };
         
         void Awake()
-        {
-            InitializeGuiStyles();
+        {            
+            // 初始化移至OnGUI()方法中
         }
         
         private void InitializeGuiStyles()
@@ -78,7 +79,14 @@ namespace cs.HoLMod.Tool
         }
         
         public void OnGUI()
-        {
+        {            
+            // 确保GUI样式已初始化
+            if (!_stylesInitialized)
+            {                
+                InitializeGuiStyles();
+                _stylesInitialized = true;
+            }
+            
             GUILayout.BeginHorizontal();
             
             // 第一列：数据类型列表

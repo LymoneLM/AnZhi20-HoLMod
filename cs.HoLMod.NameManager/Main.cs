@@ -72,11 +72,6 @@ namespace cs.HoLMod.NameManager
             try
             {
                 Logger.LogInfo("姓名管理器已加载！当前版本：" + CURRENT_VERSION);
-                Logger.LogInfo("当前姓氏数量：" + RandName.XingShi.Count);
-                Logger.LogInfo("当前男性名A数量：" + RandName.Nan_MingA.Count);
-                Logger.LogInfo("当前男性名B数量：" + RandName.Nan_MingB.Count);
-                Logger.LogInfo("当前女性名A数量：" + RandName.Nv_MingA.Count);
-                Logger.LogInfo("当前女性名B数量：" + RandName.Nv_MingB.Count);
                 
                 // 配置文件路径
                 string configFilePath = Path.Combine(Paths.ConfigPath, "cs.HoLMod.NameManager.AnZhi20.cfg");
@@ -194,58 +189,42 @@ namespace cs.HoLMod.NameManager
                         try
                         {
                             // 尝试获取原始RandName类型
-                                Type randNameType = Type.GetType("RandName");
+                            Type randNameType = Type.GetType("RandName");
+                            
+                            if (randNameType != null && randNameType.Assembly != Assembly.GetExecutingAssembly())
+                            {
+                                // 找到原始RandName类型（非占位符类）
+                                Logger.LogInfo("找到原始RandName类型，开始创建补丁...");
                                 
-                                if (randNameType != null && randNameType.Assembly != Assembly.GetExecutingAssembly())
+                                // 直接尝试修补RandName类中的数组，不依赖Start方法
+                                Logger.LogInfo("尝试直接修补RandName类中的数组...");
+                                TryPatchRandNameArraysDirectly(randNameType);
+                                
+                                // 为GetMemberNameShijia方法创建补丁
+                                MethodInfo getMemberNameMethod = randNameType.GetMethod("GetMemberNameShijia", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+                                if (getMemberNameMethod != null)
                                 {
-                                    // 找到原始RandName类型（非占位符类）
-                                    Logger.LogInfo("找到原始RandName类型，开始创建补丁...");
-                                    
-                                    // 为Start方法创建补丁
-                                    MethodInfo startMethod = randNameType.GetMethod("Start", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                                    if (startMethod != null)
+                                    MethodInfo patchGetMemberNameMethod = typeof(PluginMain).GetMethod("PatchGetMemberNameShijia", BindingFlags.NonPublic | BindingFlags.Static);
+                                    if (patchGetMemberNameMethod != null)
                                     {
-                                        MethodInfo patchAllNamesMethod = typeof(PluginMain).GetMethod("PatchAllNames", BindingFlags.NonPublic | BindingFlags.Static);
-                                        if (patchAllNamesMethod != null)
-                                        {
-                                            harmony.Patch(startMethod, postfix: new HarmonyMethod(patchAllNamesMethod));
-                                            Logger.LogInfo("成功为RandName.Start方法创建补丁。");
-                                        }
-                                        else
-                                        {
-                                            Logger.LogWarning("无法找到PatchAllNames方法，跳过该补丁。");
-                                        }
+                                        harmony.Patch(getMemberNameMethod, postfix: new HarmonyMethod(patchGetMemberNameMethod));
+                                        Logger.LogInfo("成功为RandName.GetMemberNameShijia方法创建补丁。");
                                     }
                                     else
                                     {
-                                        Logger.LogWarning("无法找到RandName.Start方法，跳过该补丁。");
-                                    }
-                                    
-                                    // 为GetMemberNameShijia方法创建补丁
-                                    MethodInfo getMemberNameMethod = randNameType.GetMethod("GetMemberNameShijia", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
-                                    if (getMemberNameMethod != null)
-                                    {
-                                        MethodInfo patchGetMemberNameMethod = typeof(PluginMain).GetMethod("PatchGetMemberNameShijia", BindingFlags.NonPublic | BindingFlags.Static);
-                                        if (patchGetMemberNameMethod != null)
-                                        {
-                                            harmony.Patch(getMemberNameMethod, postfix: new HarmonyMethod(patchGetMemberNameMethod));
-                                            Logger.LogInfo("成功为RandName.GetMemberNameShijia方法创建补丁。");
-                                        }
-                                        else
-                                        {
-                                            Logger.LogWarning("无法找到PatchGetMemberNameShijia方法，跳过该补丁。");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Logger.LogWarning("无法找到RandName.GetMemberNameShijia方法，跳过该补丁。");
+                                        Logger.LogWarning("无法找到PatchGetMemberNameShijia方法，跳过该补丁。");
                                     }
                                 }
                                 else
                                 {
-                                    // 使用占位符类，避免显示错误信息
-                                    Logger.LogInfo("使用内部RandName占位符类，确保插件功能可用。");
+                                    Logger.LogWarning("无法找到RandName.GetMemberNameShijia方法，跳过该补丁。");
                                 }
+                            }
+                            else
+                            {
+                                // 使用占位符类，避免显示错误信息
+                                Logger.LogInfo("使用内部RandName占位符类，确保插件功能可用。");
+                            }
                             
                             Logger.LogInfo("Harmony补丁创建过程已完成。");
                             Logger.LogInfo("Harmony patches creation process has been completed.");
@@ -327,7 +306,112 @@ namespace cs.HoLMod.NameManager
         }
         
         
-        // 合并所有修补方法到一个方法中，避免多次调用Start方法
+        // 尝试直接修补RandName类中的数组
+        private static void TryPatchRandNameArraysDirectly(Type randNameType)
+        {
+            try
+            {
+                Debug.Log("开始直接修补RandName类中的数组...");
+                
+                // 修补姓氏数组
+                FieldInfo xingShiField = randNameType.GetField("XingShi", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+                if (xingShiField != null)
+                {
+                    Debug.Log("找到XingShi字段，准备修补...");
+                    PatchFamilyNamesDirectly(xingShiField);
+                }
+                else
+                {
+                    Debug.LogWarning("无法找到XingShi字段");
+                }
+                
+                // 修补男性名字数组A
+                FieldInfo nanMingAField = randNameType.GetField("Nan_MingA", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+                if (nanMingAField != null)
+                {
+                    Debug.Log("找到Nan_MingA字段，准备修补...");
+                }
+                else
+                {
+                    Debug.LogWarning("无法找到Nan_MingA字段");
+                }
+                
+                // 修补男性名字数组B
+                FieldInfo nanMingBField = randNameType.GetField("Nan_MingB", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+                if (nanMingBField != null)
+                {
+                    Debug.Log("找到Nan_MingB字段，准备修补...");
+                }
+                else
+                {
+                    Debug.LogWarning("无法找到Nan_MingB字段");
+                }
+                
+                // 修补女性名字数组A
+                FieldInfo nvMingAField = randNameType.GetField("Nv_MingA", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+                if (nvMingAField != null)
+                {
+                    Debug.Log("找到Nv_MingA字段，准备修补...");
+                }
+                else
+                {
+                    Debug.LogWarning("无法找到Nv_MingA字段");
+                }
+                
+                // 修补女性名字数组B
+                FieldInfo nvMingBField = randNameType.GetField("Nv_MingB", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+                if (nvMingBField != null)
+                {
+                    Debug.Log("找到Nv_MingB字段，准备修补...");
+                }
+                else
+                {
+                    Debug.LogWarning("无法找到Nv_MingB字段");
+                }
+                
+                // 调用内部修补方法，它们将处理RandName类的静态字段
+                PatchFamilyNamesInternal();
+                PatchMaleNamesInternal();
+                PatchFemaleNamesInternal();
+                
+                Debug.Log("直接修补RandName类中的数组完成");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("直接修补RandName类中的数组时出错: " + ex.Message + "\n" + ex.StackTrace);
+            }
+        }
+        
+        // 直接修补姓氏数组
+        private static void PatchFamilyNamesDirectly(FieldInfo xingShiField)
+        {
+            try
+            {
+                // 获取当前的姓氏列表
+                object currentValue = xingShiField.GetValue(null); // 使用null获取静态字段
+                List<string> xingShiList;
+                
+                if (currentValue is List<string>)
+                {
+                    xingShiList = (List<string>)currentValue;
+                }
+                else
+                {
+                    // 如果不是List<string>，创建一个新的
+                    xingShiList = new List<string>();
+                    xingShiField.SetValue(null, xingShiList);
+                }
+                
+                // 在这里可以直接添加自定义姓氏
+                // 但我们还是使用现有的PatchFamilyNamesInternal方法，保持代码一致性
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("直接修补姓氏数组时出错: " + ex.Message);
+            }
+        }
+        
+        // 合并所有修补方法到一个方法中，作为备用方案
         [HarmonyPostfix]
         [HarmonyPatch(typeof(RandName), "Start")]
         public static void PatchAllNames(RandName __instance)
@@ -549,11 +633,14 @@ namespace cs.HoLMod.NameManager
                 }
                 
                 // 添加FemaleNameList中的女性名字首字（添加前检查是否存在，不添加重复项）
-                foreach (string femaleNameA in FemaleNameList.Nv_MingA)
+                if (FemaleNameList.Nv_MingA != null)
                 {
-                    if (!RandName.Nv_MingA.Contains(femaleNameA))
+                    foreach (string femaleNameA in FemaleNameList.Nv_MingA)
                     {
-                        RandName.Nv_MingA.Add(femaleNameA);
+                        if (!RandName.Nv_MingA.Contains(femaleNameA))
+                        {
+                            RandName.Nv_MingA.Add(femaleNameA);
+                        }
                     }
                 }
                 

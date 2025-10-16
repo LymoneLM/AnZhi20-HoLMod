@@ -29,6 +29,7 @@ public class WindowMain : MonoBehaviour
     private GUIStyle _boldLabelStyle;
     private GUIStyle _warningLabelStyle;
     private GUIStyle _errorLabelStyle;
+    private bool _stylesInitialized = false;
 
     // 窗口是否可见
     private bool _isVisible = false;
@@ -50,9 +51,6 @@ public class WindowMain : MonoBehaviour
         // 设置日志文件路径
         _logFilePath = Path.Combine(Application.persistentDataPath, "GameCheat.log");
         
-        // 初始化GUI样式
-        InitializeGuiStyles();
-        
         // 清理旧日志
         try
         {
@@ -70,7 +68,7 @@ public class WindowMain : MonoBehaviour
         }
         catch (Exception ex)
         {
-            _logger?.LogError("无法创建日志文件: " + ex.Message);
+            Debug.LogError("无法创建日志文件: " + ex.Message);
         }
     }
     
@@ -98,6 +96,13 @@ public class WindowMain : MonoBehaviour
     {
         if (!_isVisible)
             return;
+            
+        // 初始化GUI样式（只能在OnGUI内部调用）
+        if (!_stylesInitialized)
+        {
+            InitializeGuiStyles();
+            _stylesInitialized = true;
+        }
         
         // 创建窗口
         GUI.Window(0, new Rect(20, 20, 800, 600), DrawWindow, "HolMod 工具");

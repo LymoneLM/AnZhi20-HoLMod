@@ -1,0 +1,9 @@
+{
+    "name": "Tool",
+    "version_number": "1.0.0",
+    "website_url": "https://github.com/AnZhi20/AnZhi20-HoLMod",
+    "description": "在游戏内按Tab打开窗口可使用工具相关功能。Press Tab to open a window in the game to use tool related functions.",
+    "dependencies": [
+        "BepInEx-BepInExPack-5.4.2100"
+    ]
+}
