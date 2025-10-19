@@ -1,9 +1,0 @@
-{
-    "name": "NameManager",
-    "version_number": "1.0.0",
-    "website_url": "https://github.com/AnZhi20/AnZhi20-HoLMod",
-    "description": "可增加男性和女性姓名词库，可以不重名。You don't need to use the same name.Can add male and female name dictionaries.",
-    "dependencies": [
-        "BepInEx-BepInExPack-5.4.2100"
-    ]
-}
