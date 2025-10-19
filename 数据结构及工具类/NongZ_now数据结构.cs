@@ -17,7 +17,7 @@ namespace cs.HoLMod.NongZ_nowData
             public const int UNKNOWN_1 = 1;          // 未知
             public const int LAND_FERTILITY = 2;     // 土地肥力
             public const int RENT = 3;               // 地租
-            public const int COORDINATES = 4;        // 坐标（郡索引|县索引）
+            public const int COORDINATES = 4;        // 坐标（如果是大地图：郡索引|县索引；如果是封地：x坐标|y坐标）
             public const int AREA = 5;               // 面积
             public const int FARM_NAME = 6;          // 农庄名字
             public const int MAX_FARMERS = 7;        // 可居住农户数量
