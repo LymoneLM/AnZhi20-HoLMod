@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace cs.HoLMod.FengDiEditor
 {
-    internal class EditorWindow
+    internal class FengDiEditorWindow
     {
         private Rect windowRect = new Rect(20, 20, 500, 400);
         private Rect modifyWindowRect = new Rect(250, 100, 600, 500);
@@ -27,7 +27,7 @@ namespace cs.HoLMod.FengDiEditor
         public delegate void ModifyConfirmHandler(string modifyType, int levelIndex, int itemIndex, Dictionary<string, string> values);
         public event ModifyConfirmHandler OnModifyConfirmed;
 
-        public EditorWindow()
+        public FengDiEditorWindow()
         {
             languageManager = LanguageManager.Instance;
         }
