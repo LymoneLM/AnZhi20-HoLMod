@@ -345,10 +345,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cun_now数据结构.cs" />
+    <Compile Include="Hu_Now数据结构.cs" />
+    <Compile Include="JunXianList.cs" />
+    <Compile Include="JunYing_now数据结构.cs" />
+    <Compile Include="Kong_now数据结构.cs" />
     <Compile Include="LanguageManager.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="NongZ_now数据结构.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sen_Now数据结构.cs" />
+    <Compile Include="Shan_now数据结构.cs" />
     <Compile Include="Windows.cs" />
+    <Compile Include="Zhen_now数据结构.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
