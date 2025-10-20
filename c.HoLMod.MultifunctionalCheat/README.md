@@ -1,6 +1,6 @@
 # 多功能修改 MultifunctionalCheat
 
-提供城中可招门客上限、可建民居上限、可建商铺上限、商铺兑换元宝上限与家族全角色体力上限、科举人数上限、男女生育最大子嗣上限修改和可生育年龄上下限修改。Provide modifications to the upper limits of the city's ability to recruit customers, build residential buildings, build commercial properties, exchange ingots for commercial properties, and the physical strength of all family members, as well as the maximum number of candidates for the imperial examination, the maximum number of male and female children, and the upper and lower limits of the age limit for childbirth.
+提供城中可招门客上限、可建民居上限和民居价格折扣、可建商铺上限、商铺兑换元宝上限与家族全角色体力上限、科举人数上限、男女生育最大子嗣上限修改和可生育年龄上下限修改。Provide modifications to the maximum number of potential customers that can be recruited in the city, the maximum number of residential buildings that can be built, discounts on residential prices, the maximum number of shops that can be built, the maximum number of ingots that can be exchanged for shops, the maximum physical strength of all family members, the maximum number of candidates for the imperial examination, the maximum number of male and female children, and the upper and lower limits of the age limit for childbirth.
 
 ## 📦 安装 Installation
 

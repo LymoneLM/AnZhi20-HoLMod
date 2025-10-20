@@ -9,12 +9,19 @@ using UnityEngine;
 
 namespace MultifunctionalCheat
 {
-    
-    [BepInPlugin("cs.HoLMod.MultifunctionalCheat.AnZhi20", "HoLMod.MultifunctionalCheat", "1.3.0")]
+    // 插件信息类
+    public static class PluginInfo
+    {
+        public const string PLUGIN_GUID = "cs.HoLMod.MultifunctionalCheat.AnZhi20";
+        public const string PLUGIN_NAME = "HoLMod.MultifunctionalCheat";
+        public const string PLUGIN_VERSION = "1.4.0";
+        public const string PLUGIN_CONFIG = "cs.HoLMod.MultifunctionalCheat.AnZhi20.cfg";
+    }
+    [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class PluginMain : BaseUnityPlugin
     {
         // 当前插件版本
-        private const string CURRENT_VERSION = "1.3.0"; // 与BepInPlugin属性中定义的版本保持一致
+        private const string CURRENT_VERSION = PluginInfo.PLUGIN_VERSION; // 与BepInPlugin属性中定义的版本保持一致
         
         private void Awake()
         {
@@ -22,7 +29,7 @@ namespace MultifunctionalCheat
             Logger.LogInfo("The multifunctional modifier has been loaded! Current version:" + CURRENT_VERSION);
             
             // 配置文件路径
-            string configFilePath = Path.Combine(Paths.ConfigPath, "cs.HoLMod.MultifunctionalCheat.AnZhi20.cfg");
+            string configFilePath = Path.Combine(Paths.ConfigPath, PluginInfo.PLUGIN_CONFIG);
             
             try
             {
@@ -71,6 +78,7 @@ namespace MultifunctionalCheat
             PluginMain.城中商铺兑换元宝上限 = base.Config.Bind<int>("倍率调整（Magnification）", "城中商铺兑换元宝上限倍数（CityShopExchangeGoldMultiplier）", 1, "所有城中每个商铺可兑换元宝上限=钱庄等级*10*城中商铺兑换元宝上限倍数，填1为不修改（The maximum gold exchange per shop in the city = bank level * 10 * CityShopExchangeGoldMultiplier , default: 1）");
             PluginMain.科举人数上限 = base.Config.Bind<int>("倍率调整（Magnification）", "科举人数上限倍数（ExaminationNumMaxMultiplier）", 1, "科举可选人数上限=家族等级*科举人数上限倍数，填1为不修改（The maximum number of candidates for the exam = family level * ExaminationNumMaxMultiplier , default: 1）");
             PluginMain.最大子嗣上限 = base.Config.Bind<int>("倍率调整（Magnification）", "最大子嗣上限倍数（MaxOffspringNumMultiplier）", 1, "每个女性可以生的子嗣上限=1（或2）*最大子嗣上限倍数，填1为不修改（The maximum number of children that each woman can have = 1（or 2） * MaxOffspringNumMultiplier , default: 1）");
+            PluginMain.民居售价折扣 = base.Config.Bind<float>("倍率调整（Magnification）", "民居售价折扣（HousePriceMultiplier）", 10, "每个民居的售价=默认售价*民居售价折扣/10，填10为不修改（The price of each house = default price * HousePriceMultiplier /10, default: 10）");
             
             // 生育年龄相关配置
             PluginMain.最小生育年龄 = base.Config.Bind<int>("怀孕年龄（Pregnancy Age）", "最小生育年龄（Min age）", 18, "女性可怀孕的最小年龄，最好不要低于18岁，人不能至少不应该（The minimum age at which women can become pregnant,it is best not to be under 18 years old, as people should not be at least）");
@@ -145,13 +153,6 @@ namespace MultifunctionalCheat
         }
 
         
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(H_MinJuPanelA), "OnEnableData")]
-        public static void H_MinJuPanelA_OnEnableData(H_MinJuPanelA __instance)
-        {
-        }
-
-        
         [HarmonyPrefix]
         [HarmonyPatch(typeof(FormulaData), "YunBaoToCoinsNum")]
         public static bool YunBaoToCoinsNum(FormulaData __instance, ref int __result, ref int ShopLv)
@@ -202,6 +203,30 @@ namespace MultifunctionalCheat
             Mainload.OldShengYu = new List<int> { PluginMain.最小生育年龄.Value, PluginMain.最大生育年龄.Value };
         }
         
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(H_MinJuPanelA), "OnEnableData")]
+        public static void H_MinJuPanelA_OnEnableData(H_MinJuPanelA __instance)
+        {
+            // 获取 H_MinJuPanelA 实例中的 BuyMunjuCost 字段
+            // 通过反射获取私有字段
+            var fieldInfo = typeof(H_MinJuPanelA).GetField("BuyMunjuCost", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (fieldInfo != null)
+            {
+                // 获取原始值
+                int originalCost = (int)fieldInfo.GetValue(__instance);
+                
+                // 应用折扣计算
+                float discountMultiplier = PluginMain.民居售价折扣.Value / 10f;
+                int discountedCost = Mathf.FloorToInt((float)originalCost * discountMultiplier);
+                
+                // 确保价格不低于1
+                discountedCost = Math.Max(1, discountedCost);
+                
+                // 设置新值
+                fieldInfo.SetValue(__instance, discountedCost);
+            }
+        }
+        
         public static ConfigEntry<int> 城中可招门客上限倍数;
         public static ConfigEntry<int> 城中可建民居上限倍数;
         public static ConfigEntry<int> 城中可建商铺上限倍数;
@@ -211,6 +236,7 @@ namespace MultifunctionalCheat
         public static ConfigEntry<int> 最大子嗣上限;
         public static ConfigEntry<int> 最小生育年龄;
         public static ConfigEntry<int> 最大生育年龄;
+        public static ConfigEntry<float> 民居售价折扣;
         
         
     }

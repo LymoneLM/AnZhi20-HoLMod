@@ -1,3 +1,7 @@
+### v1.4.0
+
+- 增加民居售卖价格折扣修改，10折为不修改（应该没人会反向打折吧？）。Add a discount on the sale price of residential properties and change it to 10% without modification (probably no one would reverse the discount, right?).
+
 ### v1.3.0
 
 - 增加最大和最小的可生育年龄修改。Increase the maximum and minimum reproductive age modifications.
