@@ -577,14 +577,17 @@ namespace cs.HoLMod.AddItem
             
             // 初始化分辨率设置
             UpdateResolutionSettings();
-            
+        }
+
+        private void Start()
+        {
             // 加载游戏物品到字典，并根据当前语言环境选择显示中文或英文名称
             LoadGameItemsToDictionary.LoadItems(itemList, LanguageManager.Instance.IsChineseLanguage());
             
             // 初始化筛选后的物品列表
             filteredItemIds = itemList.Keys.ToList();
         }
-        
+
         private void Update()
         {
             // 按F2键切换窗口显示
