@@ -103,7 +103,7 @@ namespace cs.HoLMod.TaskCheat
                             {
                                 if (addedCount > 0)
                                 {
-                                    TaskCheat.Instance.ShowNotification(LanguageManager.GetFormattedText("SuccessfullyAddedTasks", addedCount));
+                                    TaskCheat.Instance.ShowNotification(LanguageManager.GetFormattedText("成功添加了 {0} 个任务！", addedCount));
                                 }
                                 /*
                                 else
@@ -117,13 +117,13 @@ namespace cs.HoLMod.TaskCheat
                 catch (Exception ex)
                 {
                     // 记录异常信息
-                    TaskCheat.Log?.LogError(LanguageManager.GetText("TaskAddError") + ex.Message);
+                    TaskCheat.Log?.LogError(LanguageManager.GetText("任务添加错误") + ex.Message);
                     TaskCheat.Log?.LogError(ex.StackTrace);
                     
                     // 显示错误提示
                     if (TaskCheat.Instance != null)
                     {
-                        TaskCheat.Instance.ShowNotification(LanguageManager.GetText("TaskAddFailed"));
+                        TaskCheat.Instance.ShowNotification(LanguageManager.GetText("任务添加失败"));
                     }
                 }
                 
