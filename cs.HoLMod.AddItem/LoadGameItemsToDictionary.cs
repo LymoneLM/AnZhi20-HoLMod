@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-
 namespace cs.HoLMod.AddItem
 {
     internal class LoadGameItemsToDictionary
