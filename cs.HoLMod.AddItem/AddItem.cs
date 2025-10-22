@@ -4,14 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using BepInEx;
 using BepInEx.Configuration;
-using HarmonyLib;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 namespace cs.HoLMod.AddItem
 {
@@ -25,6 +20,8 @@ namespace cs.HoLMod.AddItem
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class AddItem : BaseUnityPlugin
     {
+        private static ConfigEntry<string> Version;
+        
         // 窗口设置
         private static Rect windowRect;
         private static bool showMenu = false;// 滚动位置
@@ -569,70 +566,28 @@ namespace cs.HoLMod.AddItem
         {
             Logger.LogInfo("物品添加器已加载！");
             
-            // 配置文件路径
-            string configFilePath = Path.Combine(Paths.ConfigPath, "cs.HoLMod.AddItem.AnZhi20.cfg");
-            
-            // 获取配置文件中的版本信息（如果存在）
-            string loadedVersion = "";
-            if (File.Exists(configFilePath))
-            {
-                try
-                {
-                    foreach (string line in File.ReadAllLines(configFilePath))
-                    {
-                        if (line.Trim().StartsWith("已加载版本 = "))
-                        {
-                            loadedVersion = line.Substring("已加载版本 = ".Length).Trim('"');
-                            break;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWarning("读取配置文件版本信息时出错: " + ex.Message);
-                }
-            }
+            Version = Config.Bind("内部配置", "已加载版本", CURRENT_VERSION, "用于跟踪插件版本，请勿手动修改");
             
             // 检查是否需要更新配置
-            bool isVersionUpdated = loadedVersion != CURRENT_VERSION;
-            
-            // 如果版本更新，删除配置文件
-            if (isVersionUpdated)
+            if (Version.Value != CURRENT_VERSION)
             {
-                Logger.LogInfo($"检测到插件版本更新至 {CURRENT_VERSION}，正在删除旧配置文件...");
-                
-                try
-                {
-                    if (File.Exists(configFilePath))
-                    {
-                        File.Delete(configFilePath);
-                        Logger.LogInfo("旧配置文件已删除。");
-                    }
-                    
-                    // 只保存版本信息，不保存窗口大小配置
-                    Config.Bind("内部配置", "已加载版本", CURRENT_VERSION, "用于跟踪插件版本，请勿手动修改");
-                    
-                    // 保存新的配置文件
-                    Config.Save();
-                    
-                    Logger.LogInfo("配置文件已成功重新生成。");
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("重新生成配置文件时出错: " + ex.Message);
-                }
+                Logger.LogInfo($"检测到插件版本更新至 {CURRENT_VERSION}，更新配置文件...");
+                Version.Value = CURRENT_VERSION;
             }
             
             // 初始化分辨率设置
             UpdateResolutionSettings();
-            
+        }
+
+        private void Start()
+        {
             // 加载游戏物品到字典，并根据当前语言环境选择显示中文或英文名称
             LoadGameItemsToDictionary.LoadItems(itemList, LanguageManager.Instance.IsChineseLanguage());
             
             // 初始化筛选后的物品列表
             filteredItemIds = itemList.Keys.ToList();
         }
-        
+
         private void Update()
         {
             // 按F2键切换窗口显示
