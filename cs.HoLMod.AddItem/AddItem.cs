@@ -505,7 +505,7 @@ namespace cs.HoLMod.AddItem
         private string selectedCategory = "";
 
         // 当前插件版本
-        private const string CURRENT_VERSION = "2.5.0";
+        private const string CURRENT_VERSION = PLUGIN_VERSION;
         
         // 分辨率缩放因子
         private float scaleFactor = 1.0f;
@@ -570,58 +570,30 @@ namespace cs.HoLMod.AddItem
         {
             Logger.LogInfo("物品添加器已加载！");
             
-            // 配置文件路径
-            string configFilePath = Path.Combine(Paths.ConfigPath, "cs.HoLMod.AddItem.AnZhi20.cfg");
-            
-            // 获取配置文件中的版本信息（如果存在）
-            string loadedVersion = "";
-            if (File.Exists(configFilePath))
+            // 版本检查逻辑
+            try
             {
-                try
-                {
-                    foreach (string line in File.ReadAllLines(configFilePath))
-                    {
-                        if (line.Trim().StartsWith("已加载版本 = "))
-                        {
-                            loadedVersion = line.Substring("已加载版本 = ".Length).Trim('"');
-                            break;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWarning("读取配置文件版本信息时出错: " + ex.Message);
-                }
-            }
-            
-            // 检查是否需要更新配置
-            bool isVersionUpdated = loadedVersion != CURRENT_VERSION;
-            
-            // 如果版本更新，删除配置文件
-            if (isVersionUpdated)
-            {
-                Logger.LogInfo($"检测到插件版本更新至 {CURRENT_VERSION}，正在删除旧配置文件...");
+                // 获取之前保存的版本
+                string savedVersion = Config.Bind("内部配置", "已加载版本", "", "用于跟踪插件版本，请勿手动修改").Value;
                 
-                try
+                // 检查版本是否更新
+                if (savedVersion != CURRENT_VERSION)
                 {
-                    if (File.Exists(configFilePath))
-                    {
-                        File.Delete(configFilePath);
-                        Logger.LogInfo("旧配置文件已删除。");
-                    }
+                    Logger.LogInfo($"检测到插件版本更新至 {CURRENT_VERSION}，正在清除配置...");
                     
-                    // 只保存版本信息，不保存窗口大小配置
+                    // 清除配置
+                    Config.Clear();
+                    
+                    // 保存新版本信息
                     Config.Bind("内部配置", "已加载版本", CURRENT_VERSION, "用于跟踪插件版本，请勿手动修改");
-                    
-                    // 保存新的配置文件
                     Config.Save();
                     
-                    Logger.LogInfo("配置文件已成功重新生成。");
+                    Logger.LogInfo("配置已成功清除并更新版本信息。");
                 }
-                catch (Exception ex)
-                {
-                    Logger.LogError("重新生成配置文件时出错: " + ex.Message);
-                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("版本检查时出错: " + ex.Message);
             }
             
             // 初始化分辨率设置
