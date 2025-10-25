@@ -43,9 +43,15 @@ namespace MultifunctionalCheat
                         string line;
                         while ((line = reader.ReadLine()) != null)
                         {
-                            if (line.StartsWith("已加载版本（Loaded Version） = "))
+                            // 修改：使用更宽松的匹配方式，不依赖等号前后空格
+                            if (line.Contains("已加载版本（Loaded Version）"))
                             {
-                                loadedVersion = line.Substring(29).Trim();
+                                // 使用IndexOf('=')找到等号位置，然后提取等号后面的内容
+                                int equalsIndex = line.IndexOf('=');
+                                if (equalsIndex > 0)
+                                {
+                                    loadedVersion = line.Substring(equalsIndex + 1).Trim();
+                                }
                                 break;
                             }
                         }
@@ -294,6 +300,79 @@ namespace MultifunctionalCheat
                         }
                     }
                     
+                    // 清理重复段落和配置项
+                    Logger.LogInfo("开始清理配置文件中的重复内容...");
+                    List<string> cleanedLines = new List<string>();
+                    HashSet<string> seenSections = new HashSet<string>();
+                    HashSet<string> seenConfigs = new HashSet<string>();
+                    string currentSectionClean = "";
+                    int duplicateCount = 0;
+                    
+                    for (int i = 0; i < fileLines.Count; i++)
+                    {
+                        string line = fileLines[i];
+                        
+                        // 处理段落标记
+                        if (line.Trim().StartsWith("["))
+                        {
+                            string section = line.Trim();
+                            // 检查是否重复段落
+                            if (seenSections.Contains(section))
+                            {
+                                // 标记进入重复段落，跳过其内容
+                                currentSectionClean = "DUPLICATE:" + section;
+                                duplicateCount++;
+                                Logger.LogInfo($"检测到重复段落: {section}");
+                                continue;
+                            }
+                            else
+                            {
+                                seenSections.Add(section);
+                                currentSectionClean = section;
+                                cleanedLines.Add(line);
+                            }
+                        }
+                        // 处理配置项
+                        else if (!string.IsNullOrWhiteSpace(line) && !line.Trim().StartsWith("#") && 
+                                 currentSectionClean != "" && !currentSectionClean.StartsWith("DUPLICATE:"))
+                        {
+                            int equalsIndex = line.IndexOf('=');
+                            if (equalsIndex > 0)
+                            {
+                                string configKey = currentSectionClean + ":" + line.Substring(0, equalsIndex).Trim();
+                                // 检查是否重复配置项
+                                if (seenConfigs.Contains(configKey))
+                                {
+                                    duplicateCount++;
+                                    Logger.LogInfo($"检测到重复配置项: {configKey}");
+                                    continue;
+                                }
+                                else
+                                {
+                                    seenConfigs.Add(configKey);
+                                    cleanedLines.Add(line);
+                                }
+                            }
+                            else
+                            {
+                                cleanedLines.Add(line);
+                            }
+                        }
+                        // 保留注释、空行和非重复段落的内容
+                        else if (currentSectionClean == "" || !currentSectionClean.StartsWith("DUPLICATE:"))
+                        {
+                            cleanedLines.Add(line);
+                        }
+                    }
+                    
+                    // 如果清理后有变化，使用清理后的行
+                    if (duplicateCount > 0)
+                    {
+                        fileLines = cleanedLines;
+                        hasChanges = true;
+                        Logger.LogInfo($"成功清理了 {duplicateCount} 个重复项");
+                    }
+                    
                     // 更新内部版本参数为当前版本（无论是否有其他更改）
                     bool versionUpdated = false;
                     for (int i = 0; i < fileLines.Count; i++)
@@ -305,9 +384,10 @@ namespace MultifunctionalCheat
                             for (int j = i + 1; j < fileLines.Count; j++)
                             {
                                 string versionLine = fileLines[j];
-                                if (versionLine.Trim().StartsWith("已加载版本（Loaded Version）="))
+                                // 使用更宽松的匹配方式，不依赖等号前后空格
+                                if (versionLine.Trim().StartsWith("已加载版本（Loaded Version）"))
                                 {
-                                    // 更新版本号为当前版本
+                                    // 更新版本号为当前版本，使用统一的格式
                                     fileLines[j] = "已加载版本（Loaded Version）= " + PluginMain.CURRENT_VERSION;
                                     versionUpdated = true;
                                     hasChanges = true;
