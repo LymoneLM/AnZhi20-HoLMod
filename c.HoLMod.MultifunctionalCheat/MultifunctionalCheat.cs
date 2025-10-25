@@ -14,13 +14,13 @@ namespace MultifunctionalCheat
     {
         public const string PLUGIN_GUID = "cs.HoLMod.MultifunctionalCheat.AnZhi20";
         public const string PLUGIN_NAME = "HoLMod.MultifunctionalCheat";
-        public const string PLUGIN_VERSION = "1.6.0";
+        public const string PLUGIN_VERSION = "1.7.0";
         public const string PLUGIN_CONFIG = "cs.HoLMod.MultifunctionalCheat.AnZhi20.cfg";
     }
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class PluginMain : BaseUnityPlugin
     {
-        // 当前插件版本（设为public static以便其他方法访问）
+        // 当前插件版本
         public static readonly string CURRENT_VERSION = PluginInfo.PLUGIN_VERSION; // 与BepInPlugin属性中定义的版本保持一致
         
         private void Awake()
@@ -28,155 +28,25 @@ namespace MultifunctionalCheat
             Logger.LogInfo("多功能修改器已加载！当前版本：" + CURRENT_VERSION);
             Logger.LogInfo("The multifunctional modifier has been loaded! Current version:" + CURRENT_VERSION);
             
-            // 配置文件路径
-            string configFilePath = Path.Combine(Paths.ConfigPath, PluginInfo.PLUGIN_CONFIG);
+            // 版本检测逻辑
+            bool isVersionUpdated = false;
+            string loadedVersion = null;
             
-            try
+            // 尝试从配置中读取已加载的版本
+            ConfigEntry<string> loadedVersionEntry = base.Config.Bind<string>("内部配置（Internal Settings）", "已加载版本（Loaded Version）", CURRENT_VERSION, "用于跟踪插件版本，请勿手动修改");
+            loadedVersion = loadedVersionEntry.Value;
+            
+            // 检查版本是否更新
+            if (loadedVersion != CURRENT_VERSION)
             {
-                // 检查是否存在配置文件
-                if (File.Exists(configFilePath))
-                {
-                    // 读取配置文件中的版本信息
-                    string loadedVersion = "";
-                    using (StreamReader reader = new StreamReader(configFilePath))
-                    {
-                        string line;
-                        while ((line = reader.ReadLine()) != null)
-                        {
-                            // 修改：使用更宽松的匹配方式，不依赖等号前后空格
-                            if (line.Contains("已加载版本（Loaded Version）"))
-                            {
-                                // 使用IndexOf('=')找到等号位置，然后提取等号后面的内容
-                                int equalsIndex = line.IndexOf('=');
-                                if (equalsIndex > 0)
-                                {
-                                    loadedVersion = line.Substring(equalsIndex + 1).Trim();
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    
-                    // 检查是否需要更新配置
-                    bool isVersionUpdated = loadedVersion != CURRENT_VERSION;
-                    
-                    // 如果版本更新，保存原有配置数据后删除配置文件
-                    if (isVersionUpdated)
-                    {
-                        Logger.LogInfo($"检测到插件版本更新至 {CURRENT_VERSION}，正在保存原有配置数据...");
-                        Logger.LogInfo($"Detected plugin version update to {CURRENT_VERSION}, saving existing configuration data...");
-                        
-                        // 保存原有配置数据
-                        Dictionary<string, string> oldConfigData = new Dictionary<string, string>();
-                        if (!File.Exists(configFilePath))
-                        {
-                            Logger.LogWarning("配置文件不存在，无法保存原有配置数据。");
-                            Logger.LogWarning("Configuration file does not exist, cannot save original configuration data.");
-                        }
-                        else
-                        {
-                            using (StreamReader reader = new StreamReader(configFilePath))
-                            {
-                                string line;
-                                string currentSection = "";
-                                
-                                while ((line = reader.ReadLine()) != null)
-                                {
-                                    // 跳过注释和空行
-                                    if (string.IsNullOrWhiteSpace(line) || line.Trim().StartsWith("#"))
-                                    {
-                                        continue;
-                                    }
-                                    
-                                    // 检测段落标记
-                                    if (line.StartsWith("["))
-                                    {
-                                        currentSection = line.Trim();
-                                        continue;
-                                    }
-                                    
-                                    // 解析配置项
-                                    int equalsIndex = line.IndexOf('=');
-                                    if (equalsIndex > 0 && !string.IsNullOrEmpty(currentSection))
-                                    {
-                                        string key = currentSection + ":" + line.Substring(0, equalsIndex).Trim();
-                                        string value = line.Substring(equalsIndex + 1).Trim();
-                                        oldConfigData[key] = value;
-                                    }
-                                }
-                            }
-                        }
-                        
-                        // 删除旧配置文件前确保它存在
-                        if (File.Exists(configFilePath))
-                        {
-                            try
-                            {
-                                // 确保没有文件句柄被锁定
-                                File.Delete(configFilePath);
-                                
-                                // 验证文件是否真的被删除
-                                if (!File.Exists(configFilePath))
-                                {
-                                    Logger.LogInfo("旧配置文件已成功删除。");
-                                    Logger.LogInfo("Old configuration file has been successfully deleted.");
-                                    Logger.LogInfo("确认旧配置文件已被完全删除。");
-                                    Logger.LogInfo("Confirmed old configuration file has been completely deleted.");
-                                }
-                                else
-                                {
-                                    Logger.LogWarning("警告：旧配置文件可能未被完全删除。");
-                                    Logger.LogWarning("Warning: Old configuration file may not have been completely deleted.");
-                                    
-                                    // 尝试使用另一种方式删除
-                                    try
-                                    {
-                                        // 设置为正常属性（以防只读）
-                                        File.SetAttributes(configFilePath, FileAttributes.Normal);
-                                        File.Delete(configFilePath);
-                                        
-                                        if (!File.Exists(configFilePath))
-                                        {
-                                            Logger.LogInfo("通过备用方法成功删除旧配置文件。");
-                                            Logger.LogInfo("Successfully deleted old configuration file using alternative method.");
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Logger.LogError($"备用删除方法失败: {ex.Message}");
-                                    }
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.LogError($"删除旧配置文件时发生错误: {ex.Message}");
-                            }
-                        }
-                        else
-                        {
-                            Logger.LogWarning("未找到配置文件：" + configFilePath);
-                            Logger.LogWarning("Configuration file not found: " + configFilePath);
-                        }
-                        
-                        try
-                        {
-                            // 保存旧配置数据，以便在新配置文件生成后恢复
-                            PluginMain._tempOldConfigData = oldConfigData;
-                            Logger.LogInfo("已保存旧配置数据，将在新配置文件生成后恢复。");
-                            Logger.LogInfo("Old configuration data saved, will be restored after new config file generation.");
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.LogError("保存临时配置数据时出错: " + ex.Message);
-                            // 释放资源
-                            oldConfigData.Clear();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("读取或删除配置文件时出错: " + ex.Message);
+                Logger.LogInfo("检测到插件版本更新：" + loadedVersion + " -> " + CURRENT_VERSION);
+                Logger.LogInfo("Plugin version update detected: " + loadedVersion + " -> " + CURRENT_VERSION);
+                isVersionUpdated = true;
+                
+                // 清除旧配置
+                base.Config.Clear();
+                Logger.LogInfo("已清除旧配置");
+                Logger.LogInfo("Old configuration has been cleared");
             }
             
             // 配置游戏倍率（无论是否删除配置文件都会执行，确保配置项存在）
@@ -206,271 +76,6 @@ namespace MultifunctionalCheat
             
             // 保存配置文件
             base.Config.Save();
-            
-            // 恢复旧配置数据（如果有）
-            if (PluginMain._tempOldConfigData != null && PluginMain._tempOldConfigData.Count > 0)
-            {
-                try
-                {
-                    Logger.LogInfo("正在恢复原有配置数据...");
-                    Logger.LogInfo("Restoring existing configuration data...");
-                    
-                    string newConfigFilePath = Path.Combine(Paths.ConfigPath, PluginInfo.PLUGIN_CONFIG);
-                    
-                    // 确保新配置文件存在
-                    if (!File.Exists(newConfigFilePath))
-                    {
-                        Logger.LogError("错误：新配置文件不存在，无法恢复配置数据。");
-                        Logger.LogError("Error: New configuration file does not exist, cannot restore configuration data.");
-                        return;
-                    }
-                    
-                    // 读取新生成的配置文件内容
-                    List<string> fileLines = new List<string>();
-                    string currentSection = "";
-                    int originalConfigCount = 0;
-                    
-                    using (StreamReader reader = new StreamReader(newConfigFilePath))
-                    {
-                        string line;
-                        while ((line = reader.ReadLine()) != null)
-                        {
-                            fileLines.Add(line);
-                            
-                            // 跳过注释和空行，统计有效配置项数量
-                            if (!string.IsNullOrWhiteSpace(line) && !line.Trim().StartsWith("#") && !line.StartsWith("["))
-                            {
-                                int equalsIndex = line.IndexOf('=');
-                                if (equalsIndex > 0)
-                                {
-                                    originalConfigCount++;
-                                }
-                            }
-                        }
-                    }
-                    
-                    Logger.LogInfo($"新配置文件中的有效配置项数量: {originalConfigCount}");
-                    
-                    // 恢复配置数据
-                    bool hasChanges = false;
-                    int restoredConfigCount = 0;
-                    
-                    for (int i = 0; i < fileLines.Count; i++)
-                    {
-                        string line = fileLines[i];
-                        
-                        // 跳过注释和空行
-                        if (string.IsNullOrWhiteSpace(line) || line.Trim().StartsWith("#"))
-                        {
-                            continue;
-                        }
-                        
-                        // 检测段落标记
-                        if (line.StartsWith("["))
-                        {
-                            currentSection = line.Trim();
-                            continue;
-                        }
-                        
-                        // 解析配置项
-                        int equalsIndex = line.IndexOf('=');
-                        if (equalsIndex > 0 && !string.IsNullOrEmpty(currentSection))
-                        {
-                            string key = currentSection + ":" + line.Substring(0, equalsIndex).Trim();
-                            
-                            // 跳过内部配置中的版本参数，确保它始终使用当前版本
-                            if (currentSection == "[内部配置（Internal Settings）]" && 
-                                line.Substring(0, equalsIndex).Trim() == "已加载版本（Loaded Version）")
-                            {
-                                // 确保版本号始终为当前版本，无需从旧配置恢复
-                                Logger.LogInfo("保持内部版本参数为当前版本: " + PluginMain.CURRENT_VERSION);
-                                continue;
-                            }
-                            
-                            // 如果旧配置中有这个配置项
-                            if (PluginMain._tempOldConfigData.ContainsKey(key))
-                            {
-                                // 更新为旧配置的值
-                                string oldValue = PluginMain._tempOldConfigData[key];
-                                fileLines[i] = line.Substring(0, equalsIndex + 1).Trim() + " " + oldValue;
-                                hasChanges = true;
-                                restoredConfigCount++;
-                                Logger.LogInfo($"恢复配置项: {key} = {oldValue}");
-                            }
-                        }
-                    }
-                    
-                    // 清理重复段落和配置项
-                    Logger.LogInfo("开始清理配置文件中的重复内容...");
-                    List<string> cleanedLines = new List<string>();
-                    HashSet<string> seenSections = new HashSet<string>();
-                    HashSet<string> seenConfigs = new HashSet<string>();
-                    string currentSectionClean = "";
-                    int duplicateCount = 0;
-                    
-                    for (int i = 0; i < fileLines.Count; i++)
-                    {
-                        string line = fileLines[i];
-                        
-                        // 处理段落标记
-                        if (line.Trim().StartsWith("["))
-                        {
-                            string section = line.Trim();
-                            // 检查是否重复段落
-                            if (seenSections.Contains(section))
-                            {
-                                // 标记进入重复段落，跳过其内容
-                                currentSectionClean = "DUPLICATE:" + section;
-                                duplicateCount++;
-                                Logger.LogInfo($"检测到重复段落: {section}");
-                                continue;
-                            }
-                            else
-                            {
-                                seenSections.Add(section);
-                                currentSectionClean = section;
-                                cleanedLines.Add(line);
-                            }
-                        }
-                        // 处理配置项
-                        else if (!string.IsNullOrWhiteSpace(line) && !line.Trim().StartsWith("#") && 
-                                 currentSectionClean != "" && !currentSectionClean.StartsWith("DUPLICATE:"))
-                        {
-                            int equalsIndex = line.IndexOf('=');
-                            if (equalsIndex > 0)
-                            {
-                                string configKey = currentSectionClean + ":" + line.Substring(0, equalsIndex).Trim();
-                                // 检查是否重复配置项
-                                if (seenConfigs.Contains(configKey))
-                                {
-                                    duplicateCount++;
-                                    Logger.LogInfo($"检测到重复配置项: {configKey}");
-                                    continue;
-                                }
-                                else
-                                {
-                                    seenConfigs.Add(configKey);
-                                    cleanedLines.Add(line);
-                                }
-                            }
-                            else
-                            {
-                                cleanedLines.Add(line);
-                            }
-                        }
-                        // 保留注释、空行和非重复段落的内容
-                        else if (currentSectionClean == "" || !currentSectionClean.StartsWith("DUPLICATE:"))
-                        {
-                            cleanedLines.Add(line);
-                        }
-                    }
-                    
-                    // 如果清理后有变化，使用清理后的行
-                    if (duplicateCount > 0)
-                    {
-                        fileLines = cleanedLines;
-                        hasChanges = true;
-                        Logger.LogInfo($"成功清理了 {duplicateCount} 个重复项");
-                    }
-                    
-                    // 更新内部版本参数为当前版本（无论是否有其他更改）
-                    bool versionUpdated = false;
-                    for (int i = 0; i < fileLines.Count; i++)
-                    {
-                        string line = fileLines[i];
-                        if (line.Contains("[内部配置（Internal Settings）]"))
-                        {
-                            // 找到内部配置部分，继续查找版本参数行
-                            for (int j = i + 1; j < fileLines.Count; j++)
-                            {
-                                string versionLine = fileLines[j];
-                                // 使用更宽松的匹配方式，不依赖等号前后空格
-                                if (versionLine.Trim().StartsWith("已加载版本（Loaded Version）"))
-                                {
-                                    // 更新版本号为当前版本，使用统一的格式
-                                    fileLines[j] = "已加载版本（Loaded Version）= " + PluginMain.CURRENT_VERSION;
-                                    versionUpdated = true;
-                                    hasChanges = true;
-                                    Logger.LogInfo("自动更新内部版本参数为: " + PluginMain.CURRENT_VERSION);
-                                    break;
-                                }
-                                // 如果遇到新的段落标记，结束查找
-                                else if (versionLine.StartsWith("["))
-                                {
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                    }
-                    
-                    // 如果有更改，写回配置文件
-                    if (hasChanges)
-                    {
-                        // 确保文件可以写入，使用FileMode.Create确保完全覆盖文件
-                        try
-                        {
-                            using (FileStream fs = new FileStream(newConfigFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
-                            using (StreamWriter writer = new StreamWriter(fs))
-                            {
-                                foreach (string line in fileLines)
-                                {
-                                    writer.WriteLine(line);
-                                }
-                            }
-                            
-                            // 验证文件是否成功写入
-                            if (File.Exists(newConfigFilePath))
-                            {
-                                // 重新读取验证写入项数量
-                                int finalConfigCount = 0;
-                                using (StreamReader reader = new StreamReader(newConfigFilePath))
-                                {
-                                    string line;
-                                    while ((line = reader.ReadLine()) != null)
-                                    {
-                                        if (!string.IsNullOrWhiteSpace(line) && !line.Trim().StartsWith("#") && !line.StartsWith("["))
-                                        {
-                                            int equalsIndex = line.IndexOf('=');
-                                            if (equalsIndex > 0)
-                                            {
-                                                finalConfigCount++;
-                                            }
-                                        }
-                                    }
-                                }
-                                
-                                Logger.LogInfo($"恢复完成，共恢复 {restoredConfigCount} 个配置项。");
-                                Logger.LogInfo($"最终配置文件中的有效配置项数量: {finalConfigCount}");
-                                Logger.LogInfo("配置数据恢复完成。");
-                                Logger.LogInfo("Configuration data restoration completed.");
-                                
-                                // 重新加载配置
-                                base.Config.Reload();
-                            }
-                            else
-                            {
-                                Logger.LogError("错误：配置文件写入失败，文件不存在。");
-                            }
-                        }
-                        catch (IOException ex)
-                        {
-                            Logger.LogError($"写入配置文件时发生IO错误: {ex.Message}");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("恢复配置数据时出错: " + ex.Message);
-                }
-                finally
-                {
-                    // 释放临时数据
-                    PluginMain._tempOldConfigData.Clear();
-                    PluginMain._tempOldConfigData = null;
-                    Logger.LogInfo("临时配置数据已释放。");
-                }
-            }
             
             Harmony.CreateAndPatchAll(typeof(PluginMain), null);
         }
@@ -662,8 +267,7 @@ namespace MultifunctionalCheat
         public static ConfigEntry<float> 封地商业税收倍数;
         public static ConfigEntry<float> 府邸销售折扣;
         
-        // 临时存储旧配置数据的字段
-        private static Dictionary<string, string> _tempOldConfigData = null;
+
         
     }
 }
