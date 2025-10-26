@@ -20,7 +20,7 @@ namespace cs.HoLMod.AddItem
     {
         public const string PLUGIN_GUID = "cs.HoLMod.AddItem.AnZhi20";
         public const string PLUGIN_NAME = "HoLMod.AddItem";
-        public const string PLUGIN_VERSION = "2.7.0";
+        public const string PLUGIN_VERSION = "2.8.0";
     }
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class AddItem : BaseUnityPlugin
