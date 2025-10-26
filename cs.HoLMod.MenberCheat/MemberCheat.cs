@@ -7,9 +7,19 @@ using UnityEngine;
 
 namespace cs.HoLMod.MenberCheat
 {
-    [BepInPlugin("cs.HoLMod.MemberCheat.AnZhi20", "HoLMod.MemberCheat", "2.0.0")]
+    // 插件信息类
+    public static class PluginInfo
+    {
+        public const string PLUGIN_GUID = "cs.HoLMod.MemberCheat.AnZhi20";
+        public const string PLUGIN_NAME = "HoLMod.MemberCheat";
+        public const string PLUGIN_VERSION = "2.1.0";
+    }
+    [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class MenberCheat : BaseUnityPlugin
     {
+        // 获取 LanguageManager 单例
+        private LanguageManager languageManager => LanguageManager.Instance;
+        
         // 窗口设置
         private ConfigEntry<float> menuWidth;
         private ConfigEntry<float> menuHeight;
@@ -341,6 +351,19 @@ namespace cs.HoLMod.MenberCheat
         {
             Logger.LogInfo("族人门客修改器已加载！");
             
+            // 根据系统语言自动设置翻译语言
+            string systemLanguage = System.Globalization.CultureInfo.CurrentUICulture.Name;
+            if (systemLanguage.StartsWith("en"))
+            {
+                languageManager.SetLanguage("en-US");
+                Logger.LogInfo("语言设置为英文");
+            }
+            else
+            {
+                languageManager.SetLanguage("zh-CN");
+                Logger.LogInfo("语言设置为中文");
+            }
+            
             // 窗口配置
             menuWidth = Config.Bind("界面设置", "窗口宽度", 1000f, "族人门客修改器窗口的宽度");
             menuHeight = Config.Bind("界面设置", "窗口高度", 1400f, "族人门客修改器窗口的高度");
@@ -452,14 +475,14 @@ namespace cs.HoLMod.MenberCheat
             // 标题
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            GUILayout.Label("成员修改器", new GUILayoutOption[] { GUILayout.ExpandWidth(false) });
+            GUILayout.Label(languageManager.GetTranslation("成员修改器"), new GUILayoutOption[] { GUILayout.ExpandWidth(false) });
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(10f);
             
             // 分类按钮
             GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-            if (GUILayout.Button("族人修改", new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
+            if (GUILayout.Button(languageManager.GetTranslation("族人修改"), new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
             {
                 currentMode = 0;
                 hasSelectedCategory = true;
@@ -471,7 +494,7 @@ namespace cs.HoLMod.MenberCheat
                 FilterMembers();
             }
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("门客修改", new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
+            if (GUILayout.Button(languageManager.GetTranslation("门客修改"), new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
             {
                 currentMode = 1;
                 hasSelectedCategory = true;
@@ -483,7 +506,7 @@ namespace cs.HoLMod.MenberCheat
                 FilterMembers();
             }
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("皇室修改", new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
+            if (GUILayout.Button(languageManager.GetTranslation("皇室修改"), new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
             {
                 currentMode = 2;
                 hasSelectedCategory = true;
@@ -495,7 +518,7 @@ namespace cs.HoLMod.MenberCheat
                 FilterMembers();
             }
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("世家修改", new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
+            if (GUILayout.Button(languageManager.GetTranslation("世家修改"), new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
             {
                 currentMode = 3;
                 hasSelectedCategory = true;
@@ -507,7 +530,7 @@ namespace cs.HoLMod.MenberCheat
                 FilterMembers();
             }
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("农庄修改", new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
+            if (GUILayout.Button(languageManager.GetTranslation("农庄修改"), new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
             {
                 currentMode = 4;
                 hasSelectedCategory = true;
@@ -525,7 +548,7 @@ namespace cs.HoLMod.MenberCheat
                 if (currentMode == 0)
                 {
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    if (GUILayout.Button("族人家族", new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
+                    if (GUILayout.Button(languageManager.GetTranslation("族人家族"), new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
                     {
                         currentMemberSubMode = 1;
                         hasSelectedCategory = true;
@@ -535,7 +558,7 @@ namespace cs.HoLMod.MenberCheat
                         ClearSearchText();
                         FilterMembers();
                     }
-                    if (GUILayout.Button("族人妻妾", new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
+                    if (GUILayout.Button(languageManager.GetTranslation("族人妻妾"), new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
                     {
                         currentMemberSubMode = 2;
                         hasSelectedCategory = true;
@@ -554,7 +577,7 @@ namespace cs.HoLMod.MenberCheat
                 if (currentMode == 2)
                 {
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    if (GUILayout.Button("皇室主脉", new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
+                    if (GUILayout.Button(languageManager.GetTranslation("皇室主脉"), new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
                     {
                         currentRoyaltySubMode = 1;
                         hasSelectedCategory = true;
@@ -564,7 +587,7 @@ namespace cs.HoLMod.MenberCheat
                         ClearSearchText();
                         FilterMembers();
                     }
-                    if (GUILayout.Button("皇家妻妾", new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
+                    if (GUILayout.Button(languageManager.GetTranslation("皇家妻妾"), new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
                     {
                         currentRoyaltySubMode = 2;
                         hasSelectedCategory = true;
@@ -583,7 +606,7 @@ namespace cs.HoLMod.MenberCheat
                 if (currentMode == 3)
                 {
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    if (GUILayout.Button("世家主脉", new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
+                    if (GUILayout.Button(languageManager.GetTranslation("世家主脉"), new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
                     {
                         currentNobleSubMode = 1;
                         hasSelectedCategory = true;
@@ -593,7 +616,7 @@ namespace cs.HoLMod.MenberCheat
                         ClearSearchText();
                         FilterMembers();
                     }
-                    if (GUILayout.Button("世家妻妾", new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
+                    if (GUILayout.Button(languageManager.GetTranslation("世家妻妾"), new GUILayoutOption[] { GUILayout.Width(150f), GUILayout.Height(30f) }))
                     {
                         currentNobleSubMode = 2;
                         hasSelectedCategory = true;
@@ -615,14 +638,14 @@ namespace cs.HoLMod.MenberCheat
                 
                 // 搜索文本框和清空按钮
                 GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                GUILayout.Label("名字搜索:", new GUILayoutOption[] { GUILayout.Width(80f) });
+                GUILayout.Label(languageManager.GetTranslation("名字搜索:"), new GUILayoutOption[] { GUILayout.Width(80f) });
                 string newSearchText = GUILayout.TextField(searchText, new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                 if (newSearchText != searchText)
                 {
                     searchText = newSearchText;
                     FilterMembers();
                 }
-                if (GUILayout.Button("清空", new GUILayoutOption[] { GUILayout.Width(60f), GUILayout.Height(20f) }))
+                if (GUILayout.Button(languageManager.GetTranslation("清空"), new GUILayoutOption[] { GUILayout.Width(60f), GUILayout.Height(20f) }))
                 {
                     ClearSearchText();
                 }
@@ -634,8 +657,8 @@ namespace cs.HoLMod.MenberCheat
                 {
                     // 选择郡标签和大地图按钮单独一行
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    GUILayout.Label("选择郡: ", new GUILayoutOption[] { GUILayout.Width(80f) });
-                    if (GUILayout.Button("大地图", new GUILayoutOption[] { GUILayout.Width(80f), GUILayout.Height(25f) }))
+                    GUILayout.Label(languageManager.GetTranslation("选择郡: "), new GUILayoutOption[] { GUILayout.Width(80f) });
+                    if (GUILayout.Button(languageManager.GetTranslation("大地图"), new GUILayoutOption[] { GUILayout.Width(120f), GUILayout.Height(25f) }))
                     {
                         currentFarmAreaIndex = 0;
                         ClearSearchText();
@@ -651,7 +674,7 @@ namespace cs.HoLMod.MenberCheat
                     string[] countyNames1 = new string[] { "南郡", "三川郡", "蜀郡", "丹阳郡", "陈留郡", "长沙郡" };
                     for (int i = 0; i < countyNames1.Length; i++)
                     {
-                        if (GUILayout.Button(countyNames1[i], new GUILayoutOption[] { GUILayout.Width(80f), GUILayout.Height(25f) }))
+                        if (GUILayout.Button(languageManager.GetTranslation(countyNames1[i]), new GUILayoutOption[] { GUILayout.Width(140f), GUILayout.Height(25f) }))
                         {
                             currentFarmAreaIndex = i + 1; // 索引1-6
                             ClearSearchText();
@@ -668,7 +691,7 @@ namespace cs.HoLMod.MenberCheat
                     string[] countyNames2 = new string[] { "会稽郡", "广陵郡", "太原郡", "益州郡", "南海郡", "云南郡" };
                     for (int i = 0; i < countyNames2.Length; i++)
                     {
-                        if (GUILayout.Button(countyNames2[i], new GUILayoutOption[] { GUILayout.Width(80f), GUILayout.Height(25f) }))
+                        if (GUILayout.Button(languageManager.GetTranslation(countyNames2[i]), new GUILayoutOption[] { GUILayout.Width(140f), GUILayout.Height(25f) }))
                         {
                             currentFarmAreaIndex = i + 7; // 索引7-12
                             ClearSearchText();
@@ -685,9 +708,9 @@ namespace cs.HoLMod.MenberCheat
                 {
                     // 家族选择框
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    GUILayout.Label("选择家族: ", new GUILayoutOption[] { GUILayout.Width(100f) });
+                    GUILayout.Label(languageManager.GetTranslation("选择家族: "), new GUILayoutOption[] { GUILayout.Width(100f) });
                     // 从游戏数据中动态获取世家列表
-                    List<string> familyOptionsList = new List<string> { "全部家族" };
+                    List<string> familyOptionsList = new List<string> { languageManager.GetTranslation("全部家族") };
                     Dictionary<int, int> familyIndexMap = new Dictionary<int, int> { { 0, -1 } }; // UI索引到实际索引的映射，0表示全部家族
                     int currentFamilyIndex = 1;
                     
@@ -715,10 +738,10 @@ namespace cs.HoLMod.MenberCheat
                                         // 从郡数组和二维县数组获取对应的郡名和县名
                                         if (junIndex >= 0 && junIndex < JunList.Length)
                                         {
-                                            locationText = JunList[junIndex];
+                                            locationText = languageManager.GetTranslation(JunList[junIndex]);
                                             if (xianIndex >= 0 && xianIndex < XianList[junIndex].Length)
                                             {
-                                                locationText += "-" + XianList[junIndex][xianIndex];
+                                                locationText += "-" + languageManager.GetTranslation(XianList[junIndex][xianIndex]);
                                             }
                                         }
                                     }
@@ -734,7 +757,8 @@ namespace cs.HoLMod.MenberCheat
 
                                 if (isCurrentCounty)
                                 {
-                                    familyOptionsList.Add($"{familyName}家 ({locationText})");
+                                    string str_jia = languageManager.GetTranslation("家");
+                                    familyOptionsList.Add($"{familyName}{str_jia} ({locationText})");
                                     familyIndexMap[currentFamilyIndex] = i;
                                     currentFamilyIndex++;
                                 }
@@ -765,7 +789,7 @@ namespace cs.HoLMod.MenberCheat
                     
                     // 家族成员选择框
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    GUILayout.Label("选择成员: ", new GUILayoutOption[] { GUILayout.Width(100f) });
+                    GUILayout.Label(languageManager.GetTranslation("选择成员: "), new GUILayoutOption[] { GUILayout.Width(100f) });
                     // 搜索结果列表
                     GUILayout.BeginVertical(new GUILayoutOption[] { GUILayout.ExpandWidth(true), GUILayout.Height(120f) });
                     scrollPosition = GUILayout.BeginScrollView(scrollPosition, new GUILayoutOption[] { GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true) });
@@ -795,18 +819,18 @@ namespace cs.HoLMod.MenberCheat
                     // 显示已选择信息
                     if (!string.IsNullOrEmpty(selectedMemberName))
                     {
-                        string selectedCounty = "全郡";
+                        string selectedCounty = languageManager.GetTranslation("全郡");
                         if (currentFarmAreaIndex > 0)
                         {
-                            string[] countyNames = new string[] { "", "南郡", "三川郡", "蜀郡", "丹阳郡", "陈留郡", "长沙郡", "会稽郡", "广陵郡", "太原郡", "益州郡", "南海郡", "云南郡" };
+                            string[] countyNames = new string[] { "", languageManager.GetTranslation("南郡"), languageManager.GetTranslation("三川郡"), languageManager.GetTranslation("蜀郡"), languageManager.GetTranslation("丹阳郡"), languageManager.GetTranslation("陈留郡"), languageManager.GetTranslation("长沙郡"), languageManager.GetTranslation("会稽郡"), languageManager.GetTranslation("广陵郡"), languageManager.GetTranslation("太原郡"), languageManager.GetTranslation("益州郡"), languageManager.GetTranslation("南海郡"), languageManager.GetTranslation("云南郡") };
                             if (currentFarmAreaIndex < countyNames.Length)
                             {
-                                selectedCounty = countyNames[currentFarmAreaIndex];
+                                selectedCounty = languageManager.GetTranslation(countyNames[currentFarmAreaIndex]);
                             }
                         }
                         
                         // 获取当前选择的家族名称
-                        string familyName = "全部家族";
+                        string familyName = languageManager.GetTranslation("全部家族");
                         if (this.currentFamilyIndex >= 0 && Mainload.ShiJia_Now != null && this.currentFamilyIndex < Mainload.ShiJia_Now.Count)
                         {
                             if (Mainload.ShiJia_Now[this.currentFamilyIndex] != null && Mainload.ShiJia_Now[this.currentFamilyIndex].Count > 1)
@@ -815,7 +839,7 @@ namespace cs.HoLMod.MenberCheat
                             }
                         }
                         
-                        GUILayout.Label("已选择：" + selectedCounty + "-" + familyName + "-" + selectedMemberName, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(400f) });
+                        GUILayout.Label(languageManager.GetTranslation("已选择：") + selectedCounty + "-" + familyName + "-" + selectedMemberName, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(400f) });
                     }
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
@@ -853,7 +877,7 @@ namespace cs.HoLMod.MenberCheat
                         // 族人家族基本属性
                         // 官职选择按钮
                         GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                        GUILayout.Label("官职: ", new GUILayoutOption[] { GUILayout.Width(100f) });
+                        GUILayout.Label(languageManager.GetTranslation("官职: "), new GUILayoutOption[] { GUILayout.Width(100f) });
                         
                         // 创建居中显示的样式
                         GUIStyle centeredLabelStyle = new GUIStyle(GUI.skin.label);
@@ -884,7 +908,7 @@ namespace cs.HoLMod.MenberCheat
                         
                         for (int i = 0; i < officialRankOptions.Length; i++)
                         {
-                            if (GUILayout.Button(officialRankLabels[i], new GUILayoutOption[] { GUILayout.Width(60f), GUILayout.Height(20f) }))
+                            if (GUILayout.Button(languageManager.GetTranslation(officialRankLabels[i]), new GUILayoutOption[] { GUILayout.Width(60f), GUILayout.Height(20f) }))
                             {
                                 // 生成完整的散官数据格式：5@品阶@0@-1@-1
                                 int a=5, b=0, c =-1;
@@ -897,116 +921,116 @@ namespace cs.HoLMod.MenberCheat
                         GUILayout.EndHorizontal();
                         GUILayout.EndHorizontal();
 
-                        DrawAttributeRow("声誉:", ref A_reputationOriginal, ref A_reputation);
-                        DrawAttributeRow("体力:", ref A_powerOriginal, ref A_power);
-                        DrawAttributeRow("年龄:", ref A_ageOriginal, ref A_age);
-                        DrawAttributeRow("健康:", ref A_healthOriginal, ref A_health);
-                        DrawAttributeRow("心情:", ref A_moodOriginal, ref A_mood);
-                        DrawAttributeRow("魅力:", ref A_charmOriginal, ref A_charm);
-                        DrawAttributeRow("幸运:", ref A_luckOriginal, ref A_luck);
-                        DrawAttributeRow("品性:", ref A_characterOriginal, ref A_character);
-                        DrawAttributeRow("天赋:", ref A_talentOriginal, ref A_talent);
-                        DrawAttributeRow("天赋点:", ref A_talentPointOriginal, ref A_talentPoint);
-                        DrawAttributeRow("技能:", ref A_skillOriginal, ref A_skill);
-                        DrawAttributeRow("技能点:", ref A_skillPointOriginal, ref A_skillPoint);
-                        DrawAttributeRow("喜好:", ref A_preferenceOriginal, ref A_preference);
-                        DrawAttributeRow("文才:", ref A_intelligenceOriginal, ref A_intelligence);
-                        DrawAttributeRow("武才:", ref A_weaponOriginal, ref A_weapon);
-                        DrawAttributeRow("商才:", ref A_businessOriginal, ref A_business);
-                        DrawAttributeRow("艺才:", ref A_artOriginal, ref A_art);
-                        DrawAttributeRow("计谋:", ref A_strategyOriginal, ref A_strategy);
+                        DrawAttributeRow(languageManager.GetTranslation("声誉:"), ref A_reputationOriginal, ref A_reputation);
+                        DrawAttributeRow(languageManager.GetTranslation("体力:"), ref A_powerOriginal, ref A_power);
+                        DrawAttributeRow(languageManager.GetTranslation("年龄:"), ref A_ageOriginal, ref A_age);
+                        DrawAttributeRow(languageManager.GetTranslation("健康:"), ref A_healthOriginal, ref A_health);
+                        DrawAttributeRow(languageManager.GetTranslation("心情:"), ref A_moodOriginal, ref A_mood);
+                        DrawAttributeRow(languageManager.GetTranslation("魅力:"), ref A_charmOriginal, ref A_charm);
+                        DrawAttributeRow(languageManager.GetTranslation("幸运:"), ref A_luckOriginal, ref A_luck);
+                        DrawAttributeRow(languageManager.GetTranslation("品性:"), ref A_characterOriginal, ref A_character);
+                        DrawAttributeRow(languageManager.GetTranslation("天赋:"), ref A_talentOriginal, ref A_talent);
+                        DrawAttributeRow(languageManager.GetTranslation("天赋点:"), ref A_talentPointOriginal, ref A_talentPoint);
+                        DrawAttributeRow(languageManager.GetTranslation("技能:"), ref A_skillOriginal, ref A_skill);
+                        DrawAttributeRow(languageManager.GetTranslation("技能点:"), ref A_skillPointOriginal, ref A_skillPoint);
+                        DrawAttributeRow(languageManager.GetTranslation("喜好:"), ref A_preferenceOriginal, ref A_preference);
+                        DrawAttributeRow(languageManager.GetTranslation("文才:"), ref A_intelligenceOriginal, ref A_intelligence);
+                        DrawAttributeRow(languageManager.GetTranslation("武才:"), ref A_weaponOriginal, ref A_weapon);
+                        DrawAttributeRow(languageManager.GetTranslation("商才:"), ref A_businessOriginal, ref A_business);
+                        DrawAttributeRow(languageManager.GetTranslation("艺才:"), ref A_artOriginal, ref A_art);
+                        DrawAttributeRow(languageManager.GetTranslation("计谋:"), ref A_strategyOriginal, ref A_strategy);
                         // 族人家族特有属性：爵位和封地
-                        DrawAttributeRow("爵位:", ref A_JueWeiOriginal, ref A_JueWei);
-                        DrawAttributeRow("封地:", ref A_FengDiOriginal, ref A_FengDi);
+                        DrawAttributeRow(languageManager.GetTranslation("爵位:"), ref A_JueWeiOriginal, ref A_JueWei);
+                        DrawAttributeRow(languageManager.GetTranslation("封地:"), ref A_FengDiOriginal, ref A_FengDi);
                     }
                     else if (currentMemberSubMode == 2) // 族人妻妾
                     {
                         // 族人妻妾基本属性
-                        DrawAttributeRow("声誉:", ref B_reputationOriginal, ref B_reputation);
-                        DrawAttributeRow("体力:", ref B_powerOriginal, ref B_power);
-                        DrawAttributeRow("年龄:", ref B_ageOriginal, ref B_age);
-                        DrawAttributeRow("健康:", ref B_healthOriginal, ref B_health);
-                        DrawAttributeRow("心情:", ref B_moodOriginal, ref B_mood);
-                        DrawAttributeRow("魅力:", ref B_charmOriginal, ref B_charm);
-                        DrawAttributeRow("幸运:", ref B_luckOriginal, ref B_luck);
-                        DrawAttributeRow("品性:", ref B_characterOriginal, ref B_character);
-                        DrawAttributeRow("天赋:", ref B_talentOriginal, ref B_talent);
-                        DrawAttributeRow("天赋点:", ref B_talentPointOriginal, ref B_talentPoint);
-                        DrawAttributeRow("技能:", ref B_skillOriginal, ref B_skill);
-                        DrawAttributeRow("技能点:", ref B_skillPointOriginal, ref B_skillPoint);
-                        DrawAttributeRow("喜好:", ref B_preferenceOriginal, ref B_preference);
-                        DrawAttributeRow("文才:", ref B_intelligenceOriginal, ref B_intelligence);
-                        DrawAttributeRow("武才:", ref B_weaponOriginal, ref B_weapon);
-                        DrawAttributeRow("商才:", ref B_businessOriginal, ref B_business);
-                        DrawAttributeRow("艺才:", ref B_artOriginal, ref B_art);
-                        DrawAttributeRow("计谋:", ref B_strategyOriginal, ref B_strategy);
+                        DrawAttributeRow(languageManager.GetTranslation("声誉:"), ref B_reputationOriginal, ref B_reputation);
+                        DrawAttributeRow(languageManager.GetTranslation("体力:"), ref B_powerOriginal, ref B_power);
+                        DrawAttributeRow(languageManager.GetTranslation("年龄:"), ref B_ageOriginal, ref B_age);
+                        DrawAttributeRow(languageManager.GetTranslation("健康:"), ref B_healthOriginal, ref B_health);
+                        DrawAttributeRow(languageManager.GetTranslation("心情:"), ref B_moodOriginal, ref B_mood);
+                        DrawAttributeRow(languageManager.GetTranslation("魅力:"), ref B_charmOriginal, ref B_charm);
+                        DrawAttributeRow(languageManager.GetTranslation("幸运:"), ref B_luckOriginal, ref B_luck);
+                        DrawAttributeRow(languageManager.GetTranslation("品性:"), ref B_characterOriginal, ref B_character);
+                        DrawAttributeRow(languageManager.GetTranslation("天赋:"), ref B_talentOriginal, ref B_talent);
+                        DrawAttributeRow(languageManager.GetTranslation("天赋点:"), ref B_talentPointOriginal, ref B_talentPoint);
+                        DrawAttributeRow(languageManager.GetTranslation("技能:"), ref B_skillOriginal, ref B_skill);
+                        DrawAttributeRow(languageManager.GetTranslation("技能点:"), ref B_skillPointOriginal, ref B_skillPoint);
+                        DrawAttributeRow(languageManager.GetTranslation("喜好:"), ref B_preferenceOriginal, ref B_preference);
+                        DrawAttributeRow(languageManager.GetTranslation("文才:"), ref B_intelligenceOriginal, ref B_intelligence);
+                        DrawAttributeRow(languageManager.GetTranslation("武才:"), ref B_weaponOriginal, ref B_weapon);
+                        DrawAttributeRow(languageManager.GetTranslation("商才:"), ref B_businessOriginal, ref B_business);
+                        DrawAttributeRow(languageManager.GetTranslation("艺才:"), ref B_artOriginal, ref B_art);
+                        DrawAttributeRow(languageManager.GetTranslation("计谋:"), ref B_strategyOriginal, ref B_strategy);
                         
                     }
                 } else if (currentMode == 1) // 门客模式
                 {
                     // 门客基本属性
-                    DrawAttributeRow("声誉:", ref C_reputationOriginal, ref C_reputation);
-                    DrawAttributeRow("体力:", ref C_powerOriginal, ref C_power);
-                    DrawAttributeRow("年龄:", ref C_ageOriginal, ref C_age);
-                    DrawAttributeRow("健康:", ref C_healthOriginal, ref C_health);
-                    DrawAttributeRow("心情:", ref C_moodOriginal, ref C_mood);
-                    DrawAttributeRow("魅力:", ref C_charmOriginal, ref C_charm);
-                    DrawAttributeRow("幸运:", ref C_luckOriginal, ref C_luck);
-                    DrawAttributeRow("品性:", ref C_characterOriginal, ref C_character);
-                    DrawAttributeRow("天赋:", ref C_talentOriginal, ref C_talent);
-                    DrawAttributeRow("天赋点:", ref C_talentPointOriginal, ref C_talentPoint);
-                    DrawAttributeRow("技能:", ref C_skillOriginal, ref C_skill);
-                    DrawAttributeRow("技能点:", ref C_skillPointOriginal, ref C_skillPoint);
-                    DrawAttributeRow("文才:", ref C_intelligenceOriginal, ref C_intelligence);
-                    DrawAttributeRow("武才:", ref C_weaponOriginal, ref C_weapon);
-                    DrawAttributeRow("商才:", ref C_businessOriginal, ref C_business);
-                    DrawAttributeRow("艺才:", ref C_artOriginal, ref C_art);
-                    DrawAttributeRow("计谋:", ref C_strategyOriginal, ref C_strategy);
-                    DrawAttributeRow("门客酬劳:", ref C_MenKe_RewardOriginal, ref C_MenKe_Reward);
+                    DrawAttributeRow(languageManager.GetTranslation("声誉:"), ref C_reputationOriginal, ref C_reputation);
+                    DrawAttributeRow(languageManager.GetTranslation("体力:"), ref C_powerOriginal, ref C_power);
+                    DrawAttributeRow(languageManager.GetTranslation("年龄:"), ref C_ageOriginal, ref C_age);
+                    DrawAttributeRow(languageManager.GetTranslation("健康:"), ref C_healthOriginal, ref C_health);
+                    DrawAttributeRow(languageManager.GetTranslation("心情:"), ref C_moodOriginal, ref C_mood);
+                    DrawAttributeRow(languageManager.GetTranslation("魅力:"), ref C_charmOriginal, ref C_charm);
+                    DrawAttributeRow(languageManager.GetTranslation("幸运:"), ref C_luckOriginal, ref C_luck);
+                    DrawAttributeRow(languageManager.GetTranslation("品性:"), ref C_characterOriginal, ref C_character);
+                    DrawAttributeRow(languageManager.GetTranslation("天赋:"), ref C_talentOriginal, ref C_talent);
+                    DrawAttributeRow(languageManager.GetTranslation("天赋点:"), ref C_talentPointOriginal, ref C_talentPoint);
+                    DrawAttributeRow(languageManager.GetTranslation("技能:"), ref C_skillOriginal, ref C_skill);
+                    DrawAttributeRow(languageManager.GetTranslation("技能点:"), ref C_skillPointOriginal, ref C_skillPoint);
+                    DrawAttributeRow(languageManager.GetTranslation("文才:"), ref C_intelligenceOriginal, ref C_intelligence);
+                    DrawAttributeRow(languageManager.GetTranslation("武才:"), ref C_weaponOriginal, ref C_weapon);
+                    DrawAttributeRow(languageManager.GetTranslation("商才:"), ref C_businessOriginal, ref C_business);
+                    DrawAttributeRow(languageManager.GetTranslation("艺才:"), ref C_artOriginal, ref C_art);
+                    DrawAttributeRow(languageManager.GetTranslation("计谋:"), ref C_strategyOriginal, ref C_strategy);
+                    DrawAttributeRow(languageManager.GetTranslation("门客酬劳:"), ref C_MenKe_RewardOriginal, ref C_MenKe_Reward);
                 }
                 else if (currentMode == 2) // 皇室模式
                 {
                     if (currentRoyaltySubMode == 1) // 皇室主脉
                     {
                         // 皇室主脉基本属性
-                        DrawAttributeRow("声誉:", ref D_reputationOriginal, ref D_reputation);
-                        DrawAttributeRow("年龄:", ref D_ageOriginal, ref D_age);
-                        DrawAttributeRow("健康:", ref D_healthOriginal, ref D_health);
-                        DrawAttributeRow("心情:", ref D_moodOriginal, ref D_mood);
-                        DrawAttributeRow("魅力:", ref D_charmOriginal, ref D_charm);
-                        DrawAttributeRow("幸运:", ref D_luckOriginal, ref D_luck);
-                        DrawAttributeRow("品性:", ref D_characterOriginal, ref D_character);
-                        DrawAttributeRow("天赋:", ref D_talentOriginal, ref D_talent);
-                        DrawAttributeRow("天赋点:", ref D_talentPointOriginal, ref D_talentPoint);
-                        DrawAttributeRow("技能:", ref D_skillOriginal, ref D_skill);
-                        DrawAttributeRow("技能点:", ref D_skillPointOriginal, ref D_skillPoint);
-                        DrawAttributeRow("喜好:", ref D_preferenceOriginal, ref D_preference);
-                        DrawAttributeRow("文才:", ref D_intelligenceOriginal, ref D_intelligence);
-                        DrawAttributeRow("武才:", ref D_weaponOriginal, ref D_weapon);
-                        DrawAttributeRow("商才:", ref D_businessOriginal, ref D_business);
-                        DrawAttributeRow("艺才:", ref D_artOriginal, ref D_art);
-                        DrawAttributeRow("计谋:", ref D_strategyOriginal, ref D_strategy);
+                        DrawAttributeRow(languageManager.GetTranslation("声誉:"), ref D_reputationOriginal, ref D_reputation);
+                        DrawAttributeRow(languageManager.GetTranslation("年龄:"), ref D_ageOriginal, ref D_age);
+                        DrawAttributeRow(languageManager.GetTranslation("健康:"), ref D_healthOriginal, ref D_health);
+                        DrawAttributeRow(languageManager.GetTranslation("心情:"), ref D_moodOriginal, ref D_mood);
+                        DrawAttributeRow(languageManager.GetTranslation("魅力:"), ref D_charmOriginal, ref D_charm);
+                        DrawAttributeRow(languageManager.GetTranslation("幸运:"), ref D_luckOriginal, ref D_luck);
+                        DrawAttributeRow(languageManager.GetTranslation("品性:"), ref D_characterOriginal, ref D_character);
+                        DrawAttributeRow(languageManager.GetTranslation("天赋:"), ref D_talentOriginal, ref D_talent);
+                        DrawAttributeRow(languageManager.GetTranslation("天赋点:"), ref D_talentPointOriginal, ref D_talentPoint);
+                        DrawAttributeRow(languageManager.GetTranslation("技能:"), ref D_skillOriginal, ref D_skill);
+                        DrawAttributeRow(languageManager.GetTranslation("技能点:"), ref D_skillPointOriginal, ref D_skillPoint);
+                        DrawAttributeRow(languageManager.GetTranslation("喜好:"), ref D_preferenceOriginal, ref D_preference);
+                        DrawAttributeRow(languageManager.GetTranslation("文才:"), ref D_intelligenceOriginal, ref D_intelligence);
+                        DrawAttributeRow(languageManager.GetTranslation("武才:"), ref D_weaponOriginal, ref D_weapon);
+                        DrawAttributeRow(languageManager.GetTranslation("商才:"), ref D_businessOriginal, ref D_business);
+                        DrawAttributeRow(languageManager.GetTranslation("艺才:"), ref D_artOriginal, ref D_art);
+                        DrawAttributeRow(languageManager.GetTranslation("计谋:"), ref D_strategyOriginal, ref D_strategy);
                     }
                     else if (currentRoyaltySubMode == 2) // 皇家妻妾
                     {
                         // 皇家妻妾基本属性
-                        DrawAttributeRow("声誉:", ref E_reputationOriginal, ref E_reputation);
-                        DrawAttributeRow("年龄:", ref E_ageOriginal, ref E_age);
-                        DrawAttributeRow("健康:", ref E_healthOriginal, ref E_health);
-                        DrawAttributeRow("心情:", ref E_moodOriginal, ref E_mood);
-                        DrawAttributeRow("魅力:", ref E_charmOriginal, ref E_charm);
-                        DrawAttributeRow("幸运:", ref E_luckOriginal, ref E_luck);
-                        DrawAttributeRow("品性:", ref E_characterOriginal, ref E_character);
-                        DrawAttributeRow("天赋:", ref E_talentOriginal, ref E_talent);
-                        DrawAttributeRow("天赋点:", ref E_talentPointOriginal, ref E_talentPoint);
-                        DrawAttributeRow("技能:", ref E_skillOriginal, ref E_skill);
-                        DrawAttributeRow("技能点:", ref E_skillPointOriginal, ref E_skillPoint);
-                        DrawAttributeRow("喜好:", ref E_preferenceOriginal, ref E_preference);
-                        DrawAttributeRow("文才:", ref E_intelligenceOriginal, ref E_intelligence);
-                        DrawAttributeRow("武才:", ref E_weaponOriginal, ref E_weapon);
-                        DrawAttributeRow("商才:", ref E_businessOriginal, ref E_business);
-                        DrawAttributeRow("艺才:", ref E_artOriginal, ref E_art);
-                        DrawAttributeRow("计谋:", ref E_strategyOriginal, ref E_strategy);
+                        DrawAttributeRow(languageManager.GetTranslation("声誉:"), ref E_reputationOriginal, ref E_reputation);
+                        DrawAttributeRow(languageManager.GetTranslation("年龄:"), ref E_ageOriginal, ref E_age);
+                        DrawAttributeRow(languageManager.GetTranslation("健康:"), ref E_healthOriginal, ref E_health);
+                        DrawAttributeRow(languageManager.GetTranslation("心情:"), ref E_moodOriginal, ref E_mood);
+                        DrawAttributeRow(languageManager.GetTranslation("魅力:"), ref E_charmOriginal, ref E_charm);
+                        DrawAttributeRow(languageManager.GetTranslation("幸运:"), ref E_luckOriginal, ref E_luck);
+                        DrawAttributeRow(languageManager.GetTranslation("品性:"), ref E_characterOriginal, ref E_character);
+                        DrawAttributeRow(languageManager.GetTranslation("天赋:"), ref E_talentOriginal, ref E_talent);
+                        DrawAttributeRow(languageManager.GetTranslation("天赋点:"), ref E_talentPointOriginal, ref E_talentPoint);
+                        DrawAttributeRow(languageManager.GetTranslation("技能:"), ref E_skillOriginal, ref E_skill);
+                        DrawAttributeRow(languageManager.GetTranslation("技能点:"), ref E_skillPointOriginal, ref E_skillPoint);
+                        DrawAttributeRow(languageManager.GetTranslation("喜好:"), ref E_preferenceOriginal, ref E_preference);
+                        DrawAttributeRow(languageManager.GetTranslation("文才:"), ref E_intelligenceOriginal, ref E_intelligence);
+                        DrawAttributeRow(languageManager.GetTranslation("武才:"), ref E_weaponOriginal, ref E_weapon);
+                        DrawAttributeRow(languageManager.GetTranslation("商才:"), ref E_businessOriginal, ref E_business);
+                        DrawAttributeRow(languageManager.GetTranslation("艺才:"), ref E_artOriginal, ref E_art);
+                        DrawAttributeRow(languageManager.GetTranslation("计谋:"), ref E_strategyOriginal, ref E_strategy);
                     }
                 }
                 else if (currentMode == 3) // 世家模式
@@ -1014,44 +1038,44 @@ namespace cs.HoLMod.MenberCheat
                     if (currentNobleSubMode == 1) // 世家主脉
                     {
                         // 世家主脉基本属性
-                        DrawAttributeRow("声誉:", ref F_reputationOriginal, ref F_reputation);
-                        DrawAttributeRow("年龄:", ref F_ageOriginal, ref F_age);
-                        DrawAttributeRow("健康:", ref F_healthOriginal, ref F_health);
-                        DrawAttributeRow("心情:", ref F_moodOriginal, ref F_mood);
-                        DrawAttributeRow("魅力:", ref F_charmOriginal, ref F_charm);
-                        DrawAttributeRow("幸运:", ref F_luckOriginal, ref F_luck);
-                        DrawAttributeRow("品性:", ref F_characterOriginal, ref F_character);
-                        DrawAttributeRow("天赋:", ref F_talentOriginal, ref F_talent);
-                        DrawAttributeRow("天赋点:", ref F_talentPointOriginal, ref F_talentPoint);
-                        DrawAttributeRow("技能:", ref F_skillOriginal, ref F_skill);
-                        DrawAttributeRow("技能点:", ref F_skillPointOriginal, ref F_skillPoint);
-                        DrawAttributeRow("喜好:", ref F_preferenceOriginal, ref F_preference);
-                        DrawAttributeRow("文才:", ref F_intelligenceOriginal, ref F_intelligence);
-                        DrawAttributeRow("武才:", ref F_weaponOriginal, ref F_weapon);
-                        DrawAttributeRow("商才:", ref F_businessOriginal, ref F_business);
-                        DrawAttributeRow("艺才:", ref F_artOriginal, ref F_art);
-                        DrawAttributeRow("计谋:", ref F_strategyOriginal, ref F_strategy);
+                        DrawAttributeRow(languageManager.GetTranslation("声誉:"), ref F_reputationOriginal, ref F_reputation);
+                        DrawAttributeRow(languageManager.GetTranslation("年龄:"), ref F_ageOriginal, ref F_age);
+                        DrawAttributeRow(languageManager.GetTranslation("健康:"), ref F_healthOriginal, ref F_health);
+                        DrawAttributeRow(languageManager.GetTranslation("心情:"), ref F_moodOriginal, ref F_mood);
+                        DrawAttributeRow(languageManager.GetTranslation("魅力:"), ref F_charmOriginal, ref F_charm);
+                        DrawAttributeRow(languageManager.GetTranslation("幸运:"), ref F_luckOriginal, ref F_luck);
+                        DrawAttributeRow(languageManager.GetTranslation("品性:"), ref F_characterOriginal, ref F_character);
+                        DrawAttributeRow(languageManager.GetTranslation("天赋:"), ref F_talentOriginal, ref F_talent);
+                        DrawAttributeRow(languageManager.GetTranslation("天赋点:"), ref F_talentPointOriginal, ref F_talentPoint);
+                        DrawAttributeRow(languageManager.GetTranslation("技能:"), ref F_skillOriginal, ref F_skill);
+                        DrawAttributeRow(languageManager.GetTranslation("技能点:"), ref F_skillPointOriginal, ref F_skillPoint);
+                        DrawAttributeRow(languageManager.GetTranslation("喜好:"), ref F_preferenceOriginal, ref F_preference);
+                        DrawAttributeRow(languageManager.GetTranslation("文才:"), ref F_intelligenceOriginal, ref F_intelligence);
+                        DrawAttributeRow(languageManager.GetTranslation("武才:"), ref F_weaponOriginal, ref F_weapon);
+                        DrawAttributeRow(languageManager.GetTranslation("商才:"), ref F_businessOriginal, ref F_business);
+                        DrawAttributeRow(languageManager.GetTranslation("艺才:"), ref F_artOriginal, ref F_art);
+                        DrawAttributeRow(languageManager.GetTranslation("计谋:"), ref F_strategyOriginal, ref F_strategy);
                     }
                     else if (currentNobleSubMode == 2) // 世家妻妾
                     {
                         // 世家妻妾基本属性
-                        DrawAttributeRow("声誉:", ref G_reputationOriginal, ref G_reputation);
-                        DrawAttributeRow("年龄:", ref G_ageOriginal, ref G_age);
-                        DrawAttributeRow("健康:", ref G_healthOriginal, ref G_health);
-                        DrawAttributeRow("心情:", ref G_moodOriginal, ref G_mood);
-                        DrawAttributeRow("魅力:", ref G_charmOriginal, ref G_charm);
-                        DrawAttributeRow("幸运:", ref G_luckOriginal, ref G_luck);
-                        DrawAttributeRow("品性:", ref G_characterOriginal, ref G_character);
-                        DrawAttributeRow("天赋:", ref G_talentOriginal, ref G_talent);
-                        DrawAttributeRow("天赋点:", ref G_talentPointOriginal, ref G_talentPoint);
-                        DrawAttributeRow("技能:", ref G_skillOriginal, ref G_skill);
-                        DrawAttributeRow("技能点:", ref G_skillPointOriginal, ref G_skillPoint);
-                        DrawAttributeRow("喜好:", ref G_preferenceOriginal, ref G_preference);
-                        DrawAttributeRow("文才:", ref G_intelligenceOriginal, ref G_intelligence);
-                        DrawAttributeRow("武才:", ref G_weaponOriginal, ref G_weapon);
-                        DrawAttributeRow("商才:", ref G_businessOriginal, ref G_business);
-                        DrawAttributeRow("艺才:", ref G_artOriginal, ref G_art);
-                        DrawAttributeRow("计谋:", ref G_strategyOriginal, ref G_strategy);
+                        DrawAttributeRow(languageManager.GetTranslation("声誉:"), ref G_reputationOriginal, ref G_reputation);
+                        DrawAttributeRow(languageManager.GetTranslation("年龄:"), ref G_ageOriginal, ref G_age);
+                        DrawAttributeRow(languageManager.GetTranslation("健康:"), ref G_healthOriginal, ref G_health);
+                        DrawAttributeRow(languageManager.GetTranslation("心情:"), ref G_moodOriginal, ref G_mood);
+                        DrawAttributeRow(languageManager.GetTranslation("魅力:"), ref G_charmOriginal, ref G_charm);
+                        DrawAttributeRow(languageManager.GetTranslation("幸运:"), ref G_luckOriginal, ref G_luck);
+                        DrawAttributeRow(languageManager.GetTranslation("品性:"), ref G_characterOriginal, ref G_character);
+                        DrawAttributeRow(languageManager.GetTranslation("天赋:"), ref G_talentOriginal, ref G_talent);
+                        DrawAttributeRow(languageManager.GetTranslation("天赋点:"), ref G_talentPointOriginal, ref G_talentPoint);
+                        DrawAttributeRow(languageManager.GetTranslation("技能:"), ref G_skillOriginal, ref G_skill);
+                        DrawAttributeRow(languageManager.GetTranslation("技能点:"), ref G_skillPointOriginal, ref G_skillPoint);
+                        DrawAttributeRow(languageManager.GetTranslation("喜好:"), ref G_preferenceOriginal, ref G_preference);
+                        DrawAttributeRow(languageManager.GetTranslation("文才:"), ref G_intelligenceOriginal, ref G_intelligence);
+                        DrawAttributeRow(languageManager.GetTranslation("武才:"), ref G_weaponOriginal, ref G_weapon);
+                        DrawAttributeRow(languageManager.GetTranslation("商才:"), ref G_businessOriginal, ref G_business);
+                        DrawAttributeRow(languageManager.GetTranslation("艺才:"), ref G_artOriginal, ref G_art);
+                        DrawAttributeRow(languageManager.GetTranslation("计谋:"), ref G_strategyOriginal, ref G_strategy);
                     }
                 }
                 else if (currentMode == 4) // 农庄修改模式
@@ -1065,7 +1089,7 @@ namespace cs.HoLMod.MenberCheat
                     
                     // 农庄属性编辑区域
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    GUILayout.Label("农庄面积: ", new GUILayoutOption[] { GUILayout.Width(150f) });
+                    GUILayout.Label(languageManager.GetTranslation("农庄面积: "), new GUILayoutOption[] { GUILayout.Width(150f) });
                     GUILayout.Label(H_areaOriginal, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
                     GUILayout.Space(32f);
                     GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
@@ -1093,7 +1117,7 @@ namespace cs.HoLMod.MenberCheat
                     GUILayout.EndHorizontal();
                     
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    GUILayout.Label("农户数量-种植: ", new GUILayoutOption[] { GUILayout.Width(150f) });
+                    GUILayout.Label(languageManager.GetTranslation("农户数量-种植: "), new GUILayoutOption[] { GUILayout.Width(150f) });
                     GUILayout.Label(H_farmersPlantingOriginal, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
                     GUILayout.Space(32f);
                     GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
@@ -1108,7 +1132,7 @@ namespace cs.HoLMod.MenberCheat
                     GUILayout.EndHorizontal();
                     
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    GUILayout.Label("农户数量-养殖: ", new GUILayoutOption[] { GUILayout.Width(150f) });
+                    GUILayout.Label(languageManager.GetTranslation("农户数量-养殖: "), new GUILayoutOption[] { GUILayout.Width(150f) });
                     GUILayout.Label(H_farmersBreedingOriginal, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
                     GUILayout.Space(32f);
                     GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
@@ -1123,7 +1147,7 @@ namespace cs.HoLMod.MenberCheat
                     GUILayout.EndHorizontal();
                     
                     GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                    GUILayout.Label("农户数量-手工: ", new GUILayoutOption[] { GUILayout.Width(150f) });
+                    GUILayout.Label(languageManager.GetTranslation("农户数量-手工: "), new GUILayoutOption[] { GUILayout.Width(150f) });
                     GUILayout.Label(H_farmersCraftingOriginal, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
                     GUILayout.Space(32f);
                     GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
@@ -1141,10 +1165,10 @@ namespace cs.HoLMod.MenberCheat
                     if (!string.IsNullOrEmpty(currentZhuangTouId))
                     {
                         GUILayout.Space(20f);
-                        GUILayout.Label("庄头属性:", new GUILayoutOption[] { GUILayout.Width(100f) });
+                        GUILayout.Label(languageManager.GetTranslation("庄头属性: "), new GUILayoutOption[] { GUILayout.Width(100f) });
                         
                         GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                        GUILayout.Label("年龄: ", new GUILayoutOption[] { GUILayout.Width(150f) });
+                        GUILayout.Label(languageManager.GetTranslation("年龄: "), new GUILayoutOption[] { GUILayout.Width(150f) });
                         GUILayout.Label(H_zhuangTouAgeOriginal, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
                         GUILayout.Space(32f);
                         GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
@@ -1159,7 +1183,7 @@ namespace cs.HoLMod.MenberCheat
                         GUILayout.EndHorizontal();
                         
                         GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                        GUILayout.Label("管理: ", new GUILayoutOption[] { GUILayout.Width(150f) });
+                        GUILayout.Label(languageManager.GetTranslation("管理: "), new GUILayoutOption[] { GUILayout.Width(150f) });
                         GUILayout.Label(H_zhuangTouManagementOriginal, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
                         GUILayout.Space(32f);
                         GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
@@ -1174,7 +1198,7 @@ namespace cs.HoLMod.MenberCheat
                         GUILayout.EndHorizontal();
                         
                         GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                        GUILayout.Label("忠诚: ", new GUILayoutOption[] { GUILayout.Width(150f) });
+                        GUILayout.Label(languageManager.GetTranslation("忠诚: "), new GUILayoutOption[] { GUILayout.Width(150f) });
                         GUILayout.Label(H_zhuangTouLoyaltyOriginal, centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
                         GUILayout.Space(32f);
                         GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
@@ -1189,7 +1213,7 @@ namespace cs.HoLMod.MenberCheat
                         GUILayout.EndHorizontal();
                         
                         GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
-                        GUILayout.Label("品性: ", new GUILayoutOption[] { GUILayout.Width(150f) });
+                        GUILayout.Label(languageManager.GetTranslation("性格: "), new GUILayoutOption[] { GUILayout.Width(150f) });
                         GUILayout.Label(CharacterCodeToChinese(H_zhuangTouCharacterOriginal), centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(60f) });
                         GUILayout.Space(32f);
                         GUILayout.Label("→", new GUILayoutOption[] { GUILayout.Width(20f) });
@@ -1207,7 +1231,7 @@ namespace cs.HoLMod.MenberCheat
                         
                         for (int i = 0; i < characterOptions1.Length; i++)
                         {
-                            if (GUILayout.Button(characterLabels1[i], new GUILayoutOption[] { GUILayout.Width(40f), GUILayout.Height(20f) }))
+                            if (GUILayout.Button(languageManager.GetTranslation(characterLabels1[i]), new GUILayoutOption[] { GUILayout.Width(120f), GUILayout.Height(20f) }))
                             {
                                 H_zhuangTouCharacter = characterOptions1[i];
                             }
@@ -1221,7 +1245,7 @@ namespace cs.HoLMod.MenberCheat
                         
                         for (int i = 0; i < characterOptions2.Length; i++)
                         {
-                            if (GUILayout.Button(characterLabels2[i], new GUILayoutOption[] { GUILayout.Width(40f), GUILayout.Height(20f) }))
+                            if (GUILayout.Button(languageManager.GetTranslation(characterLabels2[i]), new GUILayoutOption[] { GUILayout.Width(120f), GUILayout.Height(20f) }))
                             {
                                 H_zhuangTouCharacter = characterOptions2[i];
                             }
@@ -1234,7 +1258,7 @@ namespace cs.HoLMod.MenberCheat
                     else
                     {
                         GUILayout.Space(20f);
-                        GUILayout.Label("当前农庄暂无庄头", new GUILayoutOption[] { GUILayout.Width(200f) });
+                        GUILayout.Label(languageManager.GetTranslation("当前农庄暂无庄头"), new GUILayoutOption[] { GUILayout.Width(200f) });
                     }
                 }
                 
@@ -1245,7 +1269,7 @@ namespace cs.HoLMod.MenberCheat
                 // 修改按钮
                 GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button("修改", new GUILayoutOption[] { GUILayout.Width(200f), GUILayout.Height(50f) }))
+                if (GUILayout.Button(languageManager.GetTranslation("修改"), new GUILayoutOption[] { GUILayout.Width(200f), GUILayout.Height(50f) }))
                 {
                     ApplyChanges();
                 }
@@ -1269,22 +1293,22 @@ namespace cs.HoLMod.MenberCheat
                 largeBoxStyle.fontSize = largeBoxStyle.fontSize * 2; // 设置字体大小为原来的2倍
                 
                 // 使用说明标题
-                GUILayout.Label("使用说明:", largeBoxStyle);
+                GUILayout.Label(languageManager.GetTranslation("使用说明:"), largeBoxStyle);
                 
                 // 使用说明
-                GUILayout.Label("1. 请在点击修改前先保存游戏，以便回档", largeFontStyle);
-                GUILayout.Label("2. 按F3键显示/隐藏窗口", largeFontStyle);
-                GUILayout.Label("3. 选择修改类型：族人修改/门客修改/皇室修改/世家修改/农庄修改", largeFontStyle);
-                GUILayout.Label("4. 族人模式下可选择：族人家族/族人妻妾", largeFontStyle);
-                GUILayout.Label("5. 皇室模式下可选择：皇室主脉/皇室妻妾", largeFontStyle);
-                GUILayout.Label("6. 世家模式下可选择：世家主脉/世家妻妾", largeFontStyle);
-                GUILayout.Label("7. 输入部分字符可搜索角色", largeFontStyle);
-                GUILayout.Label("8. 选择角色后可以通过点击按钮或者直接在文本框中输入来修改对应的属性值", largeFontStyle);
-                GUILayout.Label("9. 点击修改按钮应用更改", largeFontStyle);
+                GUILayout.Label(languageManager.GetTranslation("1. 请在点击修改前先保存游戏，以便回档"), largeFontStyle);
+                GUILayout.Label(languageManager.GetTranslation("2. 按F3键显示/隐藏窗口"), largeFontStyle);
+                GUILayout.Label(languageManager.GetTranslation("3. 选择修改类型：族人修改/门客修改/皇室修改/世家修改/农庄修改"), largeFontStyle);
+                GUILayout.Label(languageManager.GetTranslation("4. 族人模式下可选择：族人家族/族人妻妾"), largeFontStyle);
+                GUILayout.Label(languageManager.GetTranslation("5. 皇室模式下可选择：皇室主脉/皇家妻妾"), largeFontStyle);
+                GUILayout.Label(languageManager.GetTranslation("6. 世家模式下可选择：世家主脉/世家妻妾"), largeFontStyle);
+                GUILayout.Label(languageManager.GetTranslation("7. 输入部分字符可搜索角色"), largeFontStyle);
+                GUILayout.Label(languageManager.GetTranslation("8. 选择角色后可以通过点击按钮或者直接在文本框中输入来修改对应的属性值"), largeFontStyle);
+                GUILayout.Label(languageManager.GetTranslation("9. 点击修改按钮应用更改"), largeFontStyle);
                 
                 // MOD作者及版本号说明
-                GUILayout.Label("Mod作者：AnZhi20", largeFontStyle);
-                GUILayout.Label("Mod版本：2.0.0", largeFontStyle);
+                GUILayout.Label(languageManager.GetTranslation("Mod作者：AnZhi20"), largeFontStyle);
+                GUILayout.Label(string.Format(languageManager.GetTranslation("Mod版本：{0}"), PluginInfo.PLUGIN_VERSION), largeFontStyle);
                 GUILayout.EndVertical();
             }
             
@@ -1307,19 +1331,19 @@ namespace cs.HoLMod.MenberCheat
             {
                 switch (code)
                 {
-                    case '0': result += "空";
+                    case '0': result += languageManager.GetTranslation("空");
                         break;
-                    case '1': result += "巫";
+                    case '1': result += languageManager.GetTranslation("巫");
                         break;
-                    case '2': result += "医";
+                    case '2': result += languageManager.GetTranslation("医");
                         break;
-                    case '3': result += "相";
+                    case '3': result += languageManager.GetTranslation("相");
                         break;
-                    case '4': result += "卜";
+                    case '4': result += languageManager.GetTranslation("卜");
                         break;
-                    case '5': result += "魅";
+                    case '5': result += languageManager.GetTranslation("魅");
                         break;
-                    case '6': result += "工";
+                    case '6': result += languageManager.GetTranslation("工");
                         break;
                     default: result += code;
                         break;
@@ -1342,15 +1366,15 @@ namespace cs.HoLMod.MenberCheat
             {
                 switch (code)
                 {
-                    case '0': result += "空";
+                    case '0': result += languageManager.GetTranslation("空");
                         break;
-                    case '1': result += "文";
+                    case '1': result += languageManager.GetTranslation("文");
                         break;
-                    case '2': result += "武";
+                    case '2': result += languageManager.GetTranslation("武");
                         break;
-                    case '3': result += "商";
+                    case '3': result += languageManager.GetTranslation("商");
                         break;
-                    case '4': result += "艺";
+                    case '4': result += languageManager.GetTranslation("艺");
                         break;
                     default: result += code;
                         break;
@@ -1373,27 +1397,27 @@ namespace cs.HoLMod.MenberCheat
             {
                 switch (code)
                 {
-                    case '0': result += "香粉、";
+                    case '0': result += languageManager.GetTranslation("香粉");
                         break;
-                    case '1': result += "书法、";
+                    case '1': result += languageManager.GetTranslation("书法");
                         break;
-                    case '2': result += "丹青、";
+                    case '2': result += languageManager.GetTranslation("丹青");
                         break;
-                    case '3': result += "文玩、";
+                    case '3': result += languageManager.GetTranslation("文玩");
                         break;
-                    case '4': result += "茶具、";
+                    case '4': result += languageManager.GetTranslation("茶具、");
                         break;
-                    case '5': result += "香具、";
+                    case '5': result += languageManager.GetTranslation("香具、");
                         break;
-                    case '6': result += "瓷器、";
+                    case '6': result += languageManager.GetTranslation("瓷器、");
                         break;
-                    case '7': result += "美酒、";
+                    case '7': result += languageManager.GetTranslation("美酒、");
                         break;
-                    case '8': result += "琴瑟、";
+                    case '8': result += languageManager.GetTranslation("琴瑟、");
                         break;
-                    case '9': result += "皮毛、";
+                    case '9': result += languageManager.GetTranslation("皮毛、");
                         break;
-                    default: result += code + "、";
+                    default: result += code;
                         break;
                 }
             }
@@ -1416,21 +1440,21 @@ namespace cs.HoLMod.MenberCheat
             // 品性代码0-14对应中文
             switch (characterCode)
             {
-                case "0": return "不明";
-                case "1": return "傲娇";
-                case "2": return "刚正";
-                case "3": return "活泼";
-                case "4": return "善良";
-                case "5": return "真诚";
-                case "6": return "洒脱";
-                case "7": return "高冷";
-                case "8": return "自卑";
-                case "9": return "怯懦";
-                case "10": return "腼腆";
-                case "11": return "凶狠";
-                case "12": return "善变";
-                case "13": return "忧郁";
-                case "14": return "多疑";
+                case "0": return languageManager.GetTranslation("不明");
+                case "1": return languageManager.GetTranslation("傲娇");
+                case "2": return languageManager.GetTranslation("刚正");
+                case "3": return languageManager.GetTranslation("活泼");
+                case "4": return languageManager.GetTranslation("善良");
+                case "5": return languageManager.GetTranslation("真诚");
+                case "6": return languageManager.GetTranslation("洒脱");
+                case "7": return languageManager.GetTranslation("高冷");
+                case "8": return languageManager.GetTranslation("自卑");
+                case "9": return languageManager.GetTranslation("怯懦");
+                case "10": return languageManager.GetTranslation("腼腆");
+                case "11": return languageManager.GetTranslation("凶狠");
+                case "12": return languageManager.GetTranslation("善变");
+                case "13": return languageManager.GetTranslation("忧郁");
+                case "14": return languageManager.GetTranslation("多疑");
                 default: return characterCode;
             }
         }
@@ -1468,7 +1492,7 @@ namespace cs.HoLMod.MenberCheat
                     
                     string result = GuanZhiData.GetOfficialPosition(i, j, k, l, m);
                     UnityEngine.Debug.Log("GetOfficialPosition 返回: " + result);
-                    return result;
+                    return languageManager.GetTranslation(result);
                 }
                 else
                 {
@@ -1481,7 +1505,7 @@ namespace cs.HoLMod.MenberCheat
             }
             
             UnityEngine.Debug.Log("返回默认值: 未知官职");
-            return "未知官职";
+            return languageManager.GetTranslation("未知官职");
         }
 
         // 爵位代码转中文对照表
@@ -1493,11 +1517,11 @@ namespace cs.HoLMod.MenberCheat
             // 爵位代码0-4对应中文
             switch (jueWeiCode)
             {
-                case "0": return "空";
-                case "1": return "伯爵";
-                case "2": return "侯爵";
-                case "3": return "公爵";
-                case "4": return "王爵";
+                case "0": return languageManager.GetTranslation("空");
+                case "1": return languageManager.GetTranslation("伯爵");
+                case "2": return languageManager.GetTranslation("侯爵");
+                case "3": return languageManager.GetTranslation("公爵");
+                case "4": return languageManager.GetTranslation("王爵");
                 default: return jueWeiCode;
             }
         }
@@ -1512,19 +1536,19 @@ namespace cs.HoLMod.MenberCheat
             // 封地代码1-12对应中文
             switch (fengDiCode)
             {
-                case "0": return "无封地";
-                case "1": return "南郡-汉阳";
-                case "2": return "三川郡-左亭";
-                case "3": return "蜀郡-华阳";
-                case "4": return "丹阳郡-宛陵";
-                case "5": return "陈留郡-长罗";
-                case "6": return "长沙郡-安成";
-                case "7": return "会稽郡-太末";
-                case "8": return "广陵郡-盐渎";
-                case "9": return "太原郡-霍人";
-                case "10": return "益州郡-比苏";
-                case "11": return "南海郡-新会";
-                case "12": return "云南郡-越隽";
+                case "0": return languageManager.GetTranslation("无封地");
+                case "1": return languageManager.GetTranslation("南郡") + "-" + languageManager.GetTranslation("汉阳");
+                case "2": return languageManager.GetTranslation("三川郡") + "-" + languageManager.GetTranslation("左亭");
+                case "3": return languageManager.GetTranslation("蜀郡") + "-" + languageManager.GetTranslation("华阳");
+                case "4": return languageManager.GetTranslation("丹阳郡") + "-" + languageManager.GetTranslation("宛陵");
+                case "5": return languageManager.GetTranslation("陈留郡") + "-" + languageManager.GetTranslation("长罗");
+                case "6": return languageManager.GetTranslation("长沙郡") + "-" + languageManager.GetTranslation("安成");
+                case "7": return languageManager.GetTranslation("会稽郡") + "-" + languageManager.GetTranslation("太末");
+                case "8": return languageManager.GetTranslation("广陵郡") + "-" + languageManager.GetTranslation("盐渎");
+                case "9": return languageManager.GetTranslation("太原郡") + "-" + languageManager.GetTranslation("霍人");
+                case "10": return languageManager.GetTranslation("益州郡") + "-" + languageManager.GetTranslation("比苏");
+                case "11": return languageManager.GetTranslation("南海郡") + "-" + languageManager.GetTranslation("新会");
+                case "12": return languageManager.GetTranslation("云南郡") + "-" + languageManager.GetTranslation("越隽");
                 default: return fengDiCode;
             }
         }
@@ -1535,7 +1559,7 @@ namespace cs.HoLMod.MenberCheat
             GUILayout.Label(label, new GUILayoutOption[] { GUILayout.Width(100f) });
             
             // 特殊处理喜好显示和修改
-                if (label == "喜好:")
+                if (label == languageManager.GetTranslation("爱好:"))
                 {
                     // 创建居中显示的样式
                     GUIStyle centeredLabelStyle = new GUIStyle(GUI.skin.label);
@@ -1565,12 +1589,12 @@ namespace cs.HoLMod.MenberCheat
                 // 第一行按钮 (0-4)
                 GUILayout.BeginHorizontal();
                 string[] preferenceOptions1 = new string[] { "0", "1", "2", "3", "4" };
-                string[] preferenceLabels1 = new string[] { "香粉", "书法", "丹青", "文玩", "茶具" };
+                string[] preferenceLabels1 = new string[] { "香粉", "书法","丹青","文玩","茶具" };
                 
                 for (int i = 0; i < preferenceOptions1.Length; i++)
                 {
-                    Rect buttonRect = GUILayoutUtility.GetRect(new GUIContent(preferenceLabels1[i]), GUI.skin.button, new GUILayoutOption[] { GUILayout.Width(60f), GUILayout.Height(20f) });
-                    if (GUI.Button(buttonRect, preferenceLabels1[i]))
+                    Rect buttonRect = GUILayoutUtility.GetRect(new GUIContent(languageManager.GetTranslation(preferenceLabels1[i])), GUI.skin.button, new GUILayoutOption[] { GUILayout.Width(180f), GUILayout.Height(20f) });
+                    if (GUI.Button(buttonRect, languageManager.GetTranslation(preferenceLabels1[i])))
                     {
                         currentValue = preferenceOptions1[i];
                     }
@@ -1593,8 +1617,8 @@ namespace cs.HoLMod.MenberCheat
                 
                 for (int i = 0; i < preferenceOptions2.Length; i++)
                 {
-                    Rect buttonRect = GUILayoutUtility.GetRect(new GUIContent(preferenceLabels2[i]), GUI.skin.button, new GUILayoutOption[] { GUILayout.Width(60f), GUILayout.Height(20f) });
-                    if (GUI.Button(buttonRect, preferenceLabels2[i]))
+                    Rect buttonRect = GUILayoutUtility.GetRect(new GUIContent(languageManager.GetTranslation(preferenceLabels2[i])), GUI.skin.button, new GUILayoutOption[] { GUILayout.Width(180f), GUILayout.Height(20f) });
+                    if (GUI.Button(buttonRect, languageManager.GetTranslation(preferenceLabels2[i])))
                     {
                         currentValue = preferenceOptions2[i];
                     }
@@ -1613,7 +1637,7 @@ namespace cs.HoLMod.MenberCheat
                 GUILayout.EndVertical();
             }
             // 特殊处理爵位显示和修改
-            else if (label == "爵位:")
+            else if (label == languageManager.GetTranslation("爵位:"))
             {
                 // 创建居中显示的样式
                 GUIStyle centeredLabelStyle = new GUIStyle(GUI.skin.label);
@@ -1640,11 +1664,11 @@ namespace cs.HoLMod.MenberCheat
                 // 第五列改为按钮形式
                 GUILayout.BeginHorizontal();
                 string[] jueWeiOptions = new string[] { "0", "1", "2", "3", "4" };
-                string[] jueWeiLabels = new string[] { "空", "伯爵", "侯爵", "公爵", "王爵" };
+                string[] jueWeiLabels = new string[] { languageManager.GetTranslation("空"), languageManager.GetTranslation("伯爵"), languageManager.GetTranslation("侯爵"), languageManager.GetTranslation("公爵"), languageManager.GetTranslation("王爵") };
                 
                 for (int i = 0; i < jueWeiOptions.Length; i++)
                 {
-                    if (GUILayout.Button(jueWeiLabels[i], new GUILayoutOption[] { GUILayout.Width(60f), GUILayout.Height(20f) }))
+                    if (GUILayout.Button(languageManager.GetTranslation(jueWeiLabels[i]), new GUILayoutOption[] { GUILayout.Width(60f), GUILayout.Height(20f) }))
                     {
                         currentValue = jueWeiOptions[i];
                     }
@@ -1653,7 +1677,7 @@ namespace cs.HoLMod.MenberCheat
                 
             }
             // 特殊处理封地显示和修改
-            else if (label == "封地:")
+            else if (label == languageManager.GetTranslation("封地:"))
             {
                 // 创建居中显示的样式
                 GUIStyle centeredLabelStyle = new GUIStyle(GUI.skin.label);
@@ -1675,12 +1699,12 @@ namespace cs.HoLMod.MenberCheat
                 GUILayout.Label(FengDiCodeToChinese(currentValue), centeredLabelStyle, new GUILayoutOption[] { GUILayout.Width(80f) }); // 第四列显示宽度改为8个字符，并居中显示
                 
                 // 第五列改为按钮形式
-                GUILayout.BeginVertical(new GUILayoutOption[] { GUILayout.Width(380f) });
+                GUILayout.BeginVertical(new GUILayoutOption[] { GUILayout.Width(600f) });
                 
                 // 空按钮单独成行
                 GUILayout.BeginHorizontal();
-                Rect emptyButtonRect = GUILayoutUtility.GetRect(new GUIContent("空"), GUI.skin.button, new GUILayoutOption[] { GUILayout.Width(60f), GUILayout.Height(20f) });
-                if (GUI.Button(emptyButtonRect, "空"))
+                Rect emptyButtonRect = GUILayoutUtility.GetRect(new GUIContent(languageManager.GetTranslation("空")), GUI.skin.button, new GUILayoutOption[] { GUILayout.Width(90f), GUILayout.Height(20f) });
+                if (GUI.Button(emptyButtonRect, languageManager.GetTranslation("空")))
                 {
                     currentValue = "0";
                 }
@@ -1702,8 +1726,8 @@ namespace cs.HoLMod.MenberCheat
                 
                 for (int i = 0; i < fengDiOptions1.Length; i++)
                 {
-                    Rect buttonRect = GUILayoutUtility.GetRect(new GUIContent(fengDiLabels1[i]), GUI.skin.button, new GUILayoutOption[] { GUILayout.Width(60f), GUILayout.Height(20f) });
-                    if (GUI.Button(buttonRect, fengDiLabels1[i]))
+                    Rect buttonRect = GUILayoutUtility.GetRect(new GUIContent(languageManager.GetTranslation(fengDiLabels1[i])), GUI.skin.button, new GUILayoutOption[] { GUILayout.Width(90f), GUILayout.Height(20f) });
+                    if (GUI.Button(buttonRect, languageManager.GetTranslation(fengDiLabels1[i])))
                     {
                         currentValue = fengDiOptions1[i];
                     }
@@ -1726,8 +1750,8 @@ namespace cs.HoLMod.MenberCheat
                 
                 for (int i = 0; i < fengDiOptions2.Length; i++)
                 {
-                    Rect buttonRect = GUILayoutUtility.GetRect(new GUIContent(fengDiLabels2[i]), GUI.skin.button, new GUILayoutOption[] { GUILayout.Width(60f), GUILayout.Height(20f) });
-                    if (GUI.Button(buttonRect, fengDiLabels2[i]))
+                    Rect buttonRect = GUILayoutUtility.GetRect(new GUIContent(languageManager.GetTranslation(fengDiLabels2[i])), GUI.skin.button, new GUILayoutOption[] { GUILayout.Width(90f), GUILayout.Height(20f) });
+                    if (GUI.Button(buttonRect, languageManager.GetTranslation(fengDiLabels2[i])))
                     {
                         currentValue = fengDiOptions2[i];
                     }
@@ -1746,7 +1770,7 @@ namespace cs.HoLMod.MenberCheat
                 GUILayout.EndVertical();
             }
             // 特殊处理品性显示
-            else if (label == "品性:")
+            else if (label == languageManager.GetTranslation("品性:"))
             {
                 // 创建居中显示的样式
                 GUIStyle centeredLabelStyle = new GUIStyle(GUI.skin.label);
@@ -1777,11 +1801,11 @@ namespace cs.HoLMod.MenberCheat
                 
                 for (int i = 0; i < characterOptions1.Length; i++)
                 {
-                    if (GUILayout.Button(characterLabels1[i], new GUILayoutOption[] { GUILayout.Width(40f), GUILayout.Height(20f) }))
+                    if (GUILayout.Button(languageManager.GetTranslation(characterLabels1[i]), new GUILayoutOption[] { GUILayout.Width(80f), GUILayout.Height(20f) }))
                     {
                         currentValue = characterOptions1[i];
                         // 直接更新对应的模式特定变量
-                        if (label == "品性:")
+                        if (label == languageManager.GetTranslation("品性:"))
                         {
                             if (currentMode == 0 && currentMemberSubMode == 1) // 族人家族模式
                             {
@@ -1818,11 +1842,11 @@ namespace cs.HoLMod.MenberCheat
                 
                 for (int i = 0; i < characterOptions2.Length; i++)
                 {
-                    if (GUILayout.Button(characterLabels2[i], new GUILayoutOption[] { GUILayout.Width(40f), GUILayout.Height(20f) }))
+                    if (GUILayout.Button(languageManager.GetTranslation(characterLabels2[i]), new GUILayoutOption[] { GUILayout.Width(80f), GUILayout.Height(20f) }))
                     {
                         currentValue = characterOptions2[i];
                         // 直接更新对应的模式特定变量
-                        if (label == "品性:")
+                        if (label == languageManager.GetTranslation("品性:"))
                         {
                             if (currentMode == 0 && currentMemberSubMode == 1) // 族人家族模式
                             {
@@ -1855,7 +1879,7 @@ namespace cs.HoLMod.MenberCheat
                 GUILayout.EndVertical();
             }
             // 特殊处理技能显示
-            else if (label == "技能:")
+            else if (label == languageManager.GetTranslation("技能:"))
             {
                 // 创建居中显示的样式
                 GUIStyle centeredLabelStyle = new GUIStyle(GUI.skin.label);
@@ -1883,7 +1907,7 @@ namespace cs.HoLMod.MenberCheat
                 
                 for (int i = 0; i < skillOptions.Length; i++)
                 {
-                    if (GUILayout.Button(skillLabels[i], new GUILayoutOption[] { GUILayout.Width(30f), GUILayout.Height(25f) }))
+                    if (GUILayout.Button(languageManager.GetTranslation(skillLabels[i]), new GUILayoutOption[] { GUILayout.Width(80f), GUILayout.Height(25f) }))
                     {
                         // 直接赋值选中的技能值
                         currentValue = skillOptions[i];
@@ -1937,7 +1961,7 @@ namespace cs.HoLMod.MenberCheat
                 GUILayout.EndHorizontal();
             }
             // 特殊处理技能点显示
-            else if (label == "技能点:")
+            else if (label == languageManager.GetTranslation("技能点:"))
             {
                 // 创建居中显示的样式
                 GUIStyle centeredLabelStyle = new GUIStyle(GUI.skin.label);
@@ -2014,7 +2038,7 @@ namespace cs.HoLMod.MenberCheat
                 }
             }
             // 特殊处理天赋显示
-            else if (label == "天赋:")
+            else if (label == languageManager.GetTranslation("天赋:"))
             {
                 // 创建居中显示的样式
                 GUIStyle centeredLabelStyle = new GUIStyle(GUI.skin.label);
@@ -2035,11 +2059,11 @@ namespace cs.HoLMod.MenberCheat
                 // 第五列改为按钮形式
                 GUILayout.BeginHorizontal(new GUILayoutOption[] { GUILayout.Width(200f) });
                 string[] talentOptions = new string[] { "0", "1", "2", "3", "4" };
-                string[] talentLabels = new string[] { "空", "文", "武", "商", "艺" };
+                string[] talentLabels = new string[] { languageManager.GetTranslation("空"), languageManager.GetTranslation("文"), languageManager.GetTranslation("武"), languageManager.GetTranslation("商"), languageManager.GetTranslation("艺") };
                 
                 for (int i = 0; i < talentOptions.Length; i++)
                 {
-                    if (GUILayout.Button(talentLabels[i], new GUILayoutOption[] { GUILayout.Width(40f), GUILayout.Height(25f) }))
+                    if (GUILayout.Button(languageManager.GetTranslation(talentLabels[i]), new GUILayoutOption[] { GUILayout.Width(80f), GUILayout.Height(25f) }))
                     {
                         // 直接赋值选中的天赋值
                         currentValue = talentOptions[i];
@@ -2093,7 +2117,7 @@ namespace cs.HoLMod.MenberCheat
                 GUILayout.EndHorizontal();
             }
             // 特殊处理天赋点显示
-            else if (label == "天赋点:")
+            else if (label == languageManager.GetTranslation("天赋点:"))
             {
                 // 创建居中显示的样式
                 GUIStyle centeredLabelStyle = new GUIStyle(GUI.skin.label);
@@ -2167,7 +2191,7 @@ namespace cs.HoLMod.MenberCheat
                 }
             }
             // 特殊处理喜好点显示
-            else if (label == "喜好点:")
+            else if (label == languageManager.GetTranslation("喜好点:"))
             {
                 // 创建居中显示的样式
                 GUIStyle centeredLabelStyle = new GUIStyle(GUI.skin.label);
@@ -2244,7 +2268,7 @@ namespace cs.HoLMod.MenberCheat
                 }
             }
             // 特殊处理喜好显示
-            else if (label == "喜好:")
+            else if (label == languageManager.GetTranslation("喜好:"))
             {
                 // 创建居中显示的样式
                 GUIStyle centeredLabelStyle = new GUIStyle(GUI.skin.label);
@@ -2271,7 +2295,7 @@ namespace cs.HoLMod.MenberCheat
                 
                 for (int i = 0; i < preferenceOptions1.Length; i++)
                 {
-                    if (GUILayout.Button(preferenceLabels1[i], new GUILayoutOption[] { GUILayout.Width(35f), GUILayout.Height(20f) }))
+                    if (GUILayout.Button(languageManager.GetTranslation(preferenceLabels1[i]), new GUILayoutOption[] { GUILayout.Width(70f), GUILayout.Height(20f) }))
                     {
                         if (string.IsNullOrEmpty(currentValue) || !currentValue.Contains(preferenceOptions1[i]))
                         {
@@ -2325,7 +2349,7 @@ namespace cs.HoLMod.MenberCheat
                 
                 for (int i = 0; i < preferenceOptions2.Length; i++)
                 {
-                    if (GUILayout.Button(preferenceLabels2[i], new GUILayoutOption[] { GUILayout.Width(35f), GUILayout.Height(20f) }))
+                    if (GUILayout.Button(languageManager.GetTranslation(preferenceLabels2[i]), new GUILayoutOption[] { GUILayout.Width(70f), GUILayout.Height(20f) }))
                     {
                         if (string.IsNullOrEmpty(currentValue) || !currentValue.Contains(preferenceOptions2[i]))
                         {
@@ -2381,32 +2405,32 @@ namespace cs.HoLMod.MenberCheat
                     {
                         if (currentMemberSubMode == 1) // 族人家族模式
                         {
-                            if (label == "幸运:") A_luck = currentValue;
-                            else if (label == "天赋:") A_talent = currentValue;
-                            else if (label == "技能:") A_skill = currentValue;
-                            else if (label == "喜好:") A_preference = currentValue;
-                            else if (label == "品性:") A_character = currentValue;
-                            else if (label == "天赋点:") A_talentPoint = currentValue;
-                            else if (label == "技能点:") A_skillPoint = currentValue;
+                            if (label == languageManager.GetTranslation("幸运:")) A_luck = currentValue;
+                            else if (label == languageManager.GetTranslation("天赋:")) A_talent = currentValue;
+                            else if (label == languageManager.GetTranslation("技能:")) A_skill = currentValue;
+                            else if (label == languageManager.GetTranslation("喜好:")) A_preference = currentValue;
+                            else if (label == languageManager.GetTranslation("品性:")) A_character = currentValue;
+                            else if (label == languageManager.GetTranslation("天赋点:")) A_talentPoint = currentValue;
+                            else if (label == languageManager.GetTranslation("技能点:")) A_skillPoint = currentValue;
                         }
                         else if (currentMemberSubMode == 2) // 族人妻妾模式
                         {
-                            if (label == "幸运:") B_luck = currentValue;
-                            else if (label == "天赋:") B_talent = currentValue;
-                            else if (label == "技能:") B_skill = currentValue;
-                            else if (label == "喜好:") B_preference = currentValue;
-                            else if (label == "品性:") B_character = currentValue;
-                            else if (label == "天赋点:") B_talentPoint = currentValue;
-                            else if (label == "技能点:") B_skillPoint = currentValue;
+                            if (label == languageManager.GetTranslation("幸运:")) B_luck = currentValue;
+                            else if (label == languageManager.GetTranslation("天赋:")) B_talent = currentValue;
+                            else if (label == languageManager.GetTranslation("技能:")) B_skill = currentValue;
+                            else if (label == languageManager.GetTranslation("喜好:")) B_preference = currentValue;
+                            else if (label == languageManager.GetTranslation("品性:")) B_character = currentValue;
+                            else if (label == languageManager.GetTranslation("天赋点:")) B_talentPoint = currentValue;
+                            else if (label == languageManager.GetTranslation("技能点:")) B_skillPoint = currentValue;
                         }
                     }
                     else if (currentMode == 1) // 门客模式
                     {
-                        if (label == "幸运:") C_luck = currentValue;
-                        else if (label == "天赋:") C_talent = currentValue;
-                        else if (label == "技能:") C_skill = currentValue;
-                        else if (label == "品性:") C_character = currentValue;
-                        else if (label == "天赋点:") C_talentPoint = currentValue;
+                        if (label == languageManager.GetTranslation("幸运:")) C_luck = currentValue;
+                        else if (label == languageManager.GetTranslation("天赋:")) C_talent = currentValue;
+                        else if (label == languageManager.GetTranslation("技能:")) C_skill = currentValue;
+                        else if (label == languageManager.GetTranslation("品性:")) C_character = currentValue;
+                        else if (label == languageManager.GetTranslation("天赋点:")) C_talentPoint = currentValue;
                         else if (label == "技能点:") C_skillPoint = currentValue;
                     }
                 }
@@ -2515,7 +2539,7 @@ namespace cs.HoLMod.MenberCheat
                                 if (currentFamilyIndex == 0 || familyIndex == currentFamilyIndex)
                                 {
                                     // 检查郡选择状态
-                                    string[] countyNames = new string[] { "", "南郡", "三川郡", "蜀郡", "丹阳郡", "陈留郡", "长沙郡", "会稽郡", "广陵郡", "太原郡", "益州郡", "南海郡", "云南郡" };
+                                    string[] countyNames = new string[] { "", languageManager.GetTranslation("南郡"), languageManager.GetTranslation("三川郡"), languageManager.GetTranslation("蜀郡"), languageManager.GetTranslation("丹阳郡"), languageManager.GetTranslation("陈留郡"), languageManager.GetTranslation("长沙郡"), languageManager.GetTranslation("会稽郡"), languageManager.GetTranslation("广陵郡"), languageManager.GetTranslation("太原郡"), languageManager.GetTranslation("益州郡"), languageManager.GetTranslation("南海郡"), languageManager.GetTranslation("云南郡") };
                                     bool countyMatch = true;
                                     
                                     if (currentFarmAreaIndex > 0 && currentFarmAreaIndex < countyNames.Length && Mainload.ShiJia_Now != null && familyIndex < Mainload.ShiJia_Now.Count && Mainload.ShiJia_Now[familyIndex] != null && Mainload.ShiJia_Now[familyIndex].Count > 5 && !string.IsNullOrEmpty(Mainload.ShiJia_Now[familyIndex][5]))
@@ -2591,7 +2615,7 @@ namespace cs.HoLMod.MenberCheat
                                 if (currentFamilyIndex == 0 || familyIndex == currentFamilyIndex)
                                 {
                                     // 检查郡选择状态
-                                    string[] countyNames = new string[] { "", "南郡", "三川郡", "蜀郡", "丹阳郡", "陈留郡", "长沙郡", "会稽郡", "广陵郡", "太原郡", "益州郡", "南海郡", "云南郡" };
+                                    string[] countyNames = new string[] { "", languageManager.GetTranslation("南郡"), languageManager.GetTranslation("三川郡"), languageManager.GetTranslation("蜀郡"), languageManager.GetTranslation("丹阳郡"), languageManager.GetTranslation("陈留郡"), languageManager.GetTranslation("长沙郡"), languageManager.GetTranslation("会稽郡"), languageManager.GetTranslation("广陵郡"), languageManager.GetTranslation("太原郡"), languageManager.GetTranslation("益州郡"), languageManager.GetTranslation("南海郡"), languageManager.GetTranslation("云南郡") };
                                     bool countyMatch = true;
                                     
                                     if (currentFarmAreaIndex > 0 && currentFarmAreaIndex < countyNames.Length && Mainload.ShiJia_Now != null && familyIndex < Mainload.ShiJia_Now.Count && Mainload.ShiJia_Now[familyIndex] != null && Mainload.ShiJia_Now[familyIndex].Count > 5 && !string.IsNullOrEmpty(Mainload.ShiJia_Now[familyIndex][5]))
@@ -3667,7 +3691,7 @@ namespace cs.HoLMod.MenberCheat
             }
             catch (Exception ex)
             {
-                Logger.LogError(string.Format("加载庄头数据时出错: {0}", ex.Message));
+                Logger.LogError(string.Format(languageManager.GetTranslation("加载庄头数据时出错: {0}"), ex.Message));
             }
         }
         
@@ -3700,7 +3724,7 @@ namespace cs.HoLMod.MenberCheat
             }
             catch (Exception ex)
             {
-                Logger.LogError(string.Format("应用{0}属性修改时出错: {1}", selectedMemberName, ex.Message));
+                Logger.LogError(string.Format(languageManager.GetTranslation("应用{0}属性修改时出错: {1}"), selectedMemberName, ex.Message));
             }
         }
 
@@ -3724,13 +3748,12 @@ namespace cs.HoLMod.MenberCheat
                         // 有效性检查
                         if (isF_TalentEmpty && hasF_TalentPoints)
                         {
-                            ShowErrorMessage("天赋为空，天赋点不为零");
+                            ShowErrorMessage(languageManager.GetTranslation("天赋为空，天赋点不为零"));
                             return;
                         }
-                         
-                        if (isF_SkillEmpty && hasF_SkillPoints)
+                          if (isF_SkillEmpty && hasF_SkillPoints)
                         {
-                            ShowErrorMessage("技能为空，技能点不为零");
+                            ShowErrorMessage(languageManager.GetTranslation("技能为空，技能点不为零"));
                             return;
                         }
                          
@@ -3752,13 +3775,12 @@ namespace cs.HoLMod.MenberCheat
                         // 有效性检查
                         if (isG_TalentEmpty && hasG_TalentPoints)
                         {
-                            ShowErrorMessage("天赋为空，天赋点不为零");
+                            ShowErrorMessage(languageManager.GetTranslation("天赋为空，天赋点不为零"));
                             return;
                         }
-                         
-                        if (isG_SkillEmpty && hasG_SkillPoints)
+                          if (isG_SkillEmpty && hasG_SkillPoints)
                         {
-                            ShowErrorMessage("技能为空，技能点不为零");
+                            ShowErrorMessage(languageManager.GetTranslation("技能为空，技能点不为零"));
                             return;
                         }
                          
@@ -3788,13 +3810,13 @@ namespace cs.HoLMod.MenberCheat
                         // 有效性检查
                         if (isA_TalentEmpty && hasA_TalentPoints)
                         {
-                            ShowErrorMessage("天赋为空，天赋点不为零");
+                            ShowErrorMessage(languageManager.GetTranslation("天赋为空，天赋点不为零"));
                             return;
                         }
                         
                         if (isA_SkillEmpty && hasA_SkillPoints)
                         {
-                            ShowErrorMessage("技能为空，技能点不为零");
+                            ShowErrorMessage(languageManager.GetTranslation("技能为空，技能点不为零"));
                             return;
                         }
                         
@@ -3815,15 +3837,15 @@ namespace cs.HoLMod.MenberCheat
                         // 有效性检查
                         if (isB_TalentEmpty && hasB_TalentPoints)
                         {
-                            ShowErrorMessage("天赋为空，天赋点不为零");
-                            return;
-                        }
-                        
-                        if (isB_SkillEmpty && hasB_SkillPoints)
-                        {
-                            ShowErrorMessage("技能为空，技能点不为零");
-                            return;
-                        }
+                            ShowErrorMessage(languageManager.GetTranslation("天赋为空，天赋点不为零"));
+                        return;
+                    }
+                    
+                    if (isB_SkillEmpty && hasB_SkillPoints)
+                    {
+                        ShowErrorMessage(languageManager.GetTranslation("技能为空，技能点不为零"));
+                        return;
+                    }
                         
                         // 应用族人妻妾模式修改
                         ApplyClanSpouseChanges();
@@ -3847,15 +3869,15 @@ namespace cs.HoLMod.MenberCheat
                 // 有效性检查
                 if (isC_TalentEmpty && hasC_TalentPoints)
                 {
-                    ShowErrorMessage("天赋为空，天赋点不为零");
-                    return;
-                }
-                
-                if (isC_SkillEmpty && hasC_SkillPoints)
-                {
-                    ShowErrorMessage("技能为空，技能点不为零");
-                    return;
-                }
+                    ShowErrorMessage(languageManager.GetTranslation("天赋为空，天赋点不为零"));
+                        return;
+                    }
+                    
+                    if (isC_SkillEmpty && hasC_SkillPoints)
+                    {
+                        ShowErrorMessage(languageManager.GetTranslation("技能为空，技能点不为零"));
+                        return;
+                    }
                 
                 // 应用门客模式修改
                 ApplyMenKeChanges();
@@ -3881,15 +3903,15 @@ namespace cs.HoLMod.MenberCheat
                         // 有效性检查
                         if (isD_TalentEmpty && hasD_TalentPoints)
                         {
-                            ShowErrorMessage("天赋为空，天赋点不为零");
-                            return;
-                        }
-                        
-                        if (isD_SkillEmpty && hasD_SkillPoints)
-                        {
-                            ShowErrorMessage("技能为空，技能点不为零");
-                            return;
-                        }
+                            ShowErrorMessage(languageManager.GetTranslation("天赋为空，天赋点不为零"));
+                        return;
+                    }
+                    
+                    if (isD_SkillEmpty && hasD_SkillPoints)
+                    {
+                        ShowErrorMessage(languageManager.GetTranslation("技能为空，技能点不为零"));
+                        return;
+                    }
                         
                         // 应用皇室主脉模式修改
                         ApplyRoyalFamilyChanges();
@@ -3908,15 +3930,15 @@ namespace cs.HoLMod.MenberCheat
                         // 有效性检查
                         if (isE_TalentEmpty && hasE_TalentPoints)
                         {
-                            ShowErrorMessage("天赋为空，天赋点不为零");
-                            return;
-                        }
-                        
-                        if (isE_SkillEmpty && hasE_SkillPoints)
-                        {
-                            ShowErrorMessage("技能为空，技能点不为零");
-                            return;
-                        }
+                            ShowErrorMessage(languageManager.GetTranslation("天赋为空，天赋点不为零"));
+                        return;
+                    }
+                    
+                    if (isE_SkillEmpty && hasE_SkillPoints)
+                    {
+                        ShowErrorMessage(languageManager.GetTranslation("技能为空，技能点不为零"));
+                        return;
+                    }
                         
                         // 应用皇家妻妾模式修改
                         ApplyRoyalSpouseChanges();
@@ -3960,7 +3982,7 @@ namespace cs.HoLMod.MenberCheat
                         Mainload.Tip_Show.Add(new List<string>
                         {
                             "1",
-                            string.Format("【{0}】属性修改成功", selectedMemberName)
+                            string.Format("【{0}】{1}", selectedMemberName, languageManager.GetTranslation("属性修改成功"))
                         });
                     }
 
@@ -4062,7 +4084,7 @@ namespace cs.HoLMod.MenberCheat
                         Mainload.Tip_Show.Add(new List<string>
                         {
                             "1",
-                            string.Format("【{0}】属性修改成功", selectedMemberName)
+                            string.Format("【{0}】{1}", selectedMemberName, languageManager.GetTranslation("属性修改成功"))
                         });
                     }
 
@@ -4157,7 +4179,7 @@ namespace cs.HoLMod.MenberCheat
                 // 如果总农户数量超过可居住上限，阻止修改并显示提示
                 if (totalFarmers > maxResidents)
                 {
-                    ShowErrorMessage("可容纳农户数量不足，请升级或修建更多农房");
+                    ShowErrorMessage(languageManager.GetTranslation("可容纳农户数量不足，请升级或修建更多农房"));
                     return;
                 }
                 
@@ -4224,12 +4246,12 @@ namespace cs.HoLMod.MenberCheat
                 FilterMembers();
                 
                 // 显示成功消息
-                ShowSuccessMessage(string.Format("成功修改农庄 {0} 的属性", selectedMemberName));
+                ShowSuccessMessage(string.Format(languageManager.GetTranslation("成功修改农庄 {0} 的属性"), selectedMemberName));
             }
             catch (Exception ex)
             {
                 Logger.LogError(string.Format("应用农庄修改时出错: {0}", ex.Message));
-                ShowErrorMessage("应用修改时出错，请查看日志");
+                ShowErrorMessage(languageManager.GetTranslation("应用修改时出错，请查看日志"));
             }
         }
         
@@ -4244,7 +4266,7 @@ namespace cs.HoLMod.MenberCheat
                 Mainload.Tip_Show.Add(new List<string>
                 {
                     "1",
-                    string.Format("【{0}】的{1}，修改失败", selectedMemberName, errorReason)
+                    string.Format(languageManager.GetTranslation("【{0}】的{1}，修改失败"), selectedMemberName, errorReason)
                 });
             }
         }
@@ -4283,11 +4305,11 @@ namespace cs.HoLMod.MenberCheat
                 }
 
                 // 修改成功，添加提示信息
-                ShowSuccessMessage("族人家族");
+                ShowSuccessMessage(languageManager.GetTranslation("族人家族"));
             }
             catch (Exception ex)
             {
-                Logger.LogError(string.Format("应用族人家族{0}的属性修改时出错: {1}", selectedMemberName, ex.Message));
+                Logger.LogError(string.Format(languageManager.GetTranslation("应用族人家族{0}的属性修改时出错: {1}"), selectedMemberName, ex.Message));
             }
         }
 
@@ -4375,7 +4397,7 @@ namespace cs.HoLMod.MenberCheat
                 Mainload.Tip_Show.Add(new List<string>
                 {
                     "1",
-                    string.Format("【{0}】属性修改成功", selectedMemberName)
+                    string.Format(languageManager.GetTranslation("【{0}】属性修改成功"), selectedMemberName)
                 });
 
                 // 如果是族人家族模式且有封地解锁，添加封地解锁成功提示
@@ -4385,12 +4407,12 @@ namespace cs.HoLMod.MenberCheat
                     Mainload.Tip_Show.Add(new List<string>
                     {
                         "1",
-                        string.Format("封地【{0}】解锁成功", fengDiName)
+                        string.Format(languageManager.GetTranslation("封地【{0}】解锁成功"), fengDiName)
                     });
                 }
             }
 
-            Logger.LogInfo(string.Format("成功应用{0}{1}的属性修改", memberType, selectedMemberName));
+            Logger.LogInfo(string.Format(languageManager.GetTranslation("成功应用{0}{1}的属性修改"), memberType, selectedMemberName));
         }
 
         // 应用族人妻妾属性修改
@@ -4427,7 +4449,7 @@ namespace cs.HoLMod.MenberCheat
                         Mainload.Tip_Show.Add(new List<string>
                         {
                             "1",
-                            string.Format("【{0}】属性修改成功", selectedMemberName)
+                            string.Format(languageManager.GetTranslation("【{0}】属性修改成功"), selectedMemberName)
                         });
                     }
 
@@ -4522,15 +4544,15 @@ namespace cs.HoLMod.MenberCheat
                     Mainload.Tip_Show.Add(new List<string>
                     {
                         "1",
-                        string.Format("【{0}】属性修改成功", selectedMemberName)
+                        string.Format(languageManager.GetTranslation("【{0}】属性修改成功"), selectedMemberName)
                     });
                 }
 
-                Logger.LogInfo(string.Format("成功应用门客{0}的属性修改", selectedMemberName));
+                Logger.LogInfo(string.Format(languageManager.GetTranslation("成功应用门客{0}的属性修改"), selectedMemberName));
             }
             catch (Exception ex)
             {
-                Logger.LogError(string.Format("应用门客{0}的属性修改时出错: {1}", selectedMemberName, ex.Message));
+                Logger.LogError(string.Format(languageManager.GetTranslation("应用门客{0}的属性修改时出错: {1}"), selectedMemberName, ex.Message));
             }
         }
 
@@ -4642,7 +4664,7 @@ namespace cs.HoLMod.MenberCheat
                                                                 if (forceName != "-1")
                                                                 {
                                                                     canUnlockFengDi = false;
-                                                                    Logger.LogInfo(string.Format("封地{0}所在郡城已有势力控制，无法解锁", fengDiName));
+                                                                    Logger.LogInfo(string.Format(languageManager.GetTranslation("封地{0}所在郡城已有势力控制，无法解锁"), fengDiName));
                                                                 }
                                                             }
                                                         }
@@ -4655,7 +4677,7 @@ namespace cs.HoLMod.MenberCheat
                                 catch (Exception ex)
                                 {
                                     // 如果检查过程中出错，默认允许解锁
-                                    Logger.LogWarning(string.Format("检查郡城势力时出错: {0}，将继续解锁封地", ex.Message));
+                                    Logger.LogWarning(string.Format(languageManager.GetTranslation("检查郡城势力时出错: {0}，将继续解锁封地"), ex.Message));
                                 }
                                 
                                 // 只有当郡城势力为-1时才解锁封地
@@ -4667,41 +4689,41 @@ namespace cs.HoLMod.MenberCheat
                                     if (fengDiData[0] != "1")
                                     {
                                         fengDiUnlockedSuccessfully = false;
-                                        Logger.LogError(string.Format("解锁封地失败: {0}", fengDiName));
+                                        Logger.LogError(string.Format(languageManager.GetTranslation("解锁封地失败: {0}"), fengDiName));
                                     }
                                     else
                                     {
-                                        Logger.LogInfo(string.Format("已解锁封地: {0}", fengDiName));
+                                        Logger.LogInfo(string.Format(languageManager.GetTranslation("已解锁封地: {0}"), fengDiName));
                                     }
                                 }
                                 else
                                 {
                                     fengDiUnlockedSuccessfully = false;
-                                    Logger.LogError(string.Format("郡城已有势力控制，无法解锁封地: {0}", fengDiName));
+                                    Logger.LogError(string.Format(languageManager.GetTranslation("郡城已有势力控制，无法解锁封地: {0}"), fengDiName));
                                 }
                             }
                             else
                             {
                                 // 封地已解锁，直接跳出解锁逻辑
-                                Logger.LogInfo(string.Format("封地{0}已解锁，无需再次解锁", fengDiName));
+                                Logger.LogInfo(string.Format(languageManager.GetTranslation("封地{0}已解锁，无需再次解锁"), fengDiName));
                             }
                         }
                         else
                         {
                             fengDiUnlockedSuccessfully = false;
-                            Logger.LogError(string.Format("封地数据无效: {0}", fengDiName));
+                            Logger.LogError(string.Format(languageManager.GetTranslation("封地数据无效: {0}"), fengDiName));
                         }
                     }
                     else
                     {
                         fengDiUnlockedSuccessfully = false;
-                        Logger.LogError(string.Format("无效的封地索引: {0}", fengDiIndex));
+                        Logger.LogError(string.Format(languageManager.GetTranslation("无效的封地索引: {0}"), fengDiIndex));
                     }
                 }
                 catch (Exception ex)
                 {
                     fengDiUnlockedSuccessfully = false;
-                    Logger.LogError(string.Format("解锁封地时出错: {0}", ex.Message));
+                    Logger.LogError(string.Format(languageManager.GetTranslation("解锁封地时出错: {0}"), ex.Message));
                 }
             }
 
@@ -4715,10 +4737,10 @@ namespace cs.HoLMod.MenberCheat
                     Mainload.Tip_Show.Add(new List<string>
                     {
                         "1",
-                        string.Format("{0}封地解锁失败，修改失败", fengDiName)
+                        string.Format(languageManager.GetTranslation("{0}封地解锁失败，修改失败"), fengDiName)
                     });
                 }
-                Logger.LogError(string.Format("{0}封地解锁失败，已阻止属性修改", fengDiName));
+                Logger.LogError(string.Format(languageManager.GetTranslation("{0}封地解锁失败，已阻止属性修改"), fengDiName));
             }
 
             return fengDiUnlockedSuccessfully;
@@ -4765,20 +4787,20 @@ namespace cs.HoLMod.MenberCheat
                         Mainload.Tip_Show.Add(new List<string>
                         {
                             "1",
-                            string.Format("【{0}】属性修改成功", selectedMemberName)
+                            string.Format(languageManager.GetTranslation("【{0}】属性修改成功"), selectedMemberName)
                         });
                     }
 
-                    Logger.LogInfo(string.Format("成功应用皇室主脉{0}的属性修改", selectedMemberName));
+                    Logger.LogInfo(string.Format(languageManager.GetTranslation("成功应用皇室主脉{0}的属性修改"), selectedMemberName));
                 }
                 else
                 {
-                    Logger.LogError("Mainload.Member_King集合无效或索引超出范围");
+                    Logger.LogError(string.Format(languageManager.GetTranslation("Mainload.Member_King集合无效或索引超出范围")));
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(string.Format("应用皇室主脉{0}的属性修改时出错: {1}", selectedMemberName, ex.Message));
+                Logger.LogError(string.Format(languageManager.GetTranslation("应用皇室主脉{0}的属性修改时出错: {1}"), selectedMemberName, ex.Message));
             }
         }
 
@@ -4867,20 +4889,20 @@ namespace cs.HoLMod.MenberCheat
                         Mainload.Tip_Show.Add(new List<string>
                         {
                             "1",
-                            string.Format("【{0}】属性修改成功", selectedMemberName)
+                            string.Format(languageManager.GetTranslation("【{0}】属性修改成功"), selectedMemberName)
                         });
                     }
 
-                    Logger.LogInfo(string.Format("成功应用皇家妻妾{0}的属性修改", selectedMemberName));
+                    Logger.LogInfo(string.Format(languageManager.GetTranslation("成功应用皇家妻妾{0}的属性修改"), selectedMemberName));
                 }
                 else
                 {
-                    Logger.LogError("Mainload.Member_King_qu集合无效或索引超出范围");
+                    Logger.LogError(string.Format(languageManager.GetTranslation("Mainload.Member_King_qu集合无效或索引超出范围")));
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(string.Format("应用皇家妻妾{0}的属性修改时出错: {1}", selectedMemberName, ex.Message));
+                Logger.LogError(string.Format(languageManager.GetTranslation("应用皇家妻妾{0}的属性修改时出错: {1}"), selectedMemberName, ex.Message));
             }
         }
 
@@ -4967,7 +4989,7 @@ namespace cs.HoLMod.MenberCheat
             new string[] { "秣陵", "江乘", "江宁", "溧阳", "建邺", "永世" },
             
             // 陈留郡 (索引4)
-            new string[] { "长垣", "济阳", "成武", "襄邑", "宁陵", "封丘" },
+            new string[] { "长垣", "远东", "成武", "襄邑", "宁陵", "封丘" },
             
             // 长沙郡 (索引5)
             new string[] { "零陵", "益阳", "湘县", "袁州", "庐陵", "衡山", "建宁", "桂阳" },
