@@ -505,7 +505,7 @@ namespace cs.HoLMod.AddItem
         private string selectedCategory = "";
 
         // 当前插件版本
-        private const string CURRENT_VERSION = PLUGIN_VERSION;
+        private const string CURRENT_VERSION = PluginInfo.PLUGIN_VERSION;
         
         // 分辨率缩放因子
         private float scaleFactor = 1.0f;
