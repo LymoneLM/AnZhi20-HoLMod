@@ -1,3 +1,5 @@
+using System;
+
 namespace cs.HoLMod.JunXianData
 {
     public class JunXianData
