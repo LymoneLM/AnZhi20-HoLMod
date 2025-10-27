@@ -45,6 +45,7 @@ namespace cs.HoLMod.MorePopulation
         {
             // 每帧执行人口修正逻辑
             HandlePopulationCorrection();
+            
         }
 
         // 处理人口修正的主要方法，每帧执行
@@ -55,20 +56,32 @@ namespace cs.HoLMod.MorePopulation
                 // 前置条件检查
                 if (Main.Instance == null)
                 {
-                    Log?.LogWarning("Main.Instance为null，无法执行人口修正");
+                    // Log?.LogWarning("Main.Instance为null，无法执行人口修正");
                     return;
                 }
 
                 if (string.IsNullOrEmpty(Mainload.SceneID))
                 {
-                    Log?.LogWarning("Mainload.SceneID为空，无法确定当前场景");
+                    // Log?.LogWarning("Mainload.SceneID为空，无法确定当前场景");
+                    return;
+                }
+
+                // 添加对Mainload.Time_now的安全检查
+                if (Mainload.Time_now == null || Mainload.Time_now.Count < 3)
+                {
+                    // Log?.LogWarning("Mainload.Time_now数据不完整，无法执行人口修正");
                     return;
                 }
 
                 // 加载当前场景并用|分割
                 string[] arrayadd = Mainload.SceneID.Split(new char[] { '|' });
+                if (arrayadd == null || arrayadd.Length == 0)
+                {
+                    Log?.LogWarning("场景ID分割后为空，无法确定场景类型");
+                    return;
+                }
 
-                // 读取场景类型，M府邸、Z封地、S郡、H皇宫
+                // 读取场景类型，M府邸、S郡、H皇宫、Z所有的封地、F单个封地所有
                 string SceneClass = arrayadd[0];
 
                 // 检查场景类型是否为有效类型
@@ -162,10 +175,12 @@ namespace cs.HoLMod.MorePopulation
                         // 将Main类的变量值同步到PluginCommonInfo类
                         PluginCommonInfo.PopulationCorrectionRate = (int)PopulationCorrectionRate;
                         PluginCommonInfo.PopulationCheatRate = PopulationCheatRate;
+                        
+                        // 记录日志
+                        Log?.LogInfo($"已修正{year}年{month}月的人口，修正倍率为{PopulationCheatRate}，修正比例为{PopulationCorrectionRate}");
+                        
+                        // 执行人口修正
                         CorrectPopulation();
-
-                          // 日志记录修正年月
-                          Log?.LogInfo($"已修正{year}年{month}月的人口，修正倍率为{PopulationCheatRate}，修正比例为{PopulationCorrectionRate}");
                         
                         // 更新上一次执行的年月
                         lastCorrectionYearMonth = currentYearMonth;
@@ -181,46 +196,92 @@ namespace cs.HoLMod.MorePopulation
         // 修正人口的方法
         public void CorrectPopulation()
         {
-            // 修正郡城人口
-            for (int i = 0; i < 12; i++)
+            try
             {
-                // 加载原始郡人口
-                string JunPopulationOriginal = Mainload.CityData_now[i][0][7];
-                // 计算新的郡人口
-                int JunPopulation = (int)(int.Parse(JunPopulationOriginal) + PluginCommonInfo.PopulationCorrection * 3 * PopulationCorrectionRate * PopulationCheatRate);
-                // 计算修正值
-                int junCorrectionValue = JunPopulation - int.Parse(JunPopulationOriginal);
-                // 赋值回数据结构
-                Mainload.CityData_now[i][0][7] = JunPopulation.ToString();
-                // 清除原始数据（设置为空字符串）
-                JunPopulationOriginal = "";
-
-                // 日志记录修正郡人口
-                Log?.LogInfo($"已修正{PluginCommonInfo.JunList[i]}的人口，修正值为{junCorrectionValue}，修正后人口为{JunPopulation}");
-            }
-
-            // 修正县城人口
-            for (int i = 0; i < 12; i++)
-            {
-                // 获取当前郡的县数量
-                int countyCount = PluginCommonInfo.XianList[i].Length;
-                
-                for (int j = 0; j < countyCount; j++)
+                // 添加安全检查，确保Mainload.CityData_now存在且不为空
+                if (Mainload.CityData_now == null || Mainload.CityData_now.Count == 0)
                 {
-                    // 加载原始县人口
-                    string XianPopulationOriginal = Mainload.CityData_now[i][j+1][3];
-                    // 计算新的县人口
-                    int XianPopulation = (int)(int.Parse(XianPopulationOriginal) + PluginCommonInfo.PopulationCorrection * PopulationCorrectionRate * PopulationCheatRate);
-                    // 计算修正值
-                    int xianCorrectionValue = XianPopulation - int.Parse(XianPopulationOriginal);
-                    // 赋值回数据结构
-                    Mainload.CityData_now[i][j+1][3] = XianPopulation.ToString();
-                    // 清除原始数据
-                    XianPopulationOriginal = "";
-                    
-                    // 日志记录修正县人口
-                    Log?.LogInfo($"已修正{PluginCommonInfo.XianList[i][j]}的人口，修正值为{xianCorrectionValue}，修正后人口为{XianPopulation}");
+                    Log?.LogWarning("CityData_now数据结构不存在或为空，无法执行人口修正，可能是未进入相应的游戏存档");
+                    return;
                 }
+                
+                // 修正郡城人口
+                for (int i = 0; i < 12; i++)
+                {
+                    // 添加安全检查，确保数组索引有效
+                    if (i >= Mainload.CityData_now.Count || Mainload.CityData_now[i] == null || 
+                        Mainload.CityData_now[i].Count < 1 || Mainload.CityData_now[i][0] == null || 
+                        Mainload.CityData_now[i][0].Count < 8)
+                    {
+                        Log?.LogWarning($"郡索引{i}的数据结构不完整，跳过该郡的人口修正");
+                        continue;
+                    }
+                    
+                    // 加载原始郡人口
+                    string JunPopulationOriginal = Mainload.CityData_now[i][0][7];
+                    // 计算新的郡人口
+                    int JunPopulation = (int)(int.Parse(JunPopulationOriginal) + PluginCommonInfo.PopulationCorrection * 3 * PopulationCorrectionRate * PopulationCheatRate);
+                    // 计算修正值
+                    int junCorrectionValue = JunPopulation - int.Parse(JunPopulationOriginal);
+                    // 赋值回数据结构
+                    Mainload.CityData_now[i][0][7] = JunPopulation.ToString();
+                    // 清除原始数据
+                    JunPopulationOriginal = null;
+
+                    // 日志记录修正郡人口
+                    Log?.LogInfo($"已修正{PluginCommonInfo.JunList[i]}的人口，修正值为{junCorrectionValue}，修正后人口为{JunPopulation}");
+                }
+
+                // 修正县城人口
+                for (int i = 0; i < 12; i++)
+                {
+                    // 添加安全检查，确保数组索引有效
+                    if (i >= Mainload.CityData_now.Count || Mainload.CityData_now[i] == null)
+                    {
+                        Log?.LogWarning($"郡索引{i}的数据结构不存在，跳过该县的人口修正");
+                        continue;
+                    }
+                    
+                    // 获取当前郡的县数量
+                    int countyCount = PluginCommonInfo.XianList[i].Length;
+                    
+                    for (int j = 0; j < countyCount; j++)
+                    {
+                        // 添加安全检查，确保数组索引有效
+                        if (j + 1 >= Mainload.CityData_now[i].Count || Mainload.CityData_now[i][j + 1] == null || 
+                            Mainload.CityData_now[i][j + 1].Count < 4)
+                        {
+                            Log?.LogWarning($"郡索引{i}、县索引{j}的数据结构不完整，跳过该县的人口修正");
+                            continue;
+                        }
+                        
+                        // 加载原始县人口
+                        string XianPopulationOriginal = Mainload.CityData_now[i][j+1][3];
+                        // 计算新的县人口
+                        int XianPopulation = (int)(int.Parse(XianPopulationOriginal) + PluginCommonInfo.PopulationCorrection * PopulationCorrectionRate * PopulationCheatRate);
+                        // 计算修正值
+                        int xianCorrectionValue = XianPopulation - int.Parse(XianPopulationOriginal);
+                        // 赋值回数据结构
+                        Mainload.CityData_now[i][j+1][3] = XianPopulation.ToString();
+                        // 清除原始数据
+                        XianPopulationOriginal = null;
+                        
+                        // 日志记录修正县人口
+                        Log?.LogInfo($"已修正{PluginCommonInfo.XianList[i][j]}的人口，修正值为{xianCorrectionValue}，修正后人口为{XianPopulation}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log?.LogError("执行人口修正时发生错误：" + ex.Message);
+            }
+            finally
+            {
+                // 人口修正完成后释放相关内存
+                // 重置修正率，下次使用时重新计算
+                PopulationCorrectionRate = 0f;
+                PluginCommonInfo.PopulationCorrectionRate = 0;
+                PluginCommonInfo.PopulationCheatRate = 0;
             }
         }
     }
@@ -300,6 +361,13 @@ namespace cs.HoLMod.MorePopulation
         {
             try
             {
+                // 添加对Mainload.Time_now的安全检查
+                if (Mainload.Time_now == null || Mainload.Time_now.Count < 3)
+                {
+                    Main.Log?.LogWarning("Mainload.Time_now数据不完整，无法执行加载存档后的人口修正");
+                    return;
+                }
+                
                 // 获取当前游戏年份和月份
                 int year = Mainload.Time_now[0];
                 int month = Mainload.Time_now[1];
@@ -368,6 +436,9 @@ namespace cs.HoLMod.MorePopulation
                     case 20:
                         populationCorrectionRate = 3.0f;
                         break;
+                    default:
+                        populationCorrectionRate = 4.0f;
+                        break;
                 }
                 
                 // 将修正倍率同步到Main类和PluginCommonInfo类
@@ -377,8 +448,10 @@ namespace cs.HoLMod.MorePopulation
                     PluginCommonInfo.PopulationCorrectionRate = (int)populationCorrectionRate;
                     PluginCommonInfo.PopulationCheatRate = Main.PopulationCheatRate;
                     
-                    // 执行人口修正
+                    // 记录日志
                     Main.Log?.LogInfo($"加载存档后修正人口，当前年份：{year}年{month}月，修正倍率：{Main.PopulationCheatRate}，修正比例：{populationCorrectionRate}");
+                    
+                    // 执行人口修正
                     Main.Instance.CorrectPopulation();
                 }
             }
