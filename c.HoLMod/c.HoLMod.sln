@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.ES3EditorAPP", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.FengDiEditor", "..\cs.HoLMod.FengDiEditor\cs.HoLMod.FengDiEditor.csproj", "{F1ED33B3-3406-4917-B4B2-F6855C5E3E15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.CustomGenerationMenKe", "..\cs.HoLMod.CustomGenerationMenKe\cs.HoLMod.CustomGenerationMenKe.csproj", "{8F3DB39C-0C70-4364-82ED-7C8C5CE507E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{F1ED33B3-3406-4917-B4B2-F6855C5E3E15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1ED33B3-3406-4917-B4B2-F6855C5E3E15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1ED33B3-3406-4917-B4B2-F6855C5E3E15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F3DB39C-0C70-4364-82ED-7C8C5CE507E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F3DB39C-0C70-4364-82ED-7C8C5CE507E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F3DB39C-0C70-4364-82ED-7C8C5CE507E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F3DB39C-0C70-4364-82ED-7C8C5CE507E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
