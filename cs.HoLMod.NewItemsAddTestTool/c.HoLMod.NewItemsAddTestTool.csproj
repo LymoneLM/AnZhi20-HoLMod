@@ -35,7 +35,17 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworkProfile />
+    <BindingRedirectOutputType>true</BindingRedirectOutputType>
+    <!-- 确保使用netstandard 2.0.0版本 -->
+    <NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="netstandard">
+      <HintPath>..\libs\netstandard.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="0Harmony">
       <HintPath>..\libs\0Harmony.dll</HintPath>
       <Private>False</Private>
