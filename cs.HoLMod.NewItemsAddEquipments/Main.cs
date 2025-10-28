@@ -525,13 +525,13 @@ namespace cs.HoLMod.NewItemsAddEquipments
                 new PropConfig { PropID = "TieJian1", Description = "铁锏", Price = 4000, Might = 3 },
                 new PropConfig { PropID = "TieChui", Description = "铁锤", Price = 4000, Might = 3 },
                 new PropConfig { PropID = "TieZhua", Description = "铁抓", Price = 4000, Might = 3 },
-                new PropConfig { PropID = "TieTang", Description = "铁镋", Price = 7000, Might = 4 },
                 new PropConfig { PropID = "TieGun", Description = "铁棍", Price = 4000, Might = 3 },
                 new PropConfig { PropID = "TieBang", Description = "铁棒", Price = 4000, Might = 3 },
                 new PropConfig { PropID = "TieGuai", Description = "铁拐", Price = 4000, Might = 3 },
+                new PropConfig { PropID = "TieTang", Description = "铁镋", Price = 7000, Might = 4 },
                 new PropConfig { PropID = "TieLiuXingChui", Description = "铁流星锤", Price = 7000, Might = 4 },
                 
-                // 精铁器和精钢器（DIY）
+                // 精铁器（DIY）
                 new PropConfig { PropID = "JingTieDao", Description = "精铁刀", Price = 4000, Might = 4 },
                 new PropConfig { PropID = "JingTieQiang", Description = "精铁枪", Price = 4000, Might = 4 },
                 new PropConfig { PropID = "JingTieJian", Description = "精铁剑", Price = 4000, Might = 4 },
@@ -550,7 +550,7 @@ namespace cs.HoLMod.NewItemsAddEquipments
                 new PropConfig { PropID = "JingTieTang", Description = "精铁镋", Price = 16000, Might = 6 },
                 new PropConfig { PropID = "JingTieLiuXingChui", Description = "精铁流星锤", Price = 16000, Might = 6 },
                 
-                // 精钢器
+                // 精钢器（DIY）
                 new PropConfig { PropID = "JingGangDao", Description = "精钢刀", Price = 11000, Might = 7 },
                 new PropConfig { PropID = "JingGangQiang", Description = "精钢枪", Price = 11000, Might = 7 },
                 new PropConfig { PropID = "JingGangJian", Description = "精钢剑", Price = 11000, Might = 7 },
@@ -592,9 +592,6 @@ namespace cs.HoLMod.NewItemsAddEquipments
             // 使用循环添加所有武器道具
             foreach (var config in props)
             {
-                // 特殊处理CS/LR系列狙击步枪的PrefabPath
-                string prefabPath = $"Assets/Resources/allprop/{config.PropID}";
-                
                 propReg.Add(new PropData()
                 {
                     PropNamespace = MODNAME,
@@ -605,9 +602,9 @@ namespace cs.HoLMod.NewItemsAddEquipments
                     {
                         {(int)PropEffectType.Might, config.Might}
                     },
-                    TextNamespace = "Common",
+                    TextNamespace = "Weapon",
                     TextKey = $"NewItemsAddEquipments.{config.PropID}",
-                    PrefabPath = prefabPath
+                    PrefabPath = $"Assets/Resources/allprop/{config.PropID}"
                 });
             }
         }
