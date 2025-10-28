@@ -2,7 +2,6 @@
 using System.IO;
 using System.Reflection;
 using BepInEx;
-using UnityEngine;
 using YuanAPI;
 
 namespace YuanTest
@@ -14,15 +13,25 @@ namespace YuanTest
         public const string MODNAME = "YuanTest";
         public const string MODGUID = YuanAPIPlugin.MODGUID + "." + MODNAME;
         public const string VERSION = "1.0.0";
-        
+
         public void Awake()
         {
             var executingAssembly = Assembly.GetExecutingAssembly();
             var modPath = Path.GetDirectoryName(executingAssembly.Location);
 
-            string filePath = "modallprop_0";
-            ResourceData resourceData = new ResourceData(MODGUID,"keyword",modPath);
-            resourceData.LoadAssetBundle(filePath);
+            // 加载道具-XXX的资源包
+            string ItemNameKey1 = "MOD_0";
+            string fileName1 = "modallprop_0";
+            var resources1 = new ResourceData(MODNAME, ItemNameKey1, modPath);
+            resources1.LoadAssetBundle(fileName1);
+            ResourceRegistry.AddResource(resources1);
+
+            // 加载道具-XXX的资源包
+            //
+            //
+            //
+            //
+            //
 
             Localization.LoadFromPath(modPath);
             using var propReg = PropRegistry.CreateInstance();
@@ -38,7 +47,7 @@ namespace YuanTest
                 },
                 TextNamespace = "Common",
                 TextKey = "TestItem.Thing1",
-                PrefabPath = "Assets/Resources/AllProp/MOD_0.prefab"
+                PrefabPath = "AllProp/5"
             });
             propReg.Add(new PropData()
             {
@@ -52,7 +61,7 @@ namespace YuanTest
                 },
                 TextNamespace = "Common",
                 TextKey = "TestItem.Thing2",
-                PrefabPath = "AllProp/2.prefab"
+                PrefabPath = "Assets/Resources/allprop/MOD_0"
             });
         }
     }

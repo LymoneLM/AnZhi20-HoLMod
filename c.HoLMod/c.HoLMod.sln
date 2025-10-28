@@ -25,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.FengDiEditor", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.CustomGenerationMenKe", "..\cs.HoLMod.CustomGenerationMenKe\cs.HoLMod.CustomGenerationMenKe.csproj", "{8F3DB39C-0C70-4364-82ED-7C8C5CE507E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "c.HoLMod.NewItemsAddTestTool", "..\cs.HoLMod.NewItemsAddTestTool\c.HoLMod.NewItemsAddTestTool.csproj", "{E9C00D51-8BCA-4CDC-8962-605D3CF26FB1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.NewItemsAddTestTool", "..\cs.HoLMod.NewItemsAddTestTool\cs.HoLMod.NewItemsAddTestTool.csproj", "{E9C00D51-8BCA-4CDC-8962-605D3CF26FB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.MultifunctionalCheat", "..\cs.HoLMod.MultifunctionalCheat\cs.HoLMod.MultifunctionalCheat.csproj", "{63AFA192-A162-4975-9059-D934F8AD4B74}"
 EndProject

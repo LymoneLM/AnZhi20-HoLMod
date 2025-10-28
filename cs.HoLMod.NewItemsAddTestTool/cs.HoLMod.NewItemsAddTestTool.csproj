@@ -7,8 +7,8 @@
     <ProjectGuid>{E9C00D51-8BCA-4CDC-8962-605D3CF26FB1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>c.HoLMod.NewItemsAddTestTool</RootNamespace>
-    <AssemblyName>c.HoLMod.NewItemsAddTestTool</AssemblyName>
+    <RootNamespace>cs.HoLMod.NewItemsAddTestTool</RootNamespace>
+    <AssemblyName>cs.HoLMod.NewItemsAddTestTool</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
