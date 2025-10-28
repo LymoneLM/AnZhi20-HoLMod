@@ -602,12 +602,11 @@ namespace cs.HoLMod.NewItemsAddEquipments
                     {
                         {(int)PropEffectType.Might, config.Might}
                     },
-                    TextNamespace = "Weapon",
+                    TextNamespace = "AnZhi20MODWeapon",
                     TextKey = $"NewItemsAddEquipments.{config.PropID}",
                     PrefabPath = $"Assets/Resources/allprop/{config.PropID}"
                 });
             }
-        }
         }
     }
 }
