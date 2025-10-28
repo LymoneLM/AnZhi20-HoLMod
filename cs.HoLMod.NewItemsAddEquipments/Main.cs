@@ -468,13 +468,13 @@ namespace cs.HoLMod.NewItemsAddEquipments
             ResourceRegistry.AddResource(resources72);
 
             // 加载道具-CS/LR3式狙击步枪的资源包
-            string ItemNameKey73 = "CS/LR3JuJiBuQiang";
+            string ItemNameKey73 = "CSLR3JuJiBuQiang";
             var resources73 = new ResourceData(MODNAME, ItemNameKey73, modPath);
             resources73.LoadAssetBundle(fileName);
             ResourceRegistry.AddResource(resources73);
 
             // 加载道具-CS/LR4式狙击步枪的资源包
-            string ItemNameKey74 = "CS/LR4JuJiBuQiang";
+            string ItemNameKey74 = "CSLR4JuJiBuQiang";
             var resources74 = new ResourceData(MODNAME, ItemNameKey74, modPath);
             resources74.LoadAssetBundle(fileName);
             ResourceRegistry.AddResource(resources74);
@@ -486,1124 +486,131 @@ namespace cs.HoLMod.NewItemsAddEquipments
         /// <summary>
         /// 加载相关道具，游戏中
         /// </summary>
+        // 道具配置类，用于存储道具的基本信息
+        private class PropConfig
+        {
+            public string PropID { get; set; }
+            public string Description { get; set; }
+            public int Price { get; set; }
+            public int Might { get; set; }
+        }
+
         public void LoadRelatedProps()
         {
             using var propReg = PropRegistry.CreateInstance();
 
-            // 石器（很久很久以前）
-            propReg.Add(new PropData()
+            // 定义所有武器道具配置数据
+            var props = new List<PropConfig>()
             {
-                PropNamespace = MODNAME,
-                PropID = "ShiFu",// 石斧
-                Price = 1000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,1}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.ShiFu",
-                PrefabPath = "Assets/Resources/allprop/ShiFu"
-            });
+                // 石器（很久很久以前）
+                new PropConfig { PropID = "ShiFu", Description = "石斧", Price = 1000, Might = 1 },
+                new PropConfig { PropID = "ShiLian", Description = "石镰", Price = 1000, Might = 1 },
+                
+                // 青铜器（商周—春秋战国）
+                new PropConfig { PropID = "QingTongGe", Description = "青铜戈", Price = 2000, Might = 2 },
+                new PropConfig { PropID = "QingTongJian", Description = "青铜剑", Price = 2000, Might = 2 },
+                new PropConfig { PropID = "QingTongMao", Description = "青铜矛", Price = 2000, Might = 2 },
+                new PropConfig { PropID = "QingTongYue", Description = "青铜钺", Price = 2000, Might = 2 },
+                
+                // 铁器（秦—明）
+                new PropConfig { PropID = "TieDao", Description = "铁刀", Price = 2000, Might = 2 },
+                new PropConfig { PropID = "TieQiang", Description = "铁枪", Price = 2000, Might = 2 },
+                new PropConfig { PropID = "TieJian", Description = "铁剑", Price = 2000, Might = 2 },
+                new PropConfig { PropID = "TieJi", Description = "铁戟", Price = 2000, Might = 2 },
+                new PropConfig { PropID = "TieFu", Description = "铁斧", Price = 2000, Might = 2 },
+                new PropConfig { PropID = "TieYue", Description = "铁钺", Price = 4000, Might = 3 },
+                new PropConfig { PropID = "TieXuan", Description = "铁铉", Price = 4000, Might = 3 },
+                new PropConfig { PropID = "TieCha", Description = "铁叉", Price = 4000, Might = 3 },
+                new PropConfig { PropID = "TieBian", Description = "铁鞭", Price = 4000, Might = 3 },
+                new PropConfig { PropID = "TieJian1", Description = "铁锏", Price = 4000, Might = 3 },
+                new PropConfig { PropID = "TieChui", Description = "铁锤", Price = 4000, Might = 3 },
+                new PropConfig { PropID = "TieZhua", Description = "铁抓", Price = 4000, Might = 3 },
+                new PropConfig { PropID = "TieTang", Description = "铁镋", Price = 7000, Might = 4 },
+                new PropConfig { PropID = "TieGun", Description = "铁棍", Price = 4000, Might = 3 },
+                new PropConfig { PropID = "TieBang", Description = "铁棒", Price = 4000, Might = 3 },
+                new PropConfig { PropID = "TieGuai", Description = "铁拐", Price = 4000, Might = 3 },
+                new PropConfig { PropID = "TieLiuXingChui", Description = "铁流星锤", Price = 7000, Might = 4 },
+                
+                // 精铁器和精钢器（DIY）
+                new PropConfig { PropID = "JingTieDao", Description = "精铁刀", Price = 4000, Might = 4 },
+                new PropConfig { PropID = "JingTieQiang", Description = "精铁枪", Price = 4000, Might = 4 },
+                new PropConfig { PropID = "JingTieJian", Description = "精铁剑", Price = 4000, Might = 4 },
+                new PropConfig { PropID = "JingTieJi", Description = "精铁戟", Price = 4000, Might = 4 },
+                new PropConfig { PropID = "JingTieFu", Description = "精铁斧", Price = 4000, Might = 4 },
+                new PropConfig { PropID = "JingTieYue", Description = "精铁钺", Price = 11000, Might = 5 },
+                new PropConfig { PropID = "JingTieXuan", Description = "精铁铉", Price = 11000, Might = 5 },
+                new PropConfig { PropID = "JingTieCha", Description = "精铁叉", Price = 11000, Might = 5 },
+                new PropConfig { PropID = "JingTieBian", Description = "精铁鞭", Price = 11000, Might = 5 },
+                new PropConfig { PropID = "JingTieJian1", Description = "精铁锏", Price = 11000, Might = 5 },
+                new PropConfig { PropID = "JingTieChui", Description = "精铁锤", Price = 11000, Might = 5 },
+                new PropConfig { PropID = "JingTieZhua", Description = "精铁抓", Price = 11000, Might = 5 },
+                new PropConfig { PropID = "JingTieGun", Description = "精铁棍", Price = 11000, Might = 5 },
+                new PropConfig { PropID = "JingTieBang", Description = "精铁棒", Price = 11000, Might = 5 },
+                new PropConfig { PropID = "JingTieGuai", Description = "精铁拐", Price = 11000, Might = 5 },
+                new PropConfig { PropID = "JingTieTang", Description = "精铁镋", Price = 16000, Might = 6 },
+                new PropConfig { PropID = "JingTieLiuXingChui", Description = "精铁流星锤", Price = 16000, Might = 6 },
+                
+                // 精钢器
+                new PropConfig { PropID = "JingGangDao", Description = "精钢刀", Price = 11000, Might = 7 },
+                new PropConfig { PropID = "JingGangQiang", Description = "精钢枪", Price = 11000, Might = 7 },
+                new PropConfig { PropID = "JingGangJian", Description = "精钢剑", Price = 11000, Might = 7 },
+                new PropConfig { PropID = "JingGangJi", Description = "精钢戟", Price = 11000, Might = 7 },
+                new PropConfig { PropID = "JingGangFu", Description = "精钢斧", Price = 11000, Might = 7 },
+                new PropConfig { PropID = "JingGangYue", Description = "精钢钺", Price = 16000, Might = 8 },
+                new PropConfig { PropID = "JingGangXuan", Description = "精钢铉", Price = 16000, Might = 8 },
+                new PropConfig { PropID = "JingGangCha", Description = "精钢叉", Price = 16000, Might = 8 },
+                new PropConfig { PropID = "JingGangBian", Description = "精钢鞭", Price = 16000, Might = 8 },
+                new PropConfig { PropID = "JingGangJian1", Description = "精钢锏", Price = 16000, Might = 8 },
+                new PropConfig { PropID = "JingGangChui", Description = "精钢锤", Price = 16000, Might = 8 },
+                new PropConfig { PropID = "JingGangZhua", Description = "精钢抓", Price = 16000, Might = 8 },
+                new PropConfig { PropID = "JingGangGun", Description = "精钢棍", Price = 16000, Might = 8 },
+                new PropConfig { PropID = "JingGangBang", Description = "精钢棒", Price = 16000, Might = 8 },
+                new PropConfig { PropID = "JingGangGuai", Description = "精钢拐", Price = 16000, Might = 8 },
+                new PropConfig { PropID = "JingGangTang", Description = "精钢镋", Price = 22000, Might = 9 },
+                new PropConfig { PropID = "JingGangLiuXingChui", Description = "精钢流星锤", Price = 22000, Might = 9 },
+                
+                // 火器（现代）
+                new PropConfig { PropID = "54ShouQiang", Description = "54式手枪", Price = 190000, Might = 20 },
+                new PropConfig { PropID = "64ShouQiang", Description = "64式手枪", Price = 276000, Might = 24 },
+                new PropConfig { PropID = "92ShouQiang", Description = "92式手枪", Price = 435000, Might = 30 },
+                new PropConfig { PropID = "AK47BuQiang", Description = "AK-47步枪", Price = 300000, Might = 25 },
+                new PropConfig { PropID = "M4BuQiang", Description = "M4步枪", Price = 300000, Might = 25 },
+                new PropConfig { PropID = "M16BuQiang", Description = "M16步枪", Price = 435000, Might = 30 },
+                new PropConfig { PropID = "56BuQiang", Description = "56式步枪", Price = 276000, Might = 24 },
+                new PropConfig { PropID = "95BuQiang", Description = "95式步枪", Price = 378000, Might = 28 },
+                new PropConfig { PropID = "81BuQiang", Description = "81式步枪", Price = 435000, Might = 30 },
+                new PropConfig { PropID = "97BuQiang", Description = "97式步枪", Price = 496000, Might = 32 },
+                new PropConfig { PropID = "M24JuJiBuQiang", Description = "M24狙击步枪", Price = 435000, Might = 30 },
+                new PropConfig { PropID = "M95JuJiBuQiang", Description = "M95狙击步枪", Price = 595000, Might = 35 },
+                new PropConfig { PropID = "M99JuJiBuQiang", Description = "M99狙击步枪", Price = 780000, Might = 40 },
+                new PropConfig { PropID = "QBU88JuJiBuQiang", Description = "QBU88式狙击步枪", Price = 595000, Might = 35 },
+                new PropConfig { PropID = "QBU10JuJiBuQiang", Description = "QBU10式狙击步枪", Price = 780000, Might = 40 },
+                new PropConfig { PropID = "CSLR3JuJiBuQiang", Description = "CS/LR3式狙击步枪", Price = 595000, Might = 35 },
+                new PropConfig { PropID = "CSLR4JuJiBuQiang", Description = "CS/LR4式狙击步枪", Price = 780000, Might = 40 }
+            };
 
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "ShiLian",// 石镰
-                Price = 1000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,1}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.ShiLian",
-                PrefabPath = "Assets/Resources/allprop/ShiLian"
-            });
-
-            // 青铜器（商周—春秋战国）
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "QingTongGe",// 青铜戈
-                Price = 2000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,2}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.QingTongGe",
-                PrefabPath = "Assets/Resources/allprop/QingTongGe"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "QingTongJian",// 青铜剑
-                Price = 2000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,2}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.QingTongJian",
-                PrefabPath = "Assets/Resources/allprop/QingTongJian"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "QingTongMao",// 青铜矛
-                Price = 2000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,2}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.QingTongMao",
-                PrefabPath = "Assets/Resources/allprop/QingTongMao"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "QingTongYue",// 青铜钺
-                Price = 2000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,2}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.QingTongYue",
-                PrefabPath = "Assets/Resources/allprop/QingTongYue"
-            });
-
-            // 铁器（秦—明）
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieDao",// 铁刀
-                Price = 2000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,2}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieDao",
-                PrefabPath = "Assets/Resources/allprop/TieDao"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieQiang",// 铁枪
-                Price = 2000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,2}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieQiang",
-                PrefabPath = "Assets/Resources/allprop/TieQiang"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieJian",// 铁剑
-                Price = 2000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,2}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieJian",
-                PrefabPath = "Assets/Resources/allprop/TieJian"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieJi",// 铁戟
-                Price = 2000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,2}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieJi",
-                PrefabPath = "Assets/Resources/allprop/TieJi"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieFu",// 铁斧
-                Price = 2000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,2}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieFu",
-                PrefabPath = "Assets/Resources/allprop/TieFu"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieYue",// 铁钺
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,3}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieYue",
-                PrefabPath = "Assets/Resources/allprop/TieYue"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieXuan",// 铁铉
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,3}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieXuan",
-                PrefabPath = "Assets/Resources/allprop/TieXuan"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieCha",// 铁叉
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,3}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieCha",
-                PrefabPath = "Assets/Resources/allprop/TieCha"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieBian",// 铁鞭
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,3}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieBian",
-                PrefabPath = "Assets/Resources/allprop/TieBian"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieJian1",// 铁锏
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,3}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieJian1",
-                PrefabPath = "Assets/Resources/allprop/TieJian1"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieChui",// 铁锤
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,3}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieChui",
-                PrefabPath = "Assets/Resources/allprop/TieChui"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieZhua",// 铁抓
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,3}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieZhua",
-                PrefabPath = "Assets/Resources/allprop/TieZhua"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieTang",// 铁镋
-                Price = 7000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,4}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieTang",
-                PrefabPath = "Assets/Resources/allprop/TieTang"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieGun",// 铁棍
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,3}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieGun",
-                PrefabPath = "Assets/Resources/allprop/TieGun"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieBang",// 铁棒
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,3}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieBang",
-                PrefabPath = "Assets/Resources/allprop/TieBang"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieGuai",// 铁拐
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,3}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieGuai",
-                PrefabPath = "Assets/Resources/allprop/TieGuai"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "TieLiuXingChui",// 铁流星锤
-                Price = 7000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,4}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.TieLiuXingChui",
-                PrefabPath = "Assets/Resources/allprop/TieLiuXingChui"
-            });
-            
-            // 精铁器和精钢器（DIY）
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieDao",// 精铁刀
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,4}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieDao",
-                PrefabPath = "Assets/Resources/allprop/JingTieDao"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieQiang",// 精铁枪
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,4}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieQiang",
-                PrefabPath = "Assets/Resources/allprop/JingTieQiang"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieJian",// 精铁剑
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,4}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieJian",
-                PrefabPath = "Assets/Resources/allprop/JingTieJian"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieJi",// 精铁戟
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,4}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieJi",
-                PrefabPath = "Assets/Resources/allprop/JingTieJi"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieFu",// 精铁斧
-                Price = 4000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,4}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieFu",
-                PrefabPath = "Assets/Resources/allprop/JingTieFu"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieYue",// 精铁钺
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,5}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieYue",
-                PrefabPath = "Assets/Resources/allprop/JingTieYue"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieXuan",// 精铁铉
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,5}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieXuan",
-                PrefabPath = "Assets/Resources/allprop/JingTieXuan"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieCha",// 精铁叉
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,5}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieCha",
-                PrefabPath = "Assets/Resources/allprop/JingTieCha"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieBian",// 精铁鞭
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,5}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieBian",
-                PrefabPath = "Assets/Resources/allprop/JingTieBian"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieJian1",// 精铁锏
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,5}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieJian1",
-                PrefabPath = "Assets/Resources/allprop/JingTieJian1"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieChui",// 精铁锤
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,5}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieChui",
-                PrefabPath = "Assets/Resources/allprop/JingTieChui"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieZhua",// 精铁抓
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,5}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieZhua",
-                PrefabPath = "Assets/Resources/allprop/JingTieZhua"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieGun",// 精铁棍
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,5}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieGun",
-                PrefabPath = "Assets/Resources/allprop/JingTieGun"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieBang",// 精铁棒
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,5}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieBang",
-                PrefabPath = "Assets/Resources/allprop/JingTieBang"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieGuai",// 精铁拐
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,5}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieGuai",
-                PrefabPath = "Assets/Resources/allprop/JingTieGuai"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieTang",// 精铁镋
-                Price = 16000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,6}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieTang",
-                PrefabPath = "Assets/Resources/allprop/JingTieTang"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingTieLiuXingChui",// 精铁流星锤
-                Price = 16000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,6}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingTieLiuXingChui",
-                PrefabPath = "Assets/Resources/allprop/JingTieLiuXingChui"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangDao",// 精钢刀
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,7}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangDao",
-                PrefabPath = "Assets/Resources/allprop/JingGangDao"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangQiang",// 精钢枪
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,7}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangQiang",
-                PrefabPath = "Assets/Resources/allprop/JingGangQiang"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangJian",// 精钢剑
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,7}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangJian",
-                PrefabPath = "Assets/Resources/allprop/JingGangJian"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangJi",// 精钢戟
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,7}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangJi",
-                PrefabPath = "Assets/Resources/allprop/JingGangJi"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangFu",// 精钢斧
-                Price = 11000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,7}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangFu",
-                PrefabPath = "Assets/Resources/allprop/JingGangFu"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangYue",// 精钢钺
-                Price = 16000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,8}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangYue",
-                PrefabPath = "Assets/Resources/allprop/JingGangYue"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangXuan",// 精钢铉
-                Price = 16000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,8}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangXuan",
-                PrefabPath = "Assets/Resources/allprop/JingGangXuan"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangCha",// 精钢叉
-                Price = 16000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,8}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangCha",
-                PrefabPath = "Assets/Resources/allprop/JingGangCha"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangBian",// 精钢鞭
-                Price = 16000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,8}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangBian",
-                PrefabPath = "Assets/Resources/allprop/JingGangBian"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangJian1",// 精钢锏
-                Price = 16000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,8}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangJian1",
-                PrefabPath = "Assets/Resources/allprop/JingGangJian1"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangChui",// 精钢锤
-                Price = 16000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,8}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangChui",
-                PrefabPath = "Assets/Resources/allprop/JingGangChui"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangZhua",// 精钢抓
-                Price = 16000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,8}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangZhua",
-                PrefabPath = "Assets/Resources/allprop/JingGangZhua"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangGun",// 精钢棍
-                Price = 16000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,8}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangGun",
-                PrefabPath = "Assets/Resources/allprop/JingGangGun"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangBang",// 精钢棒
-                Price = 16000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,8}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangBang",
-                PrefabPath = "Assets/Resources/allprop/JingGangBang"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangGuai",// 精钢拐
-                Price = 16000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,8}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangGuai",
-                PrefabPath = "Assets/Resources/allprop/JingGangGuai"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangTang",// 精钢镋
-                Price = 22000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,9}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangTang",
-                PrefabPath = "Assets/Resources/allprop/JingGangTang"
-            });
-            
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "JingGangLiuXingChui",// 精钢流星锤
-                Price = 22000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,9}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.JingGangLiuXingChui",
-                PrefabPath = "Assets/Resources/allprop/JingGangLiuXingChui"
-            });
-
-            // 火器（现代）
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "54ShouQiang",// 54式手枪
-                Price = 190000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,20}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.54ShouQiang",
-                PrefabPath = "Assets/Resources/allprop/54ShouQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "64ShouQiang",// 64式手枪
-                Price = 276000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,24}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.64ShouQiang",
-                PrefabPath = "Assets/Resources/allprop/64ShouQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "92ShouQiang",// 92式手枪
-                Price = 435000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,30}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.92ShouQiang",
-                PrefabPath = "Assets/Resources/allprop/92ShouQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "AK47BuQiang",// AK-47步枪
-                Price = 300000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,25}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.AK47BuQiang",
-                PrefabPath = "Assets/Resources/allprop/AK47BuQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "M4BuQiang",// M4步枪
-                Price = 300000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,25}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.M4BuQiang",
-                PrefabPath = "Assets/Resources/allprop/M4BuQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "M16BuQiang",// M16步枪
-                Price = 435000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,30}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.M16BuQiang",
-                PrefabPath = "Assets/Resources/allprop/M16BuQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "56BuQiang",// 56式步枪
-                Price = 276000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,24}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.56BuQiang",
-                PrefabPath = "Assets/Resources/allprop/56BuQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "95BuQiang",// 95式步枪
-                Price = 378000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,28}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.95BuQiang",
-                PrefabPath = "Assets/Resources/allprop/95BuQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "81BuQiang",// 81式步枪
-                Price = 435000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,30}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.81BuQiang",
-                PrefabPath = "Assets/Resources/allprop/81BuQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "97BuQiang",// 97式步枪
-                Price = 496000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,32}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.97BuQiang",
-                PrefabPath = "Assets/Resources/allprop/97BuQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "M24JuJiBuQiang",// M24狙击步枪
-                Price = 435000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,30}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.M24JuJiBuQiang",
-                PrefabPath = "Assets/Resources/allprop/M24JuJiBuQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "M95JuJiBuQiang",// M95狙击步枪
-                Price = 595000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,35}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.M95JuJiBuQiang",
-                PrefabPath = "Assets/Resources/allprop/M95JuJiBuQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "M99JuJiBuQiang",// M99狙击步枪
-                Price = 780000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,40}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.M99JuJiBuQiang",
-                PrefabPath = "Assets/Resources/allprop/M99JuJiBuQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "QBU88JuJiBuQiang",// QBU88式狙击步枪
-                Price = 595000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,35}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.QBU88JuJiBuQiang",
-                PrefabPath = "Assets/Resources/allprop/QBU88JuJiBuQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "QBU10JuJiBuQiang",// QBU10式狙击步枪
-                Price = 780000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,40}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.QBU10JuJiBuQiang",
-                PrefabPath = "Assets/Resources/allprop/QBU10JuJiBuQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "CS/LR3JuJiBuQiang",// CS/LR3式狙击步枪
-                Price = 595000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,35}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.CSLR3JuJiBuQiang",
-                PrefabPath = "Assets/Resources/allprop/CS/LR3JuJiBuQiang"
-            });
-
-            propReg.Add(new PropData()
-            {
-                PropNamespace = MODNAME,
-                PropID = "CS/LR4JuJiBuQiang",// CS/LR4式狙击步枪
-                Price = 780000,
-                Category = (int)PropCategory.Weapon,
-                PropEffect = new Dictionary<int, int>()
-                {
-                    {(int)PropEffectType.Might,40}
-                },
-                TextNamespace = "Common",
-                TextKey = "NewItemsAddEquipments.CSLR4JuJiBuQiang",
-                PrefabPath = "Assets/Resources/allprop/CS/LR4JuJiBuQiang"
-            });
+            // 使用循环添加所有武器道具
+            foreach (var config in props)
+            {
+                // 特殊处理CS/LR系列狙击步枪的PrefabPath
+                string prefabPath = $"Assets/Resources/allprop/{config.PropID}";
+                
+                propReg.Add(new PropData()
+                {
+                    PropNamespace = MODNAME,
+                    PropID = config.PropID, // {config.Description}
+                    Price = config.Price,
+                    Category = (int)PropCategory.Weapon,
+                    PropEffect = new Dictionary<int, int>()
+                    {
+                        {(int)PropEffectType.Might, config.Might}
+                    },
+                    TextNamespace = "Common",
+                    TextKey = $"NewItemsAddEquipments.{config.PropID}",
+                    PrefabPath = prefabPath
+                });
+            }
+        }
         }
     }
 }
