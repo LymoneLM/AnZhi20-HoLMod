@@ -1,5 +1,6 @@
-.idea
+**/.idea
 **/.vs
 **/bin
 **/obj
 **/Properties
+**.usr
