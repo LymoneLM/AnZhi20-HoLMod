@@ -20,5 +20,8 @@
       <HintPath>..\libs\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="YuanAPI">
+      <HintPath>..\libs\YuanAPI.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

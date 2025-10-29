@@ -4,22 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BepInEx;
+using BepInEx.Configuration;
 using UnityEngine;
+using YuanAPI;
 
 // ReSharper disable InconsistentNaming
 
 namespace cs.HoLMod.AddItem
 {
-    // 插件信息类
-    public static class PluginInfo
-    {
-        public const string PLUGIN_GUID = "cs.HoLMod.AddItem.AnZhi20";
-        public const string PLUGIN_NAME = "HoLMod.AddItem";
-        public const string PLUGIN_VERSION = "2.8.0";
-    }
-    [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInPlugin(MODGUID, MODNAME, VERSION)]
+    [BepInDependency(YuanAPIPlugin.MODGUID)]
     public class AddItem : BaseUnityPlugin
     {
+        public const string MODGUID = "cs.HoLMod.AddItem.AnZhi20";
+        public const string MODNAME = "HoLMod.AddItem";
+        public const string VERSION = "2.8.0";
+        
         // 窗口设置
         private static Rect windowRect;
         private static bool showMenu;// 滚动位置
@@ -498,7 +498,7 @@ namespace cs.HoLMod.AddItem
         private string selectedCategory = "";
 
         // 当前插件版本
-        private const string CURRENT_VERSION = PluginInfo.PLUGIN_VERSION;
+        private const string CURRENT_VERSION = VERSION;
         
         // 分辨率缩放因子
         private float scaleFactor = 1.0f;
@@ -561,23 +561,22 @@ namespace cs.HoLMod.AddItem
 
         private void Awake()
         {
-            Logger.LogInfo("物品添加器已加载！");
             
             // 版本检查逻辑
             try
             {
                 // 获取之前保存的版本
-                var savedVersion = Config.Bind("内部配置", "已加载版本", "", "用于跟踪插件版本，请勿手动修改").Value;
+                var hasConfig = Config.TryGetEntry<string>(
+                    new ConfigDefinition("内部配置", "已加载版本"),
+                    out var savedVersion);
                 
                 // 检查版本是否更新
-                if (savedVersion != CURRENT_VERSION)
+                if (!hasConfig || savedVersion.Value != VERSION)
                 {
                     Logger.LogInfo($"检测到插件版本更新至 {CURRENT_VERSION}，正在清除配置...");
                     
-                    // 清除配置
-                    Config.Clear();
-                    
                     // 保存新版本信息
+                    Config.Clear();
                     Config.Bind("内部配置", "已加载版本", CURRENT_VERSION, "用于跟踪插件版本，请勿手动修改");
                     Config.Save();
                     
@@ -592,13 +591,18 @@ namespace cs.HoLMod.AddItem
             // 初始化分辨率设置
             UpdateResolutionSettings();
             
+            Logger.LogInfo("物品添加器已加载！");
+        }
+
+        private void Start()
+        {
             // 加载游戏物品到字典，并根据当前语言环境选择显示中文或英文名称
             LoadGameItemsToDictionary.LoadItems(itemList, LanguageManager.Instance.IsChineseLanguage());
             
             // 初始化筛选后的物品列表
             filteredItemIds = itemList.Keys.ToList();
         }
-        
+
         private void Update()
         {
             // 按F2键切换窗口显示
@@ -1391,7 +1395,7 @@ namespace cs.HoLMod.AddItem
             
             // MOD作者及版本号说明
             GUILayout.Label(LanguageManager.Instance.GetText("Mod作者：AnZhi20"));
-            GUILayout.Label(LanguageManager.Instance.GetText("Mod版本：") + PluginInfo.PLUGIN_VERSION);
+            GUILayout.Label(LanguageManager.Instance.GetText("Mod版本：") + VERSION);
             GUILayout.EndVertical();
             
             GUILayout.EndVertical();
