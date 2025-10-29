@@ -6,13 +6,13 @@ using YuanAPI;
 
 namespace cs.HoLMod.NewItemsAddEquipments
 {
-    [BepInDependency(YuanAPIPlugin.MODGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(YuanAPIPlugin.MODGUID)]
     [BepInPlugin(MODGUID, MODNAME, VERSION)]
     public class NewItemsAddTestTool : BaseUnityPlugin
     {
         public const string MODNAME = "NewItemsAddEquipments";
         public const string MODGUID = "cs.HoLMod.NewItemsAddEquipments.AnZhi20";
-        public const string VERSION = "1.0.0";
+        public const string VERSION = "1.1.0";
 
         public void Awake()
         {
