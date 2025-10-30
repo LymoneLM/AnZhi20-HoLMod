@@ -12,7 +12,7 @@ namespace cs.HoLMod.NewItemsAddEquipments
     {
         public const string MODNAME = "NewItemsAddEquipments";
         public const string MODGUID = "cs.HoLMod.NewItemsAddEquipments.AnZhi20";
-        public const string VERSION = "1.1.0";
+        public const string VERSION = "1.2.0";
 
         public void Awake()
         {
@@ -59,7 +59,7 @@ namespace cs.HoLMod.NewItemsAddEquipments
             using var propReg = PropRegistry.CreateInstance();
 
             // 定义所有武器道具配置数据
-            var props = new List<PropConfig>()
+            var props_weapon = new List<PropConfig>()
             {
                 // 石器（很久很久以前）
                 new PropConfig { PropID = "ShiFu", Description = "石斧", Price = 1000, Might = 1 },
@@ -149,7 +149,7 @@ namespace cs.HoLMod.NewItemsAddEquipments
             };
 
             // 使用循环添加所有武器道具
-            foreach (var config in props)
+            foreach (var config in props_weapon)
             {
                 propReg.Add(new PropData()
                 {
@@ -161,9 +161,73 @@ namespace cs.HoLMod.NewItemsAddEquipments
                     {
                         {(int)PropEffectType.Might, config.Might}
                     },
-                    TextNamespace = "AnZhi20MODWeapon",
+                    TextNamespace = "AnZhi20MODEquipments",
                     TextKey = $"NewItemsAddEquipments.{config.PropID}",
-                    PrefabPath = $"Assets/Resources/allprop/newitemsaddequipments/{config.PropID}"
+                    PrefabPath = $"Assets/Resources/allprop/newitemsaddequipments/weapon/{config.PropID}"
+                });
+            }
+            /*
+            // 定义所有马匹道具配置数据
+            var props_horse = new List<PropConfig>()
+            {
+                //new PropConfig {},
+            }
+
+            // 使用循环添加所有马匹道具
+            foreach (var config in props_horse)
+            {
+                
+            }
+            */
+            // 定义所有珠宝道具配置数据
+            var props_jewelry = new List<PropConfig>()
+            {
+                //new PropConfig { PropID = "YuPei", Description = "玉佩(男)", Price = 16000, Charisma = 8 ,Category = PropCategory.JewelryM},
+                //new PropConfig { PropID = "YuPei", Description = "玉佩(女)", Price = 16000, Charisma = 8 ,Category = PropCategory.JewelryF}
+            }
+
+            // 使用循环添加所有珠宝道具
+            foreach (var config in props_jewelry)
+            {
+                propReg.Add(new PropData()
+                {
+                    PropNamespace = MODNAME,
+                    PropID = config.PropID, // {config.Description}
+                    Price = config.Price,
+                    Category = (int)config.Category,
+                    PropEffect = new Dictionary<int, int>()
+                    {
+                        {(int)PropEffectType.Charisma, config.Charisma}
+                    },
+                    TextNamespace = "AnZhi20MODEquipments",
+                    TextKey = $"NewItemsAddEquipments.{config.PropID}",
+                    PrefabPath = $"Assets/Resources/allprop/newitemsaddequipments/jewelry/{config.PropID}"
+                });
+            }
+
+            // 定义所有符咒道具配置数据
+            var props_spell = new List<PropConfig>()
+            {
+                //new PropConfig { PropID = "LingYuan", Description = "灵元", Price = 10000, Charisma = 5 ,Luck = 5, Category = PropCategory.Spell},
+            }
+
+            // 使用循环添加所有符咒道具
+            foreach (var config in props_spell)
+            {
+                propReg.Add(new PropData()
+                {
+                    PropNamespace = MODNAME,
+                    PropID = config.PropID, // {config.Description}
+                    Price = config.Price,
+                    Category = (int)config.Category,
+                    PropEffect = new Dictionary<int, int>()
+                    {
+                        {(int)PropEffectType.Charisma, config.Charisma}
+                        {(int)PropEffectType.Luck, config.Luck}
+                    },
+                    TextNamespace = "AnZhi20MODEquipments",
+                    TextKey = $"NewItemsAddEquipments.{config.PropID}",
+                    PrefabPath = $"Assets/Resources/allprop/newitemsaddequipments/spell/{config.PropID}"
                 });
             }
         }
