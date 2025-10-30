@@ -10,19 +10,66 @@ namespace cs.HoLMod.NewItemsAddEquipments
     [BepInPlugin(MODGUID, MODNAME, VERSION)]
     public class NewItemsAddTestTool : BaseUnityPlugin
     {
+        // MOD主要信息
         public const string MODNAME = "NewItemsAddEquipments";
         public const string MODGUID = "cs.HoLMod.NewItemsAddEquipments.AnZhi20";
         public const string VERSION = "1.2.0";
 
+        // 道具列表
+        public List<string> WeaponItemIds = new List<string>();
+        public List<string> HorseItemIds = new List<string>();
+        public List<string> JewelryItemIds = new List<string>();
+        public List<string> SpellItemIds = new List<string>();
+
         public void Awake()
         {
-
             // 加载相关资源，从文件
             LoadRelatedResources();
 
-
             // 加载相关道具，游戏中
             LoadRelatedProps();
+        }
+
+        public void Start()
+        {
+            将武器添加到铁匠铺售卖();
+            将坐骑添加到骡马市售卖();
+            将珠宝添加到珠宝行售卖();
+            将符咒添加到道士的背包售卖();
+        }
+
+        public void 将武器添加到铁匠铺售卖()
+        {
+            string[] array = Mainload.AllBuilddata[60][3].Split(new char[]{'|'});
+            string 铁匠铺售卖的东西 = array[2];
+            foreach (var PropID in WeaponItemIds)
+            {
+                int index = YuanAPI.PropRegistry.GetIndex(MODNAME,PropID);
+                铁匠铺售卖的东西 += $"@{index}~1";
+            }
+            Mainload.AllBuilddata[60][3] = array[0] + "|" + array[1] + "|" + 铁匠铺售卖的东西 + "|" + array[3];
+        }
+
+        public void 将坐骑添加到骡马市售卖()
+        {
+            //
+        }
+
+        public void 将珠宝添加到珠宝行售卖()
+        {
+            string[] array = Mainload.AllBuilddata[59][3].Split(new char[]{'|'});
+            string 珠宝行售卖的东西 = array[2];
+            foreach (var PropID in JewelryItemIds)
+            {
+                int index = YuanAPI.PropRegistry.GetIndex(MODNAME,PropID);
+                珠宝行售卖的东西 += $"@{index}~1";
+            }
+            Mainload.AllBuilddata[59][3] = array[0] + "|" + array[1] + "|" + 珠宝行售卖的东西 + "|" + array[3];
+        }
+
+        public void 将符咒添加到道士的背包售卖()
+        {
+            //
         }
 
         /// <summary>
@@ -50,10 +97,15 @@ namespace cs.HoLMod.NewItemsAddEquipments
         {
             public string PropID { get; set; }
             public string Description { get; set; }
+            public PropCategory Category { get; set; }
             public int Price { get; set; }
             public int Might { get; set; }
+            public int Charisma { get; set; }
+            public int Luck { get; set; }
+            
         }
 
+        // 加载相关道具
         public void LoadRelatedProps()
         {
             using var propReg = PropRegistry.CreateInstance();
@@ -165,26 +217,54 @@ namespace cs.HoLMod.NewItemsAddEquipments
                     TextKey = $"NewItemsAddEquipments.{config.PropID}",
                     PrefabPath = $"Assets/Resources/allprop/newitemsaddequipments/weapon/{config.PropID}"
                 });
-            }
+                WeaponItemIds.Add(config.PropID);
+            };
             /*
             // 定义所有马匹道具配置数据
             var props_horse = new List<PropConfig>()
             {
                 //new PropConfig {},
-            }
+            };
 
             // 使用循环添加所有马匹道具
             foreach (var config in props_horse)
             {
                 
-            }
+            };
+            HorseItemIds.Add(config.PropID);
             */
             // 定义所有珠宝道具配置数据
             var props_jewelry = new List<PropConfig>()
             {
-                //new PropConfig { PropID = "YuPei", Description = "玉佩(男)", Price = 16000, Charisma = 8 ,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "MuBanZhi", Description = "木扳指(男)", Price = 5000, Charisma = 1 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "ShiBanZhi", Description = "石扳指(男)", Price = 10000, Charisma = 2 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "TongBanZhi", Description = "铜扳指(男)", Price = 20000, Charisma = 3 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "TieBanZhi", Description = "铁扳指(男)", Price = 30000, Charisma = 4 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YinBanZhi", Description = "银扳指(男)", Price = 60000, Charisma = 5 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "JinBanZhi", Description = "金扳指(男)", Price = 100000, Charisma = 6 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_InferiorHuaqingSeed", Description = "下等花青种玉扳指(男)", Price = 200000, Charisma = 8 ,Luck = 1,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_ModerateHuaqingSeed", Description = "中等花青种玉扳指(男)", Price = 300000, Charisma = 10 ,Luck = 1,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_SuperiorHuaqingSeed", Description = "上等花青种玉扳指(男)", Price = 400000, Charisma = 12 ,Luck = 1,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_TopgradeHuaqingSeed", Description = "特等花青种玉扳指(男)", Price = 500000, Charisma = 14 ,Luck = 1,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_InferiorDouSeed", Description = "下等豆种玉扳指(男)", Price = 1000000, Charisma = 16 ,Luck = 2,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_ModerateDouSeed", Description = "中等豆种玉扳指(男)", Price = 2000000, Charisma = 18 ,Luck = 2,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_SuperiorDouSeed", Description = "上等豆种玉扳指(男)", Price = 3000000, Charisma = 20 ,Luck = 2,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_TopgradeDouSeed", Description = "特等豆种玉扳指(男)", Price = 4000000, Charisma = 22 ,Luck = 2,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_InferiorNuoSeed", Description = "下等糯种玉扳指(男)", Price = 8000000, Charisma = 25 ,Luck = 3,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_ModerateNuoSeed", Description = "中等糯种玉扳指(男)", Price = 10000000, Charisma = 28 ,Luck = 3,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_SuperiorNuoSeed", Description = "上等糯种玉扳指(男)", Price = 12000000, Charisma = 31 ,Luck = 3,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_TopgradeNuoSeed", Description = "特等糯种玉扳指(男)", Price = 14000000, Charisma = 34 ,Luck = 3,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_InferiorBingSeed", Description = "下等冰种玉扳指(男)", Price = 30000000, Charisma = 37 ,Luck = 4,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_ModerateBingSeed", Description = "中等冰种玉扳指(男)", Price = 40000000, Charisma = 40 ,Luck = 5,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_SuperiorBingSeed", Description = "上等冰种玉扳指(男)", Price = 50000000, Charisma = 43 ,Luck = 6,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_TopgradeBingSeed", Description = "特等冰种玉扳指(男)", Price = 60000000, Charisma = 46 ,Luck = 7,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_InferiorBoliSeed", Description = "下等玻璃种玉扳指(男)", Price = 100000000, Charisma = 50 ,Luck = 10,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_ModerateBoliSeed", Description = "中等玻璃种玉扳指(男)", Price = 200000000, Charisma = 54 ,Luck = 15,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_SuperiorBoliSeed", Description = "上等玻璃种玉扳指(男)", Price = 400000000, Charisma = 58 ,Luck = 20,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuBanZhi_TopgradeBoliSeed", Description = "特等玻璃种玉扳指(男)", Price = 800000000, Charisma = 62 ,Luck = 25,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "ZhizunBanZhi", Description = "至尊扳指(男)", Price = 1600000000, Charisma = 80 ,Luck = 40,Category = PropCategory.JewelryM},
                 //new PropConfig { PropID = "YuPei", Description = "玉佩(女)", Price = 16000, Charisma = 8 ,Category = PropCategory.JewelryF}
-            }
+            };
 
             // 使用循环添加所有珠宝道具
             foreach (var config in props_jewelry)
@@ -197,19 +277,44 @@ namespace cs.HoLMod.NewItemsAddEquipments
                     Category = (int)config.Category,
                     PropEffect = new Dictionary<int, int>()
                     {
-                        {(int)PropEffectType.Charisma, config.Charisma}
+                        {(int)PropEffectType.Charisma, config.Charisma},
+                        {(int)PropEffectType.Luck, config.Luck}
                     },
                     TextNamespace = "AnZhi20MODEquipments",
                     TextKey = $"NewItemsAddEquipments.{config.PropID}",
                     PrefabPath = $"Assets/Resources/allprop/newitemsaddequipments/jewelry/{config.PropID}"
                 });
-            }
+                JewelryItemIds.Add(config.PropID);
+            };
 
             // 定义所有符咒道具配置数据
             var props_spell = new List<PropConfig>()
             {
-                //new PropConfig { PropID = "LingYuan", Description = "灵元", Price = 10000, Charisma = 5 ,Luck = 5, Category = PropCategory.Spell},
-            }
+                new PropConfig { PropID = "Level 1 talisman", Description = "1级符咒", Price = 100000, Charisma = 1 ,Luck = 0, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 2 talisman", Description = "2级符咒", Price = 200000, Charisma = 2 ,Luck = 0, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 3 talisman", Description = "3级符咒", Price = 400000, Charisma = 3 ,Luck = 0, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 4 talisman", Description = "4级符咒", Price = 700000, Charisma = 4 ,Luck = 0, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 5 talisman", Description = "5级符咒", Price = 1100000, Charisma = 5 ,Luck = 0, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 6 talisman", Description = "6级符咒", Price = 1600000, Charisma = 6 ,Luck = 0, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 7 talisman", Description = "7级符咒", Price = 2200000, Charisma = 7 ,Luck = 0, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 8 talisman", Description = "8级符咒", Price = 2900000, Charisma = 8 ,Luck = 0, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 9 talisman", Description = "9级符咒", Price = 3700000, Charisma = 9 ,Luck = 0, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 10 talisman", Description = "10级符咒", Price = 4600000, Charisma = 10 ,Luck = 0, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 11 talisman", Description = "11级符咒", Price = 6000000, Charisma = 12 ,Luck = 1, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 12 talisman", Description = "12级符咒", Price = 7000000, Charisma = 14 ,Luck = 2, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 13 talisman", Description = "13级符咒", Price = 8000000, Charisma = 16 ,Luck = 3, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 14 talisman", Description = "14级符咒", Price = 9000000, Charisma = 18 ,Luck = 4, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 15 talisman", Description = "15级符咒", Price = 10000000, Charisma = 20 ,Luck = 5, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 16 talisman", Description = "16级符咒", Price = 11000000, Charisma = 22 ,Luck = 6, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 17 talisman", Description = "17级符咒", Price = 12000000, Charisma = 24 ,Luck = 7, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 18 talisman", Description = "18级符咒", Price = 13000000, Charisma = 26 ,Luck = 8, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 19 talisman", Description = "19级符咒", Price = 14000000, Charisma = 28 ,Luck = 9, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 20 talisman", Description = "20级符咒", Price = 15000000, Charisma = 30 ,Luck = 10, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 21 talisman", Description = "21级符咒", Price = 30000000, Charisma = 35 ,Luck = 15, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 22 talisman", Description = "22级符咒", Price = 60000000, Charisma = 40 ,Luck = 20, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 23 talisman", Description = "23级符咒", Price = 120000000, Charisma = 45 ,Luck = 25, Category = PropCategory.Spell},
+                new PropConfig { PropID = "Level 24 talisman", Description = "24级符咒", Price = 240000000, Charisma = 50 ,Luck = 30, Category = PropCategory.Spell},
+            };
 
             // 使用循环添加所有符咒道具
             foreach (var config in props_spell)
@@ -222,13 +327,14 @@ namespace cs.HoLMod.NewItemsAddEquipments
                     Category = (int)config.Category,
                     PropEffect = new Dictionary<int, int>()
                     {
-                        {(int)PropEffectType.Charisma, config.Charisma}
+                        {(int)PropEffectType.Charisma, config.Charisma},
                         {(int)PropEffectType.Luck, config.Luck}
                     },
                     TextNamespace = "AnZhi20MODEquipments",
                     TextKey = $"NewItemsAddEquipments.{config.PropID}",
                     PrefabPath = $"Assets/Resources/allprop/newitemsaddequipments/spell/{config.PropID}"
                 });
+                SpellItemIds.Add(config.PropID);
             }
         }
     }
