@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.MultifunctionalCh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.NewItemsAddEquipments", "..\cs.HoLMod.NewItemsAddEquipments\cs.HoLMod.NewItemsAddEquipments.csproj", "{E9C00D51-8BCA-4CDC-8962-605D3CF26FB1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.AddEvents", "..\cs.HoLMod.AddEvents\cs.HoLMod.AddEvents.csproj", "{A01208BE-DD60-4332-AA50-2F5A8789E3A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{E9C00D51-8BCA-4CDC-8962-605D3CF26FB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9C00D51-8BCA-4CDC-8962-605D3CF26FB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9C00D51-8BCA-4CDC-8962-605D3CF26FB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A01208BE-DD60-4332-AA50-2F5A8789E3A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A01208BE-DD60-4332-AA50-2F5A8789E3A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A01208BE-DD60-4332-AA50-2F5A8789E3A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A01208BE-DD60-4332-AA50-2F5A8789E3A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
