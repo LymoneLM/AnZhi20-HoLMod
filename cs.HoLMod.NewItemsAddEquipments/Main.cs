@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using BepInEx;
@@ -13,7 +14,10 @@ namespace cs.HoLMod.NewItemsAddEquipments
         // MOD主要信息
         public const string MODNAME = "NewItemsAddEquipments";
         public const string MODGUID = "cs.HoLMod.NewItemsAddEquipments.AnZhi20";
-        public const string VERSION = "1.2.0";
+        public const string VERSION = "2.0.0";
+        
+        // 随机数生成器
+        private static readonly Random random = new Random();
 
         // 道具列表
         public List<string> WeaponItemIds = new List<string>();
@@ -45,7 +49,8 @@ namespace cs.HoLMod.NewItemsAddEquipments
             foreach (var PropID in WeaponItemIds)
             {
                 int index = YuanAPI.PropRegistry.GetIndex(MODNAME,PropID);
-                铁匠铺售卖的东西 += $"@{index}~1";
+                int 售卖的数量 = random.Next(1, 11);
+                铁匠铺售卖的东西 += $"@{index}~{售卖的数量}";
             }
             Mainload.AllBuilddata[60][3] = array[0] + "|" + array[1] + "|" + 铁匠铺售卖的东西 + "|" + array[3];
         }
@@ -62,14 +67,19 @@ namespace cs.HoLMod.NewItemsAddEquipments
             foreach (var PropID in JewelryItemIds)
             {
                 int index = YuanAPI.PropRegistry.GetIndex(MODNAME,PropID);
-                珠宝行售卖的东西 += $"@{index}~1";
+                int 售卖的数量 = random.Next(1, 11);
+                珠宝行售卖的东西 += $"@{index}~{售卖的数量}";
             }
             Mainload.AllBuilddata[59][3] = array[0] + "|" + array[1] + "|" + 珠宝行售卖的东西 + "|" + array[3];
         }
 
         public void 将符咒添加到道士的背包售卖()
         {
-            //
+            foreach (var PropID in SpellItemIds)
+            {
+                int index = YuanAPI.PropRegistry.GetIndex(MODNAME,PropID);
+                Mainload.PropIDForFuZhou.Add(index);
+            }
         }
 
         /// <summary>
@@ -263,7 +273,155 @@ namespace cs.HoLMod.NewItemsAddEquipments
                 new PropConfig { PropID = "YuBanZhi_SuperiorBoliSeed", Description = "上等玻璃种玉扳指(男)", Price = 400000000, Charisma = 58 ,Luck = 20,Category = PropCategory.JewelryM},
                 new PropConfig { PropID = "YuBanZhi_TopgradeBoliSeed", Description = "特等玻璃种玉扳指(男)", Price = 800000000, Charisma = 62 ,Luck = 25,Category = PropCategory.JewelryM},
                 new PropConfig { PropID = "ZhizunBanZhi", Description = "至尊扳指(男)", Price = 1600000000, Charisma = 80 ,Luck = 40,Category = PropCategory.JewelryM},
-                //new PropConfig { PropID = "YuPei", Description = "玉佩(女)", Price = 16000, Charisma = 8 ,Category = PropCategory.JewelryF}
+                new PropConfig { PropID = "YuPei_InferiorHuaqingSeed", Description = "下等花青种玉佩(男)", Price = 200000, Charisma = 8 ,Luck = 1,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_ModerateHuaqingSeed", Description = "中等花青种玉佩(男)", Price = 300000, Charisma = 10 ,Luck = 1,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_SuperiorHuaqingSeed", Description = "上等花青种玉佩(男)", Price = 400000, Charisma = 12 ,Luck = 1,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_TopgradeHuaqingSeed", Description = "特等花青种玉佩(男)", Price = 500000, Charisma = 14 ,Luck = 1,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_InferiorDouSeed", Description = "下等豆种玉佩(男)", Price = 1000000, Charisma = 16 ,Luck = 2,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_ModerateDouSeed", Description = "中等豆种玉佩(男)", Price = 2000000, Charisma = 18 ,Luck = 2,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_SuperiorDouSeed", Description = "上等豆种玉佩(男)", Price = 3000000, Charisma = 20 ,Luck = 2,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_TopgradeDouSeed", Description = "特等豆种玉佩(男)", Price = 4000000, Charisma = 22 ,Luck = 2,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_InferiorNuoSeed", Description = "下等糯种玉佩(男)", Price = 8000000, Charisma = 25 ,Luck = 3,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_ModerateNuoSeed", Description = "中等糯种玉佩(男)", Price = 10000000, Charisma = 28 ,Luck = 3,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_SuperiorNuoSeed", Description = "上等糯种玉佩(男)", Price = 12000000, Charisma = 31 ,Luck = 3,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_TopgradeNuoSeed", Description = "特等糯种玉佩(男)", Price = 14000000, Charisma = 34 ,Luck = 3,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_InferiorBingSeed", Description = "下等冰种玉佩(男)", Price = 30000000, Charisma = 37 ,Luck = 4,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_ModerateBingSeed", Description = "中等冰种玉佩(男)", Price = 40000000, Charisma = 40 ,Luck = 5,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_SuperiorBingSeed", Description = "上等冰种玉佩(男)", Price = 50000000, Charisma = 43 ,Luck = 6,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_TopgradeBingSeed", Description = "特等冰种玉佩(男)", Price = 60000000, Charisma = 46 ,Luck = 7,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_InferiorBoliSeed", Description = "下等玻璃种玉佩(男)", Price = 100000000, Charisma = 50 ,Luck = 10,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_ModerateBoliSeed", Description = "中等玻璃种玉佩(男)", Price = 200000000, Charisma = 54 ,Luck = 15,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_SuperiorBoliSeed", Description = "上等玻璃种玉佩(男)", Price = 400000000, Charisma = 58 ,Luck = 20,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuPei_TopgradeBoliSeed", Description = "特等玻璃种玉佩(男)", Price = 800000000, Charisma = 62 ,Luck = 25,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "ZhizunPei", Description = "至尊玉佩(男)", Price = 1600000000, Charisma = 80 ,Luck = 40,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "MuYin", Description = "木印(男)", Price = 5000, Charisma = 1 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "ShiYin", Description = "石印(男)", Price = 10000, Charisma = 2 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "TongYin", Description = "铜印(男)", Price = 20000, Charisma = 3 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "TieYin", Description = "铁印(男)", Price = 30000, Charisma = 4 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YinYin", Description = "银印(男)", Price = 60000, Charisma = 5 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "JinYin", Description = "金印(男)", Price = 100000, Charisma = 6 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_InferiorHuaqingSeed", Description = "下等花青种玉印(男)", Price = 200000, Charisma = 8 ,Luck = 1,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_ModerateHuaqingSeed", Description = "中等花青种玉印(男)", Price = 300000, Charisma = 10 ,Luck = 1,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_SuperiorHuaqingSeed", Description = "上等花青种玉印(男)", Price = 400000, Charisma = 12 ,Luck = 1,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_TopgradeHuaqingSeed", Description = "特等花青种玉印(男)", Price = 500000, Charisma = 14 ,Luck = 1,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_InferiorDouSeed", Description = "下等豆种玉印(男)", Price = 1000000, Charisma = 16 ,Luck = 2,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_ModerateDouSeed", Description = "中等豆种玉印(男)", Price = 2000000, Charisma = 18 ,Luck = 2,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_SuperiorDouSeed", Description = "上等豆种玉印(男)", Price = 3000000, Charisma = 20 ,Luck = 2,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_TopgradeDouSeed", Description = "特等豆种玉印(男)", Price = 4000000, Charisma = 22 ,Luck = 2,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_InferiorNuoSeed", Description = "下等糯种玉印(男)", Price = 8000000, Charisma = 25 ,Luck = 3,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_ModerateNuoSeed", Description = "中等糯种玉印(男)", Price = 10000000, Charisma = 28 ,Luck = 3,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_SuperiorNuoSeed", Description = "上等糯种玉印(男)", Price = 12000000, Charisma = 31 ,Luck = 3,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_TopgradeNuoSeed", Description = "特等糯种玉印(男)", Price = 14000000, Charisma = 34 ,Luck = 3,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_InferiorBingSeed", Description = "下等冰种玉印(男)", Price = 30000000, Charisma = 37 ,Luck = 4,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_ModerateBingSeed", Description = "中等冰种玉印(男)", Price = 40000000, Charisma = 40 ,Luck = 5,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_SuperiorBingSeed", Description = "上等冰种玉印(男)", Price = 50000000, Charisma = 43 ,Luck = 6,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_TopgradeBingSeed", Description = "特等冰种玉印(男)", Price = 60000000, Charisma = 46 ,Luck = 7,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_InferiorBoliSeed", Description = "下等玻璃种玉印(男)", Price = 100000000, Charisma = 50 ,Luck = 10,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_ModerateBoliSeed", Description = "中等玻璃种玉印(男)", Price = 200000000, Charisma = 54 ,Luck = 15,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_SuperiorBoliSeed", Description = "上等玻璃种玉印(男)", Price = 400000000, Charisma = 58 ,Luck = 20,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuYin_TopgradeBoliSeed", Description = "特等玻璃种玉印(男)", Price = 800000000, Charisma = 62 ,Luck = 25,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YuXi_95ZhiZun", Description = "玉玺（龙印）", Price = 1600000000, Charisma = 80 ,Luck = 40,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "MaBuYaoDai_M", Description = "麻布腰带(男)", Price = 10000, Charisma = 1 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "CuBuYaoDai_Lv1", Description = "下等粗布腰带(男)", Price = 20000, Charisma = 2 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "CuBuYaoDai_Lv2", Description = "中等粗布腰带(男)", Price = 30000, Charisma = 3 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "CuBuYaoDai_Lv3", Description = "上等粗布腰带(男)", Price = 40000, Charisma = 4 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "CuBuYaoDai_Lv4", Description = "特等粗布腰带(男)", Price = 50000, Charisma = 5 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "GeBuYaoDai_Lv1", Description = "下等葛布腰带(男)", Price = 60000, Charisma = 6 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "GeBuYaoDai_Lv2", Description = "中等葛布腰带(男)", Price = 70000, Charisma = 7 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "GeBuYaoDai_Lv3", Description = "上等葛布腰带(男)", Price = 80000, Charisma = 8 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "GeBuYaoDai_Lv4", Description = "特等葛布腰带(男)", Price = 90000, Charisma = 9 ,Luck = 0,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "DuanYaoDai_Lv1", Description = "下等缎腰带(男)", Price = 100000, Charisma = 10 ,Luck = 1,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "DuanYaoDai_Lv2", Description = "中等缎腰带(男)", Price = 120000, Charisma = 12 ,Luck = 2,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "DuanYaoDai_Lv3", Description = "上等缎腰带(男)", Price = 140000, Charisma = 14 ,Luck = 3,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "DuanYaoDai_Lv4", Description = "特等缎腰带(男)", Price = 160000, Charisma = 16 ,Luck = 4,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "ChouYaoDai_Lv1", Description = "下等绸腰带(男)", Price = 180000, Charisma = 18 ,Luck = 5,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "ChouYaoDai_Lv2", Description = "中等绸腰带(男)", Price = 200000, Charisma = 20 ,Luck = 6,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "ChouYaoDai_Lv3", Description = "上等绸腰带(男)", Price = 220000, Charisma = 22 ,Luck = 7,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "ChouYaoDai_Lv4", Description = "特等绸腰带(男)", Price = 2400000, Charisma = 24 ,Luck = 8,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "LingYaoDai_Lv1", Description = "下等绫腰带(男)", Price = 260000, Charisma = 26 ,Luck = 9,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "LingYaoDai_Lv2", Description = "中等绫腰带(男)", Price = 280000, Charisma = 28 ,Luck = 10,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "LingYaoDai_Lv3", Description = "上等绫腰带(男)", Price = 300000, Charisma = 30 ,Luck = 11,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "LingYaoDai_Lv4", Description = "特等绫腰带(男)", Price = 320000, Charisma = 32 ,Luck = 12,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "SongjinYaoDai_Lv1", Description = "五等宋锦腰带(男)", Price = 640000, Charisma = 40 ,Luck = 20,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "SongjinYaoDai_Lv2", Description = "四等宋锦腰带(男)", Price = 800000, Charisma = 42 ,Luck = 21,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "SongjinYaoDai_Lv3", Description = "三等宋锦腰带(男)", Price = 1000000, Charisma = 44 ,Luck = 22,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "SongjinYaoDai_Lv4", Description = "二等宋锦腰带(男)", Price = 1200000, Charisma = 46 ,Luck = 23,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "SongjinYaoDai_Lv5", Description = "一等宋锦腰带(男)", Price = 1400000, Charisma = 48 ,Luck = 24,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "ShuJinYaoDai_Lv1", Description = "五等蜀锦腰带(男)", Price = 2800000, Charisma = 50 ,Luck = 25,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "ShuJinYaoDai_Lv2", Description = "四等蜀锦腰带(男)", Price = 3000000, Charisma = 52 ,Luck = 26,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "ShuJinYaoDai_Lv3", Description = "三等蜀锦腰带(男)", Price = 3400000, Charisma = 54 ,Luck = 27,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "ShuJinYaoDai_Lv4", Description = "二等蜀锦腰带(男)", Price = 3800000, Charisma = 56 ,Luck = 28,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "ShuJinYaoDai_Lv5", Description = "一等蜀锦腰带(男)", Price = 4200000, Charisma = 58 ,Luck = 29,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YunJinYaoDai_Lv1", Description = "五等云锦腰带(男)", Price = 8400000, Charisma = 60 ,Luck = 30,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YunJinYaoDai_Lv2", Description = "四等云锦腰带(男)", Price = 10000000, Charisma = 62 ,Luck = 31,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YunJinYaoDai_Lv3", Description = "三等云锦腰带(男)", Price = 20000000, Charisma = 64 ,Luck = 32,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YunJinYaoDai_Lv4", Description = "二等云锦腰带(男)", Price = 40000000, Charisma = 66 ,Luck = 33,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "YunJinYaoDai_Lv5", Description = "一等云锦腰带(男)", Price = 80000000, Charisma = 68 ,Luck = 34,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "ZhiZunYaoDai", Description = "至尊腰带（男）", Price = 160000000, Charisma = 80 ,Luck = 40,Category = PropCategory.JewelryM},
+                new PropConfig { PropID = "MuYin_F", Description = "木印(女)", Price = 5000, Charisma = 1 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "ShiYin_F", Description = "石印(女)", Price = 10000, Charisma = 2 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "TongYin_F", Description = "铜印(女)", Price = 20000, Charisma = 3 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "TieYin_F", Description = "铁印(女)", Price = 30000, Charisma = 4 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YinYin_F", Description = "银印(女)", Price = 60000, Charisma = 5 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "JinYin_F", Description = "金印(女)", Price = 100000, Charisma = 6 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_InferiorHuaqingSeed_F", Description = "下等花青种玉印(女)", Price = 200000, Charisma = 8 ,Luck = 1,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_ModerateHuaqingSeed_F", Description = "中等花青种玉印(女)", Price = 300000, Charisma = 10 ,Luck = 1,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_SuperiorHuaqingSeed_F", Description = "上等花青种玉印(女)", Price = 400000, Charisma = 12 ,Luck = 1,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_TopgradeHuaqingSeed_F", Description = "特等花青种玉印(女)", Price = 500000, Charisma = 14 ,Luck = 1,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_InferiorDouSeed_F", Description = "下等豆种玉印(女)", Price = 1000000, Charisma = 16 ,Luck = 2,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_ModerateDouSeed_F", Description = "中等豆种玉印(女)", Price = 2000000, Charisma = 18 ,Luck = 2,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_SuperiorDouSeed_F", Description = "上等豆种玉印(女)", Price = 3000000, Charisma = 20 ,Luck = 2,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_TopgradeDouSeed_F", Description = "特等豆种玉印(女)", Price = 4000000, Charisma = 22 ,Luck = 2,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_InferiorNuoSeed_F", Description = "下等糯种玉印(女)", Price = 8000000, Charisma = 25 ,Luck = 3,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_ModerateNuoSeed_F", Description = "中等糯种玉印(女)", Price = 10000000, Charisma = 28 ,Luck = 3,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_SuperiorNuoSeed_F", Description = "上等糯种玉印(女)", Price = 12000000, Charisma = 31 ,Luck = 3,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_TopgradeNuoSeed_F", Description = "特等糯种玉印(女)", Price = 14000000, Charisma = 34 ,Luck = 3,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_InferiorBingSeed_F", Description = "下等冰种玉印(女)", Price = 30000000, Charisma = 37 ,Luck = 4,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_ModerateBingSeed_F", Description = "中等冰种玉印(女)", Price = 40000000, Charisma = 40 ,Luck = 5,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_SuperiorBingSeed_F", Description = "上等冰种玉印(女)", Price = 50000000, Charisma = 43 ,Luck = 6,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_TopgradeBingSeed_F", Description = "特等冰种玉印(女)", Price = 60000000, Charisma = 46 ,Luck = 7,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_InferiorBoliSeed_F", Description = "下等玻璃种玉印(女)", Price = 100000000, Charisma = 50 ,Luck = 10,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_ModerateBoliSeed_F", Description = "中等玻璃种玉印(女)", Price = 200000000, Charisma = 54 ,Luck = 15,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_SuperiorBoliSeed_F", Description = "上等玻璃种玉印(女)", Price = 400000000, Charisma = 58 ,Luck = 20,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuYin_TopgradeBoliSeed_F", Description = "特等玻璃种玉印(女)", Price = 800000000, Charisma = 62 ,Luck = 25,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YuXi_MuYiTianXia_F", Description = "玉玺（凤印）", Price = 1600000000, Charisma = 80 ,Luck = 40,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "MaBuYaoDai_F", Description = "麻布腰带(女)", Price = 10000, Charisma = 1 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "CuBuYaoDai_Lv1_F", Description = "下等粗布腰带(女)", Price = 20000, Charisma = 2 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "CuBuYaoDai_Lv2_F", Description = "中等粗布腰带(女)", Price = 30000, Charisma = 3 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "CuBuYaoDai_Lv3_F", Description = "上等粗布腰带(女)", Price = 40000, Charisma = 4 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "CuBuYaoDai_Lv4_F", Description = "特等粗布腰带(女)", Price = 50000, Charisma = 5 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "GeBuYaoDai_Lv1_F", Description = "下等葛布腰带(女)", Price = 60000, Charisma = 6 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "GeBuYaoDai_Lv2_F", Description = "中等葛布腰带(女)", Price = 70000, Charisma = 7 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "GeBuYaoDai_Lv3_F", Description = "上等葛布腰带(女)", Price = 80000, Charisma = 8 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "GeBuYaoDai_Lv4_F", Description = "特等葛布腰带(女)", Price = 90000, Charisma = 9 ,Luck = 0,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "DuanYaoDai_Lv1_F", Description = "下等缎腰带(女)", Price = 100000, Charisma = 10 ,Luck = 1,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "DuanYaoDai_Lv2_F", Description = "中等缎腰带(女)", Price = 120000, Charisma = 12 ,Luck = 2,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "DuanYaoDai_Lv3_F", Description = "上等缎腰带(女)", Price = 140000, Charisma = 14 ,Luck = 3,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "DuanYaoDai_Lv4_F", Description = "特等缎腰带(女)", Price = 160000, Charisma = 16 ,Luck = 4,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "ChouYaoDai_Lv1_F", Description = "下等绸腰带(女)", Price = 180000, Charisma = 18 ,Luck = 5,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "ChouYaoDai_Lv2_F", Description = "中等绸腰带(女)", Price = 200000, Charisma = 20 ,Luck = 6,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "ChouYaoDai_Lv3_F", Description = "上等绸腰带(女)", Price = 220000, Charisma = 22 ,Luck = 7,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "ChouYaoDai_Lv4_F", Description = "特等绸腰带(女)", Price = 2400000, Charisma = 24 ,Luck = 8,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "LingYaoDai_Lv1_F", Description = "下等绫腰带(女)", Price = 260000, Charisma = 26 ,Luck = 9,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "LingYaoDai_Lv2_F", Description = "中等绫腰带(女)", Price = 280000, Charisma = 28 ,Luck = 10,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "LingYaoDai_Lv3_F", Description = "上等绫腰带(女)", Price = 300000, Charisma = 30 ,Luck = 11,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "LingYaoDai_Lv4_F", Description = "特等绫腰带(女)", Price = 320000, Charisma = 32 ,Luck = 12,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "SongjinYaoDai_Lv1_F", Description = "五等宋锦腰带(女)", Price = 640000, Charisma = 40 ,Luck = 20,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "SongjinYaoDai_Lv2_F", Description = "四等宋锦腰带(女)", Price = 800000, Charisma = 42 ,Luck = 21,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "SongjinYaoDai_Lv3_F", Description = "三等宋锦腰带(女)", Price = 1000000, Charisma = 44 ,Luck = 22,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "SongjinYaoDai_Lv4_F", Description = "二等宋锦腰带(女)", Price = 1200000, Charisma = 46 ,Luck = 23,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "SongjinYaoDai_Lv5_F", Description = "一等宋锦腰带(女)", Price = 1400000, Charisma = 48 ,Luck = 24,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "ShuJinYaoDai_Lv1_F", Description = "五等蜀锦腰带(女)", Price = 2800000, Charisma = 50 ,Luck = 25,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "ShuJinYaoDai_Lv2_F", Description = "四等蜀锦腰带(女)", Price = 3000000, Charisma = 52 ,Luck = 26,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "ShuJinYaoDai_Lv3_F", Description = "三等蜀锦腰带(女)", Price = 3400000, Charisma = 54 ,Luck = 27,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "ShuJinYaoDai_Lv4_F", Description = "二等蜀锦腰带(女)", Price = 3800000, Charisma = 56 ,Luck = 28,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "ShuJinYaoDai_Lv5_F", Description = "一等蜀锦腰带(女)", Price = 4200000, Charisma = 58 ,Luck = 29,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YunJinYaoDai_Lv1_F", Description = "五等云锦腰带(女)", Price = 8400000, Charisma = 60 ,Luck = 30,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YunJinYaoDai_Lv2_F", Description = "四等云锦腰带(女)", Price = 10000000, Charisma = 62 ,Luck = 31,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YunJinYaoDai_Lv3_F", Description = "三等云锦腰带(女)", Price = 20000000, Charisma = 64 ,Luck = 32,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YunJinYaoDai_Lv4_F", Description = "二等云锦腰带(女)", Price = 40000000, Charisma = 66 ,Luck = 33,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "YunJinYaoDai_Lv5_F", Description = "一等云锦腰带(女)", Price = 80000000, Charisma = 68 ,Luck = 34,Category = PropCategory.JewelryF},
+                new PropConfig { PropID = "ZhiZunYaoDai_F", Description = "至尊腰带（女）", Price = 160000000, Charisma = 80 ,Luck = 40,Category = PropCategory.JewelryF}
             };
 
             // 使用循环添加所有珠宝道具
