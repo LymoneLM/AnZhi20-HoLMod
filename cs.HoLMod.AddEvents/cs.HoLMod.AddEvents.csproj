@@ -263,6 +263,10 @@
       <HintPath>..\..\..\吾今有世家\引用\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="TMPro">
+      <HintPath>..\..\..\吾今有世家\引用\TextMeshPro-2018.4.11f1.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.UIElementsModule">
       <HintPath>..\..\..\吾今有世家\引用\UnityEngine.UIElementsModule.dll</HintPath>
       <Private>False</Private>
@@ -345,9 +349,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventData.cs" />
     <Compile Include="LanguageManager.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Windows.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
