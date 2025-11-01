@@ -1,454 +1,383 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using System;
+using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TMPro;
+using UnityEngine.UI;
+using BepInEx.Logging;
 
 namespace cs.HoLMod.AddEvents
 {
-    internal class Windows : MonoBehaviour
+    public class Windows : MonoBehaviour
     {
-        // 窗口实例
-        private static GameObject welcomeWindow;
-        private static GameObject mainWindow;
+        private static Windows instance;
+        private static List<GameObject> activeWindows = new List<GameObject>();
         
-        // 按钮列表数据
-        private static List<string> buttonList = new List<string> {
-            "事件类型1",
-            "事件类型2",
-            "事件类型3",
-            "事件类型4",
-            "事件类型5"
-        };
+        private GameObject welcomeWindow;
+        private GameObject mainWindow;
         
-        private static int selectedButtonIndex = -1;
+        private AddEvents pluginInstance;
         
-        // 创建欢迎窗口
-        public static void CreateWelcomeWindow()
+        // 初始化方法
+        public void Initialize()
         {
-            if (welcomeWindow != null)
-                return;
-            
-            // 创建窗口容器
+            instance = this;
+            pluginInstance = FindObjectOfType<AddEvents>();
+            Logger.LogInfo($"{PluginInfo.PLUGIN_NAME} 窗口管理器已初始化");
+        }
+        
+        // 显示欢迎界面
+        public void StartAddEvents()
+        {
+            CreateWelcomeWindow();
+        }
+        
+        // 创建欢迎界面
+        private void CreateWelcomeWindow()
+        {
+            // 创建欢迎窗口对象
             welcomeWindow = new GameObject("WelcomeWindow");
             Canvas canvas = welcomeWindow.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            CanvasScaler scaler = welcomeWindow.AddComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920, 1080);
+            welcomeWindow.AddComponent<CanvasScaler>();
             welcomeWindow.AddComponent<GraphicRaycaster>();
             
-            // 创建背景面板
-            GameObject panel = new GameObject("Panel");
-            panel.transform.SetParent(welcomeWindow.transform);
-            Image panelImage = panel.AddComponent<Image>();
-            panelImage.color = new Color(0.2f, 0.2f, 0.2f, 0.9f);
+            // 设置窗口背景
+            GameObject background = new GameObject("Background");
+            background.transform.SetParent(welcomeWindow.transform, false);
+            Image bgImage = background.AddComponent<Image>();
+            bgImage.color = new Color(0.1f, 0.1f, 0.1f, 0.9f);
+            RectTransform bgRect = background.GetComponent<RectTransform>();
+            bgRect.sizeDelta = new Vector2(400, 300);
+            bgRect.anchoredPosition = Vector2.zero;
             
-            // 设置面板RectTransform
-            RectTransform panelRect = panel.GetComponent<RectTransform>();
-            panelRect.sizeDelta = new Vector2(600, 400);
-            panelRect.anchoredPosition = Vector2.zero;
+            // 添加标题
+            GameObject title = new GameObject("Title");
+            title.transform.SetParent(background.transform, false);
+            Text titleText = title.AddComponent<Text>();
+            titleText.text = "欢迎使用事件编辑器";
+            titleText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            titleText.fontSize = 24;
+            titleText.alignment = TextAnchor.MiddleCenter;
+            titleText.color = Color.white;
+            RectTransform titleRect = title.GetComponent<RectTransform>();
+            titleRect.sizeDelta = new Vector2(300, 50);
+            titleRect.anchoredPosition = new Vector2(0, 50);
             
-            // 创建标题文本
-            GameObject titleText = new GameObject("TitleText");
-            titleText.transform.SetParent(panel.transform);
-            TextMeshProUGUI titleTMP = titleText.AddComponent<TextMeshProUGUI>();
-            titleTMP.text = "欢迎使用事件触发器";
-            titleTMP.fontSize = 32;
-            titleTMP.color = Color.white;
-            titleTMP.alignment = TextAlignmentOptions.Center;
+            // 添加版本信息
+            GameObject version = new GameObject("Version");
+            version.transform.SetParent(background.transform, false);
+            Text versionText = version.AddComponent<Text>();
+            versionText.text = $"版本: {PluginInfo.PLUGIN_VERSION}";
+            versionText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            versionText.fontSize = 14;
+            versionText.alignment = TextAnchor.MiddleCenter;
+            versionText.color = Color.gray;
+            RectTransform versionRect = version.GetComponent<RectTransform>();
+            versionRect.sizeDelta = new Vector2(200, 30);
+            versionRect.anchoredPosition = new Vector2(0, 0);
             
-            RectTransform titleRect = titleText.GetComponent<RectTransform>();
-            titleRect.sizeDelta = new Vector2(500, 50);
-            titleRect.anchoredPosition = new Vector2(0, 100);
+            // 添加进入按钮
+            GameObject enterButton = new GameObject("EnterButton");
+            enterButton.transform.SetParent(background.transform, false);
+            Button button = enterButton.AddComponent<Button>();
+            Image buttonImage = enterButton.GetComponent<Image>();
+            buttonImage.color = new Color(0.2f, 0.6f, 1f);
             
-            // 创建版本信息
-            GameObject versionText = new GameObject("VersionText");
-            versionText.transform.SetParent(panel.transform);
-            TextMeshProUGUI versionTMP = versionText.AddComponent<TextMeshProUGUI>();
-            versionTMP.text = $"版本: {PluginInfo.PLUGIN_VERSION}";
-            versionTMP.fontSize = 18;
-            versionTMP.color = Color.gray;
-            versionTMP.alignment = TextAlignmentOptions.Center;
+            // 添加按钮文本
+            GameObject buttonTextObj = new GameObject("ButtonText");
+            buttonTextObj.transform.SetParent(enterButton.transform, false);
+            Text buttonText = buttonTextObj.AddComponent<Text>();
+            buttonText.text = "进入";
+            buttonText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            buttonText.fontSize = 16;
+            buttonText.alignment = TextAnchor.MiddleCenter;
+            buttonText.color = Color.white;
+            RectTransform buttonTextRect = buttonTextObj.GetComponent<RectTransform>();
+            buttonTextRect.sizeDelta = new Vector2(100, 30);
+            buttonTextRect.anchoredPosition = Vector2.zero;
             
-            RectTransform versionRect = versionText.GetComponent<RectTransform>();
-            versionRect.sizeDelta = new Vector2(300, 30);
-            versionRect.anchoredPosition = new Vector2(0, 50);
-            
-            // 创建开始按钮
-            GameObject startButton = new GameObject("StartButton");
-            startButton.transform.SetParent(panel.transform);
-            Button buttonComp = startButton.AddComponent<Button>();
-            
-            // 设置按钮样式
-            Image buttonImage = startButton.AddComponent<Image>();
-            buttonImage.color = new Color(0.4f, 0.4f, 0.8f, 1f);
+            // 设置按钮大小和位置
+            RectTransform buttonRect = enterButton.GetComponent<RectTransform>();
+            buttonRect.sizeDelta = new Vector2(120, 40);
+            buttonRect.anchoredPosition = new Vector2(0, -50);
             
             // 添加按钮点击事件
-            buttonComp.onClick.AddListener(() => {
-                DestroyWelcomeWindow();
+            button.onClick.AddListener(() => 
+            {
+                CloseWelcomeWindow();
                 CreateMainWindow();
             });
             
-            // 设置按钮文本
-            GameObject buttonText = new GameObject("ButtonText");
-            buttonText.transform.SetParent(startButton.transform);
-            TextMeshProUGUI buttonTMP = buttonText.AddComponent<TextMeshProUGUI>();
-            buttonTMP.text = "开始添加";
-            buttonTMP.fontSize = 24;
-            buttonTMP.color = Color.white;
-            buttonTMP.alignment = TextAlignmentOptions.Center;
-            
-            // 设置按钮RectTransform
-            RectTransform buttonRect = startButton.GetComponent<RectTransform>();
-            buttonRect.sizeDelta = new Vector2(200, 60);
-            buttonRect.anchoredPosition = Vector2.zero;
-            
-            RectTransform buttonTextRect = buttonText.GetComponent<RectTransform>();
-            buttonTextRect.sizeDelta = new Vector2(180, 40);
-            buttonTextRect.anchoredPosition = Vector2.zero;
+            // 添加窗口到活动窗口列表
+            activeWindows.Add(welcomeWindow);
         }
         
-        // 销毁欢迎窗口
-        public static void DestroyWelcomeWindow()
+        // 关闭欢迎界面
+        private void CloseWelcomeWindow()
         {
             if (welcomeWindow != null)
             {
+                activeWindows.Remove(welcomeWindow);
                 Destroy(welcomeWindow);
                 welcomeWindow = null;
             }
         }
         
-        // 创建主要窗口
-        public static void CreateMainWindow()
+        // 创建主窗口
+        private void CreateMainWindow()
         {
-            if (mainWindow != null)
-                return;
-            
-            // 创建窗口容器
+            // 创建主窗口对象
             mainWindow = new GameObject("MainWindow");
             Canvas canvas = mainWindow.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            CanvasScaler scaler = mainWindow.AddComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920, 1080);
+            mainWindow.AddComponent<CanvasScaler>();
             mainWindow.AddComponent<GraphicRaycaster>();
             
-            // 创建背景面板
-            GameObject panel = new GameObject("Panel");
-            panel.transform.SetParent(mainWindow.transform);
-            Image panelImage = panel.AddComponent<Image>();
-            panelImage.color = new Color(0.15f, 0.15f, 0.15f, 0.95f);
+            // 设置窗口背景
+            GameObject background = new GameObject("Background");
+            background.transform.SetParent(mainWindow.transform, false);
+            Image bgImage = background.AddComponent<Image>();
+            bgImage.color = new Color(0.1f, 0.1f, 0.1f, 0.95f);
+            RectTransform bgRect = background.GetComponent<RectTransform>();
+            bgRect.sizeDelta = new Vector2(800, 600);
+            bgRect.anchoredPosition = Vector2.zero;
             
-            // 设置面板RectTransform
-            RectTransform panelRect = panel.GetComponent<RectTransform>();
-            panelRect.sizeDelta = new Vector2(1000, 800);
-            panelRect.anchoredPosition = Vector2.zero;
+            // 添加标题
+            GameObject title = new GameObject("Title");
+            title.transform.SetParent(background.transform, false);
+            Text titleText = title.AddComponent<Text>();
+            titleText.text = "事件触发器";
+            titleText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            titleText.fontSize = 20;
+            titleText.alignment = TextAnchor.MiddleCenter;
+            titleText.color = Color.white;
+            RectTransform titleRect = title.GetComponent<RectTransform>();
+            titleRect.sizeDelta = new Vector2(200, 40);
+            titleRect.anchoredPosition = new Vector2(0, 250);
             
-            // 创建标题文本
-            GameObject titleText = new GameObject("TitleText");
-            titleText.transform.SetParent(panel.transform);
-            TextMeshProUGUI titleTMP = titleText.AddComponent<TextMeshProUGUI>();
-            titleTMP.text = "事件触发器";
-            titleTMP.fontSize = 28;
-            titleTMP.color = Color.white;
-            titleTMP.alignment = TextAlignmentOptions.Center;
+            // 创建左侧可触发事件列表区域
+            GameObject eventListPanel = new GameObject("EventListPanel");
+            eventListPanel.transform.SetParent(background.transform, false);
+            Image eventListImage = eventListPanel.AddComponent<Image>();
+            eventListImage.color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
+            RectTransform eventListRect = eventListPanel.GetComponent<RectTransform>();
+            eventListRect.sizeDelta = new Vector2(350, 400);
+            eventListRect.anchoredPosition = new Vector2(-200, 0);
             
-            RectTransform titleRect = titleText.GetComponent<RectTransform>();
-            titleRect.sizeDelta = new Vector2(900, 40);
-            titleRect.anchoredPosition = new Vector2(0, 350);
+            // 添加事件列表标题
+            GameObject eventListTitle = new GameObject("EventListTitle");
+            eventListTitle.transform.SetParent(eventListPanel.transform, false);
+            Text eventListTitleText = eventListTitle.AddComponent<Text>();
+            eventListTitleText.text = "可触发的事件列表";
+            eventListTitleText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            eventListTitleText.fontSize = 16;
+            eventListTitleText.alignment = TextAnchor.MiddleCenter;
+            eventListTitleText.color = Color.white;
+            RectTransform eventListTitleRect = eventListTitle.GetComponent<RectTransform>();
+            eventListTitleRect.sizeDelta = new Vector2(300, 30);
+            eventListTitleRect.anchoredPosition = new Vector2(0, 170);
             
-            // 创建左侧按钮列表面板
-            GameObject buttonListPanel = new GameObject("ButtonListPanel");
-            buttonListPanel.transform.SetParent(panel.transform);
-            Image buttonListImage = buttonListPanel.AddComponent<Image>();
-            buttonListImage.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+            // 创建事件列表内容区域
+            GameObject eventListContent = new GameObject("EventListContent");
+            eventListContent.transform.SetParent(eventListPanel.transform, false);
+            RectTransform eventListContentRect = eventListContent.AddComponent<RectTransform>();
+            eventListContentRect.sizeDelta = new Vector2(320, 320);
+            eventListContentRect.anchoredPosition = Vector2.zero;
             
-            RectTransform buttonListRect = buttonListPanel.GetComponent<RectTransform>();
-            buttonListRect.sizeDelta = new Vector2(400, 600);
-            buttonListRect.anchoredPosition = new Vector2(-250, 0);
+            // 添加事件列表项
+            if (pluginInstance != null && pluginInstance.EventList != null)
+            {
+                for (int i = 0; i < pluginInstance.EventList.Count; i++)
+                {
+                    int index = i; // 捕获当前索引
+                    GameObject eventItem = new GameObject($"EventItem_{index}");
+                    eventItem.transform.SetParent(eventListContent.transform, false);
+                    Button eventButton = eventItem.AddComponent<Button>();
+                    Image eventButtonImage = eventItem.GetComponent<Image>();
+                    eventButtonImage.color = new Color(0.3f, 0.3f, 0.3f, 0.7f);
+                    
+                    // 添加事件文本
+                    GameObject eventTextObj = new GameObject("EventText");
+                    eventTextObj.transform.SetParent(eventItem.transform, false);
+                    Text eventText = eventTextObj.AddComponent<Text>();
+                    eventText.text = $"事件 {index + 1}";
+                    eventText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+                    eventText.fontSize = 14;
+                    eventText.alignment = TextAnchor.MiddleLeft;
+                    eventText.color = Color.white;
+                    RectTransform eventTextRect = eventTextObj.GetComponent<RectTransform>();
+                    eventTextRect.sizeDelta = new Vector2(280, 30);
+                    eventTextRect.anchoredPosition = new Vector2(10, 0);
+                    
+                    // 设置按钮大小和位置
+                    RectTransform eventButtonRect = eventItem.GetComponent<RectTransform>();
+                    eventButtonRect.sizeDelta = new Vector2(300, 40);
+                    eventButtonRect.anchoredPosition = new Vector2(0, 120 - index * 50);
+                    
+                    // 添加选中效果
+                    eventButton.onClick.AddListener(() => 
+                    {
+                        // 重置所有按钮颜色
+                        foreach (Transform child in eventListContent.transform)
+                        {
+                            if (child.TryGetComponent<Image>(out Image img))
+                            {
+                                img.color = new Color(0.3f, 0.3f, 0.3f, 0.7f);
+                            }
+                        }
+                        // 高亮选中的按钮
+                        eventButtonImage.color = new Color(0.2f, 0.6f, 1f, 0.9f);
+                        // 这里可以添加选中事件后的逻辑
+                        Logger.LogInfo($"选中事件: {index}");
+                    });
+                }
+            }
             
-            // 添加按钮列表标题
-            GameObject buttonListTitle = new GameObject("ButtonListTitle");
-            buttonListTitle.transform.SetParent(buttonListPanel.transform);
-            TextMeshProUGUI buttonListTitleTMP = buttonListTitle.AddComponent<TextMeshProUGUI>();
-            buttonListTitleTMP.text = "N个按钮列表";
-            buttonListTitleTMP.fontSize = 20;
-            buttonListTitleTMP.color = Color.white;
-            buttonListTitleTMP.alignment = TextAlignmentOptions.Center;
+            // 创建右侧可修改参数列表区域
+            GameObject paramListPanel = new GameObject("ParamListPanel");
+            paramListPanel.transform.SetParent(background.transform, false);
+            Image paramListImage = paramListPanel.AddComponent<Image>();
+            paramListImage.color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
+            RectTransform paramListRect = paramListPanel.GetComponent<RectTransform>();
+            paramListRect.sizeDelta = new Vector2(350, 400);
+            paramListRect.anchoredPosition = new Vector2(200, 0);
             
-            RectTransform buttonListTitleRect = buttonListTitle.GetComponent<RectTransform>();
-            buttonListTitleRect.sizeDelta = new Vector2(350, 30);
-            buttonListTitleRect.anchoredPosition = new Vector2(0, 270);
+            // 添加参数列表标题
+            GameObject paramListTitle = new GameObject("ParamListTitle");
+            paramListTitle.transform.SetParent(paramListPanel.transform, false);
+            Text paramListTitleText = paramListTitle.AddComponent<Text>();
+            paramListTitleText.text = "可修改参数列表";
+            paramListTitleText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            paramListTitleText.fontSize = 16;
+            paramListTitleText.alignment = TextAnchor.MiddleCenter;
+            paramListTitleText.color = Color.white;
+            RectTransform paramListTitleRect = paramListTitle.GetComponent<RectTransform>();
+            paramListTitleRect.sizeDelta = new Vector2(300, 30);
+            paramListTitleRect.anchoredPosition = new Vector2(0, 170);
             
-            // 创建按钮列表
-            CreateButtonList(buttonListPanel);
+            // 创建参数列表内容区域
+            GameObject paramListContent = new GameObject("ParamListContent");
+            paramListContent.transform.SetParent(paramListPanel.transform, false);
+            RectTransform paramListContentRect = paramListContent.AddComponent<RectTransform>();
+            paramListContentRect.sizeDelta = new Vector2(320, 320);
+            paramListContentRect.anchoredPosition = Vector2.zero;
             
-            // 创建右侧参数面板
-            GameObject paramsPanel = new GameObject("ParamsPanel");
-            paramsPanel.transform.SetParent(panel.transform);
-            Image paramsImage = paramsPanel.AddComponent<Image>();
-            paramsImage.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+            // 添加示例参数项
+            AddParamItem(paramListContent, "参数1", "数值", 1, new Vector2(0, 100));
+            AddParamItem(paramListContent, "参数2", "文本", 2, new Vector2(0, 40));
+            AddParamItem(paramListContent, "参数3", "布尔值", 3, new Vector2(0, -20));
             
-            RectTransform paramsRect = paramsPanel.GetComponent<RectTransform>();
-            paramsRect.sizeDelta = new Vector2(400, 600);
-            paramsRect.anchoredPosition = new Vector2(250, 0);
+            // 添加底部触发事件按钮
+            GameObject triggerButton = new GameObject("TriggerButton");
+            triggerButton.transform.SetParent(background.transform, false);
+            Button button = triggerButton.AddComponent<Button>();
+            Image buttonImage = triggerButton.GetComponent<Image>();
+            buttonImage.color = new Color(0.2f, 0.8f, 0.3f);
             
-            // 创建参数输入区域
-            CreateParamsInputs(paramsPanel);
+            // 添加按钮文本
+            GameObject buttonTextObj = new GameObject("ButtonText");
+            buttonTextObj.transform.SetParent(triggerButton.transform, false);
+            Text buttonText = buttonTextObj.AddComponent<Text>();
+            buttonText.text = "触发事件";
+            buttonText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            buttonText.fontSize = 18;
+            buttonText.alignment = TextAnchor.MiddleCenter;
+            buttonText.color = Color.white;
+            RectTransform buttonTextRect = buttonTextObj.GetComponent<RectTransform>();
+            buttonTextRect.sizeDelta = new Vector2(150, 40);
+            buttonTextRect.anchoredPosition = Vector2.zero;
             
-            // 创建底部添加按钮
-            GameObject addButton = new GameObject("AddButton");
-            addButton.transform.SetParent(panel.transform);
-            Button addButtonComp = addButton.AddComponent<Button>();
+            // 设置按钮大小和位置
+            RectTransform buttonRect = triggerButton.GetComponent<RectTransform>();
+            buttonRect.sizeDelta = new Vector2(180, 50);
+            buttonRect.anchoredPosition = new Vector2(0, -250);
             
-            Image addButtonImage = addButton.AddComponent<Image>();
-            addButtonImage.color = new Color(0.2f, 0.6f, 0.2f, 1f);
-            
-            addButtonComp.onClick.AddListener(() => {
-                // 处理添加事件的逻辑
-                Debug.Log("添加事件按钮点击");
+            // 添加按钮点击事件
+            button.onClick.AddListener(() => 
+            {
+                Logger.LogInfo("触发事件按钮被点击");
+                // 这里可以添加触发事件的逻辑
             });
             
-            GameObject addButtonText = new GameObject("AddButtonText");
-            addButtonText.transform.SetParent(addButton.transform);
-            TextMeshProUGUI addButtonTMP = addButtonText.AddComponent<TextMeshProUGUI>();
-            addButtonTMP.text = "添加";
-            addButtonTMP.fontSize = 24;
-            addButtonTMP.color = Color.white;
-            addButtonTMP.alignment = TextAlignmentOptions.Center;
-            
-            RectTransform addButtonRect = addButton.GetComponent<RectTransform>();
-            addButtonRect.sizeDelta = new Vector2(200, 60);
-            addButtonRect.anchoredPosition = new Vector2(0, -350);
-            
-            RectTransform addButtonTextRect = addButtonText.GetComponent<RectTransform>();
-            addButtonTextRect.sizeDelta = new Vector2(180, 40);
-            addButtonTextRect.anchoredPosition = Vector2.zero;
-            
-            // 添加关闭按钮
-            GameObject closeButton = new GameObject("CloseButton");
-            closeButton.transform.SetParent(panel.transform);
-            Button closeButtonComp = closeButton.AddComponent<Button>();
-            
-            Image closeButtonImage = closeButton.AddComponent<Image>();
-            closeButtonImage.color = new Color(0.8f, 0.2f, 0.2f, 1f);
-            
-            closeButtonComp.onClick.AddListener(() => {
-                DestroyMainWindow();
-            });
-            
-            GameObject closeButtonText = new GameObject("CloseButtonText");
-            closeButtonText.transform.SetParent(closeButton.transform);
-            TextMeshProUGUI closeButtonTMP = closeButtonText.AddComponent<TextMeshProUGUI>();
-            closeButtonTMP.text = "关闭";
-            closeButtonTMP.fontSize = 18;
-            closeButtonTMP.color = Color.white;
-            closeButtonTMP.alignment = TextAlignmentOptions.Center;
-            
-            RectTransform closeButtonRect = closeButton.GetComponent<RectTransform>();
-            closeButtonRect.sizeDelta = new Vector2(80, 40);
-            closeButtonRect.anchoredPosition = new Vector2(450, 360);
-            
-            RectTransform closeButtonTextRect = closeButtonText.GetComponent<RectTransform>();
-            closeButtonTextRect.sizeDelta = new Vector2(70, 30);
-            closeButtonTextRect.anchoredPosition = Vector2.zero;
+            // 添加窗口到活动窗口列表
+            activeWindows.Add(mainWindow);
         }
         
-        // 创建按钮列表
-        private static void CreateButtonList(GameObject parent)
+        // 添加参数项
+        private void AddParamItem(GameObject parent, string paramName, string paramType, int index, Vector2 position)
         {
-            float startY = 200;
-            float buttonSpacing = 60;
+            GameObject paramItem = new GameObject($"ParamItem_{index}");
+            paramItem.transform.SetParent(parent.transform, false);
             
-            for (int i = 0; i < buttonList.Count; i++)
-            {
-                int index = i;
-                GameObject button = new GameObject($"Button_{i}");
-                button.transform.SetParent(parent.transform);
-                Button buttonComp = button.AddComponent<Button>();
-                
-                Image buttonImage = button.AddComponent<Image>();
-                buttonImage.color = new Color(0.3f, 0.3f, 0.6f, 1f);
-                
-                buttonComp.onClick.AddListener(() => {
-                    selectedButtonIndex = index;
-                    Debug.Log($"选中按钮: {buttonList[index]}");
-                    // 更新参数显示
-                    UpdateParamsDisplay();
-                });
-                
-                GameObject buttonText = new GameObject("ButtonText");
-                buttonText.transform.SetParent(button.transform);
-                TextMeshProUGUI buttonTMP = buttonText.AddComponent<TextMeshProUGUI>();
-                buttonTMP.text = buttonList[i];
-                buttonTMP.fontSize = 18;
-                buttonTMP.color = Color.white;
-                buttonTMP.alignment = TextAlignmentOptions.Center;
-                
-                RectTransform buttonRect = button.GetComponent<RectTransform>();
-                buttonRect.sizeDelta = new Vector2(300, 50);
-                buttonRect.anchoredPosition = new Vector2(0, startY - i * buttonSpacing);
-                
-                RectTransform buttonTextRect = buttonText.GetComponent<RectTransform>();
-                buttonTextRect.sizeDelta = new Vector2(280, 40);
-                buttonTextRect.anchoredPosition = Vector2.zero;
-            }
+            // 添加背景
+            Image paramBg = paramItem.AddComponent<Image>();
+            paramBg.color = new Color(0.3f, 0.3f, 0.3f, 0.7f);
+            
+            // 设置大小和位置
+            RectTransform paramRect = paramItem.GetComponent<RectTransform>();
+            paramRect.sizeDelta = new Vector2(300, 50);
+            paramRect.anchoredPosition = position;
+            
+            // 添加参数名称
+            GameObject nameObj = new GameObject("ParamName");
+            nameObj.transform.SetParent(paramItem.transform, false);
+            Text nameText = nameObj.AddComponent<Text>();
+            nameText.text = paramName;
+            nameText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            nameText.fontSize = 14;
+            nameText.alignment = TextAnchor.MiddleLeft;
+            nameText.color = Color.white;
+            RectTransform nameRect = nameObj.GetComponent<RectTransform>();
+            nameRect.sizeDelta = new Vector2(100, 30);
+            nameRect.anchoredPosition = new Vector2(-80, 0);
+            
+            // 添加输入框
+            GameObject inputObj = new GameObject("ParamInput");
+            inputObj.transform.SetParent(paramItem.transform, false);
+            InputField inputField = inputObj.AddComponent<InputField>();
+            
+            // 设置输入框大小和位置
+            RectTransform inputRect = inputObj.GetComponent<RectTransform>();
+            inputRect.sizeDelta = new Vector2(150, 30);
+            inputRect.anchoredPosition = new Vector2(40, 0);
+            
+            // 设置输入框文本组件
+            GameObject inputTextObj = new GameObject("Text");
+            inputTextObj.transform.SetParent(inputObj.transform, false);
+            Text inputText = inputTextObj.AddComponent<Text>();
+            inputText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            inputText.fontSize = 14;
+            inputText.alignment = TextAnchor.MiddleLeft;
+            inputText.color = Color.black;
+            RectTransform inputTextRect = inputTextObj.GetComponent<RectTransform>();
+            inputTextRect.sizeDelta = new Vector2(140, 20);
+            inputTextRect.anchoredPosition = new Vector2(5, 0);
+            
+            // 设置输入框占位符
+            GameObject placeholderObj = new GameObject("Placeholder");
+            placeholderObj.transform.SetParent(inputObj.transform, false);
+            Text placeholderText = placeholderObj.AddComponent<Text>();
+            placeholderText.text = paramType;
+            placeholderText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            placeholderText.fontSize = 14;
+            placeholderText.alignment = TextAnchor.MiddleLeft;
+            placeholderText.color = Color.gray;
+            RectTransform placeholderRect = placeholderObj.GetComponent<RectTransform>();
+            placeholderRect.sizeDelta = new Vector2(140, 20);
+            placeholderRect.anchoredPosition = new Vector2(5, 0);
+            
+            // 配置InputField组件
+            inputField.textComponent = inputText;
+            inputField.placeholder = placeholderText;
+            inputField.text = "";
+            inputField.characterLimit = 50;
+            inputField.lineType = InputField.LineType.SingleLine;
         }
         
-        // 创建参数输入区域
-        private static void CreateParamsInputs(GameObject parent)
-        {
-            float startY = 200;
-            float inputSpacing = 80;
-            
-            // 创建5个参数输入框
-            for (int i = 0; i < 5; i++)
-            {
-                CreateParamInput(parent, i, startY - i * inputSpacing);
-            }
-            
-            // 创建多行文本说明框
-            CreateMultilineInput(parent);
-        }
-        
-        // 创建单个参数输入
-        private static void CreateParamInput(GameObject parent, int index, float yPosition)
-        {
-            GameObject paramContainer = new GameObject($"Param_{index}");
-            paramContainer.transform.SetParent(parent.transform);
-            
-            RectTransform paramContainerRect = paramContainer.AddComponent<RectTransform>();
-            paramContainerRect.sizeDelta = new Vector2(350, 60);
-            paramContainerRect.anchoredPosition = new Vector2(0, yPosition);
-            
-            // 参数标签
-            GameObject paramLabel = new GameObject($"ParamLabel_{index}");
-            paramLabel.transform.SetParent(paramContainer.transform);
-            TextMeshProUGUI labelTMP = paramLabel.AddComponent<TextMeshProUGUI>();
-            labelTMP.text = $"参数{Convert.ToChar('A' + index)}: ";
-            labelTMP.fontSize = 16;
-            labelTMP.color = Color.white;
-            labelTMP.alignment = TextAlignmentOptions.Right;
-            
-            RectTransform labelRect = paramLabel.GetComponent<RectTransform>();
-            labelRect.sizeDelta = new Vector2(80, 30);
-            labelRect.anchoredPosition = new Vector2(-100, 0);
-            
-            // 参数输入框背景
-            GameObject inputBackground = new GameObject($"InputBackground_{index}");
-            inputBackground.transform.SetParent(paramContainer.transform);
-            Image inputBgImage = inputBackground.AddComponent<Image>();
-            inputBgImage.color = Color.white;
-            
-            RectTransform inputBgRect = inputBackground.GetComponent<RectTransform>();
-            inputBgRect.sizeDelta = new Vector2(200, 30);
-            inputBgRect.anchoredPosition = new Vector2(50, 0);
-            
-            // 参数输入文本（使用TextMeshPro作为输入框）
-            GameObject inputText = new GameObject($"InputText_{index}");
-            inputText.transform.SetParent(inputBackground.transform);
-            TextMeshProUGUI inputTMP = inputText.AddComponent<TextMeshProUGUI>();
-            inputTMP.text = "";
-            inputTMP.fontSize = 16;
-            inputTMP.color = Color.black;
-            inputTMP.alignment = TextAlignmentOptions.Left;
-            
-            RectTransform inputTextRect = inputText.GetComponent<RectTransform>();
-            inputTextRect.sizeDelta = new Vector2(190, 25);
-            inputTextRect.anchoredPosition = new Vector2(0, 0);
-        }
-        
-        // 创建多行文本输入框
-        private static void CreateMultilineInput(GameObject parent)
-        {
-            GameObject multilineContainer = new GameObject("MultilineContainer");
-            multilineContainer.transform.SetParent(parent.transform);
-            
-            RectTransform multilineContainerRect = multilineContainer.AddComponent<RectTransform>();
-            multilineContainerRect.sizeDelta = new Vector2(350, 120);
-            multilineContainerRect.anchoredPosition = new Vector2(0, -250);
-            
-            // 多行文本标签
-            GameObject multilineLabel = new GameObject("MultilineLabel");
-            multilineLabel.transform.SetParent(multilineContainer.transform);
-            TextMeshProUGUI labelTMP = multilineLabel.AddComponent<TextMeshProUGUI>();
-            labelTMP.text = "说明: ";
-            labelTMP.fontSize = 16;
-            labelTMP.color = Color.white;
-            labelTMP.alignment = TextAlignmentOptions.Right;
-            
-            RectTransform labelRect = multilineLabel.GetComponent<RectTransform>();
-            labelRect.sizeDelta = new Vector2(60, 30);
-            labelRect.anchoredPosition = new Vector2(-110, 40);
-            
-            // 多行文本输入框背景
-            GameObject multilineBackground = new GameObject("MultilineBackground");
-            multilineBackground.transform.SetParent(multilineContainer.transform);
-            Image multilineBgImage = multilineBackground.AddComponent<Image>();
-            multilineBgImage.color = Color.white;
-            
-            RectTransform multilineBgRect = multilineBackground.GetComponent<RectTransform>();
-            multilineBgRect.sizeDelta = new Vector2(220, 80);
-            multilineBgRect.anchoredPosition = new Vector2(60, 0);
-            
-            // 多行文本输入（使用TextMeshPro作为多行输入框）
-            GameObject multilineText = new GameObject("MultilineText");
-            multilineText.transform.SetParent(multilineBackground.transform);
-            TextMeshProUGUI multilineTMP = multilineText.AddComponent<TextMeshProUGUI>();
-            multilineTMP.text = "(多行文本)";
-            multilineTMP.fontSize = 14;
-            multilineTMP.color = Color.black;
-            multilineTMP.alignment = TextAlignmentOptions.TopLeft;
-            multilineTMP.enableWordWrapping = true;
-            
-            RectTransform multilineTextRect = multilineText.GetComponent<RectTransform>();
-            multilineTextRect.sizeDelta = new Vector2(210, 70);
-            multilineTextRect.anchoredPosition = new Vector2(0, 0);
-            
-            // 添加调整大小的边框标记（视觉效果）
-            CreateResizeHandles(multilineBackground);
-        }
-        
-        // 创建调整大小的边框标记
-        private static void CreateResizeHandles(GameObject parent)
-        {
-            Vector2[] handlePositions = new Vector2[] {
-                new Vector2(-110, 40),  // 左上
-                new Vector2(110, 40),   // 右上
-                new Vector2(-110, -40), // 左下
-                new Vector2(110, -40)   // 右下
-            };
-            
-            foreach (Vector2 pos in handlePositions)
-            {
-                GameObject handle = new GameObject($"ResizeHandle");
-                handle.transform.SetParent(parent.transform);
-                Image handleImage = handle.AddComponent<Image>();
-                handleImage.color = Color.black;
-                
-                RectTransform handleRect = handle.GetComponent<RectTransform>();
-                handleRect.sizeDelta = new Vector2(10, 10);
-                handleRect.anchoredPosition = pos;
-            }
-        }
-        
-        // 更新参数显示
-        private static void UpdateParamsDisplay()
-        {
-            // 根据选中的按钮索引更新参数显示
-            Debug.Log($"更新参数显示，选中索引: {selectedButtonIndex}");
-            // 这里可以根据selectedButtonIndex来动态显示不同数量的参数
-        }
-        
-        // 销毁主要窗口
-        public static void DestroyMainWindow()
+        // 关闭主窗口
+        private void CloseMainWindow()
         {
             if (mainWindow != null)
             {
+                activeWindows.Remove(mainWindow);
                 Destroy(mainWindow);
                 mainWindow = null;
             }
@@ -457,14 +386,26 @@ namespace cs.HoLMod.AddEvents
         // 检查是否有窗口打开
         public static bool IsAnyWindowOpen()
         {
-            return welcomeWindow != null || mainWindow != null;
+            return activeWindows.Count > 0;
         }
         
         // 关闭所有窗口
         public static void CloseAllWindows()
         {
-            DestroyWelcomeWindow();
-            DestroyMainWindow();
+            foreach (GameObject window in activeWindows.ToArray())
+            {
+                if (window != null)
+                {
+                    Destroy(window);
+                }
+            }
+            activeWindows.Clear();
+            
+            if (instance != null)
+            {
+                instance.welcomeWindow = null;
+                instance.mainWindow = null;
+            }
         }
     }
 }
