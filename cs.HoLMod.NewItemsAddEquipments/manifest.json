@@ -1,0 +1,10 @@
+{
+    "name": "NewItemsAddEquipments",
+    "version_number": "2.0.0",
+    "website_url": "https://github.com/AnZhi20/AnZhi20-HoLMod",
+    "description": "装备库MOD，提供多种武器、马匹、珠宝、符咒添加。Equipment library MOD, providing various weapons, horses, jewelry, and talismans for addition.",
+    "dependencies": [
+        "BepInEx-BepInExPack-5.4.2100",
+        "LymoneLM-YuanAPI-0.1.0"
+    ]
+}
