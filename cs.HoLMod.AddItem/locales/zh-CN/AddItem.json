@@ -1,0 +1,53 @@
+﻿{
+  "Mod": {
+    "Name": "物品添加器",
+    "Author": ""
+  },
+  "Description": {
+    "1": "1. 请在点击添加前先保存游戏，以便回档",
+    "2": "2. 按F2键显示/隐藏窗口",
+    "3": "3. 切换模式选择：物品模式/货币模式/话本模式/地图模式",
+    "4": "4. 输入部分字符可搜索物品或话本",
+    "5": "5. 选择项目并选择或输入数量后点击添加按钮"
+  },
+  "MenuTab": {
+    "Currency": "",
+    "Items": "",
+    "Map": "",
+    "Stories": ""
+  },
+  "PropCategory": {
+    "Other": "其他",
+    "Special": "特殊",
+    "Snack": "",
+    "Textile": "",
+    "Mineral": "",
+    "Rouge": "",
+    "Jewelry": "",
+    "Book": "",
+    "Ink": "",
+    "Art": "",
+    "Antique": "",
+    "Weapon": "",
+    "TeaSet": "",
+    "Incense": "",
+    "Vase": "",
+    "Wine": "",
+    "Music": "",
+    "Pelt": "",
+    "Spell": "",
+    "Poison": "",
+    "Produce": "",
+    "Medicine": ""
+  },
+  "Info": {
+    "Search": "搜索:",
+    "Category": "",
+    "Clear": "",
+    "Description": "使用说明:",
+    "Count": "数量:"
+  },
+  "Button": {
+    "Add": "添加"
+  }
+}
