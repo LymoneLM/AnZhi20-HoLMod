@@ -77,36 +77,5 @@ namespace cs.HoLMod.AddEvents
                 Destroy(windowsManager);
             }
         }
-
-        public List<List<string>> EventList = new List<List<string>>()
-        {
-            // 0，云游道士卖丹药
-            new List<string>
-            {
-                "20",
-                string.Concat(new string[]
-                {
-                    "28|1|null|5@",
-                    "100",
-                    "@1@",
-                    "100",
-                    "|0"
-                })
-            },
-
-            // 1，云游道士卖符咒
-            new List<string>
-            {
-                "20",
-                string.Concat(new string[]
-                {
-                    "29|1|null|5@",
-                    "542",
-                    "@1@",
-                    "100",
-                    "|0"
-                })
-            }
-        };
     }
 }
