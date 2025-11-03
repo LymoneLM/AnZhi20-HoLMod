@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.TaskCheat", "..\c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.MorePopulation", "..\cs.HoLMod.MorePopulation\cs.HoLMod.MorePopulation.csproj", "{D1E8EBB6-3E94-4AC1-A0A1-BCBC5BDC0FF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.Tool", "..\cs.HoLMod.Tool\cs.HoLMod.Tool.csproj", "{BC6B3C19-C8D0-4E90-91D2-0062D3A408CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.TestTool", "..\cs.HoLMod.Tool\cs.HoLMod.TestTool.csproj", "{BC6B3C19-C8D0-4E90-91D2-0062D3A408CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.ES3EditorAPP", "..\cs.HoLMod.ES3EditorAPP\cs.HoLMod.ES3EditorAPP.csproj", "{CE6FE5C1-BF8E-4368-8773-059A1E145CBE}"
 EndProject
@@ -30,6 +30,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.NewItemsAddEquipments", "..\cs.HoLMod.NewItemsAddEquipments\cs.HoLMod.NewItemsAddEquipments.csproj", "{E9C00D51-8BCA-4CDC-8962-605D3CF26FB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.AddEvents", "..\cs.HoLMod.AddEvents\cs.HoLMod.AddEvents.csproj", "{A01208BE-DD60-4332-AA50-2F5A8789E3A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.NewItems", "..\cs.HoLMod.NewItems\cs.HoLMod.NewItems.csproj", "{62C07123-4D94-4050-96BD-3A2139D3B6EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +95,10 @@ Global
 		{A01208BE-DD60-4332-AA50-2F5A8789E3A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A01208BE-DD60-4332-AA50-2F5A8789E3A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A01208BE-DD60-4332-AA50-2F5A8789E3A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62C07123-4D94-4050-96BD-3A2139D3B6EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62C07123-4D94-4050-96BD-3A2139D3B6EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62C07123-4D94-4050-96BD-3A2139D3B6EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62C07123-4D94-4050-96BD-3A2139D3B6EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -343,17 +343,17 @@
       <HintPath>..\libs\UnityEngine.XRModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="YuanAPI">
+      <HintPath>..\..\YuanAPI\YuanAPI\bin\Debug\netstandard2.0\YuanAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventData.cs" />
     <Compile Include="LanguageManager.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WindowA.cs" />
-    <Compile Include="WindowB.cs" />
-    <Compile Include="WindowC.cs" />
-    <Compile Include="WindowD.cs" />
-    <Compile Include="WindowE.cs" />
-    <Compile Include="WindowMain.cs" />
+    <Compile Include="Windows.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
