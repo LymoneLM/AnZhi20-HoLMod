@@ -1,7 +1,7 @@
 ﻿{
   "Mod": {
     "Name": "物品添加器",
-    "Author": ""
+    "Author": "AnZhi20"
   },
   "Description": {
     "1": "1. 请在点击添加前先保存游戏，以便回档",
@@ -12,10 +12,10 @@
     "6": "6. 注意：物品添加不能超过库存上限"
   },
   "MenuTab": {
-    "Currency": "",
-    "Items": "",
-    "Map": "",
-    "Stories": ""
+    "Currency": "货币",
+    "Items": "物品",
+    "Map": "地图",
+    "Stories": "话本"
   },
   "CurrencyClass": {
     "Coins": "铜钱",
@@ -24,26 +24,26 @@
   "PropClass": {
     "Other": "其他",
     "Special": "特殊",
-    "Snack": "",
-    "Textile": "",
-    "Mineral": "",
-    "Rouge": "",
-    "Jewelry": "",
-    "Book": "",
-    "Ink": "",
-    "Art": "",
-    "Antique": "",
-    "Weapon": "",
-    "TeaSet": "",
-    "Incense": "",
-    "Vase": "",
-    "Wine": "",
-    "Music": "",
-    "Pelt": "",
-    "Spell": "",
-    "Poison": "",
-    "Produce": "",
-    "Medicine": ""
+    "Spell": "符咒",
+    "Snack": "美食",
+    "Textile": "布料",
+    "Mineral": "矿产",
+    "Rouge": "香粉",
+    "Jewelry": "珠宝",
+    "Book": "书籍",
+    "Ink": "书法",
+    "Art": "丹青",
+    "Antique": "文玩",
+    "Weapon": "武器",
+    "TeaSet": "茶具",
+    "Incense": "香具",
+    "Vase": "瓷器",
+    "Wine": "美酒",
+    "Music": "乐器",
+    "Pelt": "毛皮",
+    "Poison": "毒药",
+    "Produce": "农产",
+    "Medicine": "丹药"
   },
   "Info": {
     "Search": "搜索:",

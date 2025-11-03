@@ -1,7 +1,7 @@
 ﻿{
   "Mod": {
     "Name": "Item Adder",
-    "Author": ""
+    "Author": "AnZhi20"
   },
   "Description": {
     "1": "1. Please save the game before adding items for rollback",
@@ -12,10 +12,10 @@
     "6": "6. Note: Item addition cannot exceed the available inventory space."
   },
   "MenuTab": {
-    "Currency": "",
-    "Items": "",
-    "Map": "",
-    "Stories": ""
+    "Currency": "Currency",
+    "Items": "items",
+    "Map": "Map",
+    "Stories": "Stories"
   },
   "CurrencyClass": {
     "Coins": "Coins",
@@ -23,16 +23,36 @@
   },
   "PropClass": {
     "Other": "Other",
-    "Special": "Special"
+    "Special": "Special",
+    "Spell": "Spell",
+    "Snack": "Snack",
+    "Textile": "Textile",
+    "Mineral": "Mineral",
+    "Rouge": "Rouge",
+    "Jewelry": "Jewelry",
+    "Book": "Book",
+    "Ink": "Ink",
+    "Art": "Art",
+    "Antique": "Antique",
+    "Weapon": "Weapon",
+    "TeaSet": "TeaSet",
+    "Incense": "Incense",
+    "Vase": "Vase",
+    "Wine": "Wine",
+    "Music": "Music",
+    "Pelt": "Pelt",
+    "Poison": "Poison",
+    "Produce": "Produce",
+    "Medicine": "Medicine"
   },
   "Info": {
     "Search": "Search:",
     "Category": "Category: ",
-    "Description": "",
-    "Count": "",
+    "Description": "Instructions:",
+    "Count": "Count:",
     "CurrencyNow": {
-      "Coins": "",
-      "Gold": ""
+      "Coins": "{0} Coins added",
+      "Gold": "{0} Gold added"
     }
   },
   "Button": {
