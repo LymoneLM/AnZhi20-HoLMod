@@ -72,6 +72,12 @@
       "Failed": "添加失败，话本【{0}】已存在",
       "None": "添加失败，话本【{0}】不存在"
     },
-    "SelectedNone": "待添加为空，请先选择再添加"
+    "SelectedNone": "待添加为空，请先选择再添加",
+    "AddCoins": {
+      "Succeed": "已添加{0}铜钱"
+    },
+    "AddGold": {
+      "Succeed": "已添加{0}元宝"
+    }
   }
 }

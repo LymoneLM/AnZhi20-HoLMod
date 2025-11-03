@@ -36,10 +36,15 @@ public class AddItemController : IAddItemController
 
     private void CheckCountInput()
     {
+        if (!int.TryParse(_view.CountInput, out var count))
+        {
+            _view.CountInput = "1";
+            return;
+        }
+        
         switch (_view.PanelTab)
         {
             case MenuTab.Currency:
-                var count = int.Parse(_view.CountInput);
                 count = _view.SelectedCurrency switch
                 {
                     CurrencyClass.Coins => Mathf.Clamp(count, 1, 1000000000),   // 10亿
@@ -51,15 +56,14 @@ public class AddItemController : IAddItemController
             case MenuTab.Items:
                 var storage = int.Parse(Mainload.FamilyData[5]);
                 storage = storage < 1 ? 1 : storage;
-                _view.CountInput = Mathf.Clamp(int.Parse(_view.CountInput), 1, storage).ToString();
+                _view.CountInput = Mathf.Clamp(count, 1, storage).ToString();
                 break;
-            default:
-                throw new ArgumentOutOfRangeException();
         }
     }
 
     private void CallAddButton()
     {
+        CheckCountInput();
         switch (_view.PanelTab)
         {
             case MenuTab.Currency:
@@ -83,7 +87,17 @@ public class AddItemController : IAddItemController
     
     private void WhenAddCurrency()
     {
-        // TODO
+        switch (_view.SelectedCurrency)
+        {
+            case CurrencyClass.Coins:
+                _model.AddCoins(int.Parse(_view.CountInput));
+                break;
+            case CurrencyClass.Gold:
+                _model.AddGold(int.Parse(_view.CountInput));
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
     private void WhenAddItem()
     {
@@ -92,11 +106,16 @@ public class AddItemController : IAddItemController
             MsgTool.TipMsg(_i18N.t("Tip.SelectedNone"));
             return;
         }
-        // TODO
+        _model.AddProp((int)_view.SelectedPropId, int.Parse(_view.CountInput));
     }
     private void WhenAddStories()
     {
-        // TODO
+        if (_view.SelectedBookId == null)
+        {
+            MsgTool.TipMsg(_i18N.t("Tip.SelectedNone"));
+            return;
+        }
+        _model.AddStoriesBook((int)_view.SelectedBookId);
     }
     private void WhenAddMap()
     {

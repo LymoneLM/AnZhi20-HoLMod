@@ -52,6 +52,12 @@
       "Failed": "",
       "None": ""
     },
-    "SelectedNone": ""
+    "SelectedNone": "",
+    "AddCoins": {
+      "Succeed": ""
+    },
+    "AddGold": {
+      "Succeed": ""
+    }
   }
 }

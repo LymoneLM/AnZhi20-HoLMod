@@ -22,6 +22,9 @@ public interface IAddItemView
     PropClass? SelectedPropClass { get; set; }
     int? SelectedPropId { get; set; }
     
+    // 话本相关
+    public int? SelectedBookId { get; set; }
+    
     // 控制栏
     string CountInput { get; set; }
 }

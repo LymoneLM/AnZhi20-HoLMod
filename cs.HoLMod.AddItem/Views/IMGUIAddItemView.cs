@@ -34,10 +34,19 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
     public PropClass? SelectedPropClass { get; set; } = null;
     public int? SelectedPropId { get; set; } = null;
     
+    // 话本相关
+    public int? SelectedBookId { get; set; } = null;
+    
     // 控制栏
-    public string CountInput { get;
-        set { field = value; OnCountInputChanged?.Invoke(); }
-    }
+    public string CountInput
+    {
+        get;
+        set
+        {
+            field = value;
+            OnCountInputChanged?.Invoke();
+        }
+    } = "1";
 
     #endregion
     
@@ -299,39 +308,38 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
 
     private void DrawAddCurrency()
     {
-            GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.Height(300f * _scaleFactor));
-            
-            // 货币类型选择
-            GUILayout.Label(_i18N.t("Info.Category"), GUILayout.Width(200f * _scaleFactor));
-            
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button(_i18N.t("CurrencyClass.Coins"), GUILayout.Width(160f * _scaleFactor)))
-            {
-                SelectedCurrency = CurrencyClass.Coins;
-            }
-            if (GUILayout.Button(_i18N.t("CurrencyClass.Gold"), GUILayout.Width(160f * _scaleFactor)))
-            {
-                SelectedCurrency = CurrencyClass.Gold;
-            }
-            GUILayout.EndHorizontal();
-            
-            GUILayout.Space(10f * _scaleFactor);
-            
-            // 当前货币数量显示
-            GUILayout.BeginVertical();
-            GUILayout.Label(_i18N.t("Info.CurrencyNow.Coins",  FormulaData.GetCoinsNum()),
-                GUILayout.ExpandWidth(true));
-            GUILayout.Label(_i18N.t("Info.CurrencyNow.Gold", args: Mainload.CGNum[1]), 
-                GUILayout.ExpandWidth(true));
-            GUILayout.EndVertical();
-            
-            GUILayout.FlexibleSpace();
-            GUILayout.EndVertical();
+        GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.Height(300f * _scaleFactor));
+        
+        // 货币类型选择
+        GUILayout.Label(_i18N.t("Info.Category"), GUILayout.Width(200f * _scaleFactor));
+        
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button(_i18N.t("CurrencyClass.Coins"), GUILayout.Width(160f * _scaleFactor)))
+        {
+            SelectedCurrency = CurrencyClass.Coins;
+        }
+        if (GUILayout.Button(_i18N.t("CurrencyClass.Gold"), GUILayout.Width(160f * _scaleFactor)))
+        {
+            SelectedCurrency = CurrencyClass.Gold;
+        }
+        GUILayout.EndHorizontal();
+        
+        GUILayout.Space(10f * _scaleFactor);
+        
+        // 当前货币数量显示
+        GUILayout.BeginVertical();
+        GUILayout.Label(_i18N.t("Info.CurrencyNow.Coins",  FormulaData.GetCoinsNum()),
+            GUILayout.ExpandWidth(true));
+        GUILayout.Label(_i18N.t("Info.CurrencyNow.Gold", args: Mainload.CGNum[1]), 
+            GUILayout.ExpandWidth(true));
+        GUILayout.EndVertical();
+        
+        GUILayout.FlexibleSpace();
+        GUILayout.EndVertical();
     }
 
     private void DrawAddItem()
     {
-        
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label(_i18N.t("Info.Search"), GUILayout.Width(160f * _scaleFactor));
@@ -417,14 +425,13 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
             GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
             
         // 创建话本列表，根据语言显示对应文本
-        foreach (var book in ItemData.StoriesList)
+        ItemData.StoriesList.ForEach((book, index) =>
         {
-            var displayName = LanguageManager.Instance.IsChineseLanguage() ? book.Value[0] : book.Value[1];
-            if (GUILayout.Button(displayName, GUILayout.ExpandWidth(true)))
+            if (GUILayout.Button(book, GUILayout.ExpandWidth(true)))
             {
-                selectedItemId = book.Key;
+                SelectedBookId = index;
             }
-        }
+        });
             
         GUILayout.EndScrollView();
         GUILayout.EndVertical();
