@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace cs.HoLMod.AddItem;
 
+[Obsolete]
 internal class LanguageManager
 {
     // 单例模式
