@@ -5,5 +5,4 @@ public enum MenuTab
     Currency,
     Items,
     Stories,
-    Map,
 }

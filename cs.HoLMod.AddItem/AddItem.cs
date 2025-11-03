@@ -21,7 +21,7 @@ public class AddItem : BaseUnityPlugin
     
     private static IAddItemModel _model;
     private static IAddItemView _view;
-    private static IAddItemController _controller;
+    private static AddItemController _controller;
     
     private void Awake()
     {

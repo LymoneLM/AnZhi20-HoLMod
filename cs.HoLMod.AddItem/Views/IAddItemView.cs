@@ -12,7 +12,6 @@ public interface IAddItemView
     
     // 页面状态
     MenuTab PanelTab { get; set; }
-    MapTab PanelMapTab { get; set; }
     
     // 货币界面
     CurrencyClass SelectedCurrency { get; set; }

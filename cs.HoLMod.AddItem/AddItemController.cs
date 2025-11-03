@@ -4,7 +4,7 @@ using YuanAPI;
 
 namespace cs.HoLMod.AddItem;
 
-public class AddItemController : IAddItemController
+public class AddItemController
 {
     private IAddItemModel _model;
     private IAddItemView _view;
@@ -75,9 +75,6 @@ public class AddItemController : IAddItemController
             case MenuTab.Stories:
                 WhenAddStories();
                 break;
-            case MenuTab.Map:
-                WhenAddMap();
-                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -116,10 +113,6 @@ public class AddItemController : IAddItemController
             return;
         }
         _model.AddStoriesBook((int)_view.SelectedBookId);
-    }
-    private void WhenAddMap()
-    {
-        // TODO
     }
     
     #endregion
