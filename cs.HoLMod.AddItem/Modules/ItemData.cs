@@ -8,8 +8,7 @@ namespace cs.HoLMod.AddItem;
 public class ItemData
 {
     // 数据
-    internal static int AllPropCount;
-    internal static List<int> AllPtops;
+    internal static List<int> AllProps;
     internal static List<List<int>> ClassifiedProps;
     
     // 缓存需要处理的文本，避免多次处理
@@ -44,8 +43,7 @@ public class ItemData
 
     internal static void RefreshProp()
     {
-        AllPropCount = Mainload.AllPropdata.Count;
-        AllPtops = [];
+        AllProps = [];
         ClassifiedProps = [];
         
         var max = Enum.GetValues(typeof(PropClass)).Cast<int>().Max();
@@ -60,7 +58,7 @@ public class ItemData
                 cate = cate > max ? 1 : cate;
 
             ClassifiedProps[cate].Add(index);
-            AllPtops.Add(index);
+            AllProps.Add(index);
         });
     }
 }

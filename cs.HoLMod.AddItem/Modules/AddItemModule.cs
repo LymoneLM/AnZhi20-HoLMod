@@ -3,32 +3,50 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using YuanAPI;
 
 namespace cs.HoLMod.AddItem;
 
-public class Module
+public partial class AddItemModule : IAddItemModel
 {
-    public static event Action<List<int>> OnFilteredPropsChanged;
-    public static List<int> FilteredProps
+    # region IAddItemModel 实现
+    
+    public event Action OnFilteredPropsChanged;
+    public List<int> FilteredProps
     {
-        get => field;
+        get;
         private set
-        { 
-            field = value; 
-            OnFilteredPropsChanged?.Invoke(value);
+        {
+            field = value;
+            OnFilteredPropsChanged?.Invoke();
         }
     }
     
-    internal static void FilterItems(int propClass = -1 , string search = "")
+    # endregion
+
+    #region 私有字段
+
+    private Localization.LocalizationInstance _i18N;
+    private Localization.LocalizationInstance _vStr;
+    
+    #endregion
+
+    internal AddItemModule()
     {
-        var list = propClass == -1 ? ItemData.AllPtops : ItemData.ClassifiedProps[propClass];
+        _i18N = Localization.CreateInstance(@namespace: AddItem.LocaleNamespace);
+        _vStr = Localization.CreateInstance(@namespace: Localization.VanillaNamespace);
+    }
+    
+    public void FilterItems(int propClass = -1 , string search = "")
+    {
+        var list = propClass == -1 ? ItemData.AllProps : ItemData.ClassifiedProps[propClass];
         if (string.IsNullOrEmpty(search))
         {
             FilteredProps = list;
             return;
         }
         search = search.ToLower();
-        FilteredProps = list.Where(index => AddItem.VStr.t($"Text_AllProp.{index}")
+        FilteredProps = list.Where(index => _vStr.t($"Text_AllProp.{index}")
             .ToLower().Contains(search)).ToList();
     }
     
@@ -52,7 +70,7 @@ public class Module
             else if (panelTab == 2)
             {
                 // 话本模式
-                AddScriptBookToGame(selectedItemId);
+                AddStoriesBook(selectedItemId);
             } 
             else if (panelTab == 3)
             {
@@ -717,125 +735,60 @@ public class Module
         }
     }
     
-    
     /// <summary>
     /// 添加物品
     /// </summary>
     /// <param name="propId">ID</param>
     /// <param name="propCount">数量</param>
-    internal static void AddProp(int propId, int propCount)
+    public void AddProp(int propId, int propCount)
     {
-        if (propCount <= 0)
+        var flag = PropTool.AddProp(propId, propCount);
+        MsgTool.TipMsg(_i18N.t($"Tip.AddItem.{(flag?"Succeed":"Failed")}",
+                args:[_vStr.t($"Text_AllProp.{propId}"), propCount]),
+            flag ? TipLv.Info : TipLv.Warning);
+    }
+    
+    /// <summary>
+    /// 添加话本
+    /// </summary>
+    /// <param name="bookId">话本ID</param>
+    public void AddStoriesBook(int bookId)
+    {
+        // 验证话本ID是否有效
+        if (bookId<0 || bookId >= ItemData.StoriesList.Count)
         {
+            MsgTool.TipMsg(_i18N.t($"Tip.AddItem.None", bookId), TipLv.Warning);
             return;
         }
-        if (propId < 0 || propId >= ItemData.AllPropCount)
+        
+        if (!CheckIfBookExists(bookId))
         {
-            return;
+            Mainload.XiQuHave_Now.Add([
+                bookId.ToString(),  // 话本ID
+                "",                 // 位置信息（留空）
+                "100"
+            ]);
+            MsgTool.TipMsg(_i18N.t($"Tip.AddItem.Succeed", args:ItemData.StoriesList[bookId]));
         }
-        var propIdStr = propId.ToString();
-
-        var haveCount = Mainload.Prop_have.Count;
-        for (var i = 0; i < haveCount; i++)
+        else
         {
-            if (Mainload.Prop_have[i][0] != propIdStr) 
-                continue;
-            Mainload.Prop_have[i][1] = (int.Parse(Mainload.Prop_have[i][1]) + propCount).ToString();
-            break;
-        }
-        Mainload.Prop_have.Add([propIdStr, propCount.ToString()]);
-    }
-    
-
-    
-    // 显示物品数量为0的提示
-    private void ShowItemCountZeroMessage(int itemId)
-    {
-        var itemName = itemList[itemId].Item1;
-        var message = string.Format(LanguageManager.Instance.GetText("添加的【{0}】数量为0，添加失败"), itemName);
-        ShowTipMessage(message);
-        statusMessage = string.Format(LanguageManager.Instance.GetText("添加失败：物品【{0}】数量为0"), itemName);
-        AddItem.Logger.LogWarning(statusMessage);
-    }
-    
-    // 显示物品添加成功的提示
-    private void ShowItemAddedMessage(int itemId, int quantity)
-    {
-        var itemName = itemList[itemId].Item1;
-        var message = string.Format(LanguageManager.Instance.GetText("已添加: {0} x {1}"), itemName, quantity);
-        ShowTipMessage(message);
-        statusMessage = string.Format(LanguageManager.Instance.GetText("已添加物品: {0} x {1}"), itemName, quantity);
-        AddItem.Logger.LogInfo(statusMessage);
-    }
-    
-    // 添加话本到游戏
-    private void AddScriptBookToGame(int bookId)
-    {
-        try
-        {
-            // 验证话本ID是否有效
-            if (!bookList.ContainsKey(bookId))
-            {
-                statusMessage = LanguageManager.Instance.GetText("无效的话本ID");
-                AddItem.Logger.LogError(string.Format(LanguageManager.Instance.GetText("无效的话本ID: {0}"), bookId));
-                return;
-            }
-            
-            // 检查话本是否已存在
-            var bookExists = CheckIfBookExists(bookId);
-            
-            if (!bookExists)
-            {
-                // 添加新话本
-                AddNewBookToGame(bookId);
-            }
-            else
-            {
-                // 话本已存在，显示提示
-                ShowBookExistsMessage(bookId);
-            }
-        }
-        catch (Exception ex)
-        {
-            statusMessage = LanguageManager.Instance.GetText("添加话本时发生错误: ") + ex.Message;
-            AddItem.Logger.LogError(string.Format(LanguageManager.Instance.GetText("添加话本失败: {0}"), ex.Message));
+            MsgTool.TipMsg(_i18N.t($"Tip.AddItem.Failed", args:ItemData.StoriesList[bookId]), TipLv.Warning);
         }
     }
     
-    // 检查话本是否已存在
-    private bool CheckIfBookExists(int bookId)
+    /// <summary>
+    /// 检查话本是否已存在
+    /// </summary>
+    /// <param name="bookId">话本ID</param>
+    /// <returns>是否存在</returns>
+    private static bool CheckIfBookExists(int bookId)
     {
-        if (Mainload.XiQuHave_Now == null || Mainload.XiQuHave_Now.Count <= 0)
+        if (Mainload.XiQuHave_Now == null || Mainload.XiQuHave_Now.Count == 0)
             return false;
-            
-        return Mainload.XiQuHave_Now.Any(book => book[0] == bookId.ToString());
+
+        var bookIdStr = bookId.ToString();
+        return Mainload.XiQuHave_Now.Any(book => book[0] == bookIdStr);
     }
-    
-    // 添加新话本到游戏
-    private void AddNewBookToGame(int bookId)
-    {
-        // 游戏中Mainload.XiQuHave_Now的数据结构为：
-        // [0]话本ID字符串 - 用于在Mainload.AllXiQu中查找对应话本
-        // [1]位置信息字符串 - 使用竖线(|)分隔多个建筑位置ID
-        // [2]默认值字符串 - 通常为"100"
-        Mainload.XiQuHave_Now.Add(new List<string>
-        {
-            bookId.ToString(),  // 话本ID
-            "",                 // 位置信息（留空）
-            "100"               // 话本默认值
-        });
-        
-        // 获取显示名称
-        var displayName = LanguageManager.Instance.IsChineseLanguage() ? bookList[bookId][0] : bookList[bookId][1];
-        
-        // 显示添加成功提示
-        var successMessage = string.Format(LanguageManager.Instance.GetText("已添加: {0}"), displayName);
-        ShowTipMessage(successMessage);
-        
-        statusMessage = string.Format(LanguageManager.Instance.GetText("已添加话本: {0}"), displayName);
-        AddItem.Logger.LogInfo(statusMessage);
-    }
-    
     
     // 检查指定位置是否存在状态为-1的农庄
     private bool CheckIfFarmExistsAtLocation(string locationKey)

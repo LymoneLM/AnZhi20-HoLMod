@@ -7,8 +7,9 @@
     "1": "1. Please save the game before adding items for rollback",
     "2": "2. Press F2 to show/hide window",
     "3": "3. Switch modes: Items/Currency/Stories/Map",
-    "4": "4. Enter partial characters to search items or stories",
-    "5": "5. Select item, choose/enter quantity, then click Add"
+    "4": "4. Enter partial characters to search items",
+    "5": "5. Select item, choose/enter quantity, then click Add",
+    "6": "6. Note: Item addition cannot exceed the available inventory space."
   },
   "MenuTab": {
     "Currency": "",
@@ -16,18 +17,41 @@
     "Map": "",
     "Stories": ""
   },
-  "PropCategory": {
+  "CurrencyClass": {
+    "Coins": "Coins",
+    "Gold": "Gold"
+  },
+  "PropClass": {
     "Other": "Other",
     "Special": "Special"
   },
   "Info": {
     "Search": "Search:",
-    "Category": "",
-    "Clear": "",
+    "Category": "Category: ",
     "Description": "",
-    "Count": ""
+    "Count": "",
+    "CurrencyNow": {
+      "Coins": "",
+      "Gold": ""
+    }
   },
   "Button": {
-    "Add": "Add"
+    "Add": "Add",
+    "Clear": "Clear"
+  },
+  "Error": {
+    "NoProp": ""
+  },
+  "Tip": {
+    "AddItem": {
+      "Succeed": "",
+      "Failed": ""
+    },
+    "AddStories": {
+      "Succeed": "",
+      "Failed": "",
+      "None": ""
+    },
+    "SelectedNone": ""
   }
 }

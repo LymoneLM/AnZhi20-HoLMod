@@ -1,7 +1,9 @@
-using System;
+using System.IO;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using UnityEngine;
 using YuanAPI;
 
 namespace cs.HoLMod.AddItem;
@@ -14,57 +16,62 @@ public class AddItem : BaseUnityPlugin
     public const string MODNAME = "HoLMod.AddItem";
     public const string VERSION = "3.0.0";
     
-    public new static ManualLogSource Logger;
-    public static Localization.LocalizationInstance I18N;
-    public static Localization.LocalizationInstance VStr;
+    internal new static ManualLogSource Logger;
+    internal static string LocaleNamespace = "AddItem";
     
-    public static BaseView UI;
-    
-    public static event Action OnUpdate;
-    public static event Action OnOnGUI;
-    
+    private static IAddItemModel _model;
+    private static IAddItemView _view;
+    private static IAddItemController _controller;
     
     private void Awake()
     {
-        // 初始化
         Logger = base.Logger;
-        I18N = Localization.CreateInstance(@namespace:"AddItem");
-        VStr = Localization.CreateInstance(@namespace: Localization.VanillaNamespace);
-        UI = new IMGUIView();
-
+        
+        CheckConfigVersion();
+        LoadLocalizations();
+    }
+    
+    private void Start()
+    {
         Localization.OnLanguageChanged += ItemData.RefreshText;
-        
-        // 版本检查
-        var versionConfig = Config.Bind(new ConfigDefinition("内部配置", "已加载版本"), VERSION,
-            new ConfigDescription("用于跟踪插件版本，请勿手动修改"));
-        
-        if (versionConfig.Value != VERSION)
-        {
-            Logger.LogInfo($"检测到插件版本更新至 {VERSION}，配置更新");
-            versionConfig.Value = VERSION;
-        }
+        ItemData.RefreshProp();
+        InitializeMVC();
         
         Logger.LogInfo("物品添加器初始化完毕");
     }
 
-    private void Start()
+    private void CheckConfigVersion()
     {
-        ItemData.RefreshProp();
-        ItemData.RefreshText(I18N.Locale);
+        var versionConfig = Config.Bind(new ConfigDefinition("内部配置", "已加载版本"), VERSION,
+            new ConfigDescription("用于跟踪插件版本，请勿手动修改"));
+
+        if (versionConfig.Value == VERSION) 
+            return;
         
-        
-        
-        Logger.LogInfo("物品添加器已加载完毕");
+        Logger.LogInfo($"检测到插件版本更新至 {VERSION}，配置更新");
+        versionConfig.Value = VERSION;
     }
 
-    private void Update()
+    private static void LoadLocalizations()
     {
-        OnUpdate?.Invoke();
+        var executingAssembly = Assembly.GetExecutingAssembly();
+        var modPath = Path.GetDirectoryName(executingAssembly.Location);
+        Localization.LoadFromPath(modPath);
     }
 
-    private void OnGUI()
+    private static void InitializeMVC()
     {
-        OnOnGUI?.Invoke();
+        // 初始化Model
+        _model = new AddItemModule();
+
+        // 初始化View
+        var obj = new GameObject("AddItemUI");
+        obj.AddComponent<IMGUIAddItemView>();
+        DontDestroyOnLoad(obj);
+        _view = obj.GetComponent<IMGUIAddItemView>();
+
+        // 初始化Controller
+        _controller = new AddItemController(_model,  _view);
     }
 }
 
