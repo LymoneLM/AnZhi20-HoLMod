@@ -34,6 +34,7 @@ public class AddItem : BaseUnityPlugin
     private void Start()
     {
         Localization.OnLanguageChanged += ItemData.RefreshText;
+        ItemData.RefreshText(Localization.GetLocale(Mainload.SetData[4]));
         ItemData.RefreshProp();
         InitializeMVC();
         

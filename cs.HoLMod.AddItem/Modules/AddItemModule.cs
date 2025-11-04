@@ -87,7 +87,7 @@ public partial class AddItemModule : IAddItemModel
         // 验证话本ID是否有效
         if (bookId<0 || bookId >= ItemData.StoriesList.Count)
         {
-            MsgTool.TipMsg(_i18N.t($"Tip.AddItem.None", bookId), TipLv.Warning);
+            MsgTool.TipMsg(_i18N.t($"Tip.AddStories.None", bookId), TipLv.Warning);
             return;
         }
         
@@ -98,11 +98,11 @@ public partial class AddItemModule : IAddItemModel
                 "",                 // 位置信息（留空）
                 "100"
             ]);
-            MsgTool.TipMsg(_i18N.t($"Tip.AddItem.Succeed", args:ItemData.StoriesList[bookId]));
+            MsgTool.TipMsg(_i18N.t($"Tip.AddStories.Succeed", args:ItemData.StoriesList[bookId]));
         }
         else
         {
-            MsgTool.TipMsg(_i18N.t($"Tip.AddItem.Failed", args:ItemData.StoriesList[bookId]), TipLv.Warning);
+            MsgTool.TipMsg(_i18N.t($"Tip.AddStories.Failed", args:ItemData.StoriesList[bookId]), TipLv.Warning);
         }
     }
     
