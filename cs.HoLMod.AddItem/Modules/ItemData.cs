@@ -5,7 +5,7 @@ using YuanAPI;
 
 namespace cs.HoLMod.AddItem;
 
-public class ItemData
+public static class ItemData
 {
     // 数据
     internal static List<int> AllProps;
@@ -25,7 +25,7 @@ public class ItemData
         var storiesCount = AllText.Text_AllXiQu.Count;
         for (var i = 0; i < storiesCount; i++)
         {
-            var str = i18N.t($"Text_AllXiQu.Count.{i}").Split('|')[0];
+            var str = i18N.t($"Text_AllXiQu.{i}").Split('|')[0];
             StoriesList.Add(str);
         }
 
@@ -34,7 +34,7 @@ public class ItemData
         var cityCount = AllText.Text_City.Count;
         for (var i = 0; i < cityCount; i++)
         {
-            var array = i18N.t($"Text_City.Count.{i}").Split('~');
+            var array = i18N.t($"Text_City.{i}").Split('~');
             JunList.Add(array[0]);
             array = array[1].Split('|');
             XianList.Add(array.ToList());
@@ -47,7 +47,7 @@ public class ItemData
         ClassifiedProps = [];
         
         var max = Enum.GetValues(typeof(PropClass)).Cast<int>().Max();
-        for (var i = 0; i < max; i++)
+        for (var i = 0; i <= max; i++)
             ClassifiedProps.Add([]);
         
         Mainload.AllPropdata.ForEach((propData, index) =>

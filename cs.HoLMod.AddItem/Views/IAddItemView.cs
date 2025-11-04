@@ -26,4 +26,6 @@ public interface IAddItemView
     
     // 控制栏
     string CountInput { get; set; }
+
+    void Initialize(IAddItemModel model);
 }

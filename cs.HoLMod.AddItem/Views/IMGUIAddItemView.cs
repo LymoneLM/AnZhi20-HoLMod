@@ -40,6 +40,8 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
         get;
         set
         {
+            if (field == value) 
+                return;
             field = value;
             OnCountInputChanged?.Invoke();
         }
@@ -52,7 +54,7 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
     
     private IAddItemModel _model;
 
-    internal IMGUIAddItemView(IAddItemModel model)
+    public void Initialize(IAddItemModel model)
     {
         _i18N = Localization.CreateInstance(@namespace: AddItem.LocaleNamespace);
         _vStr = Localization.CreateInstance(@namespace: Localization.VanillaNamespace);
@@ -190,13 +192,11 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
     private void DrawWindow(int windowID)
     {
         GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
-        
         // 窗口最上方标题文本
         GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
         GUILayout.FlexibleSpace();
-        var titleStyle = new GUIStyle(GUI.skin.label);
         GUILayout.Label($"{_i18N.t("Mod.Name")} v{AddItem.VERSION} by:{_i18N.t("Mod.Author")}", 
-            titleStyle, GUILayout.ExpandWidth(false));
+            GUI.skin.label, GUILayout.ExpandWidth(false));
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
         GUILayout.Space(15f * _scaleFactor);
@@ -234,23 +234,25 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
             GUILayout.BeginVertical(GUILayout.ExpandWidth(true));
+            GUILayout.FlexibleSpace();
+            
             //TODO: 当前添加物品显示
+            GUILayout.Label($"当前物品：{"123"}", GUILayout.Width(100f * _scaleFactor));
             
             // 仅在物品模式下显示数量输入框
             if (PanelTab == MenuTab.Items)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label(_i18N.t("Info.Count"), GUILayout.Width(100f * _scaleFactor));
-                var countInputNow = GUILayout.TextField(CountInput, GUILayout.Width(200f * _scaleFactor));
-                if(countInputNow != CountInput)
-                    CountInput = countInputNow;
+                CountInput = GUILayout.TextField(CountInput, GUILayout.Width(200f * _scaleFactor));
                 GUILayout.EndHorizontal();
                 GUILayout.Space(10f * _scaleFactor);
                 
                 //TODO: 快捷添加按键区
+                GUILayout.Label($"当前物品：{"123"}", GUILayout.Width(100f * _scaleFactor));
                 
             }
-            
+            GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
 
             // 添加按钮
@@ -337,13 +339,13 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
         
         // 物品分类按钮
         {
-            GUILayout.Space(10f * _scaleFactor);
             GUILayout.BeginHorizontal();
-            GUILayout.Label(_i18N.t("Info.Category")+_i18N.t($"PropClass.{SelectedPropClass.ToString()}"),
+            GUILayout.Label(_i18N.t("Info.Category")+
+                            (SelectedPropClass != null ? _i18N.t($"PropClass.{SelectedPropClass.ToString()}") : ""),
                 GUILayout.Width(160f * _scaleFactor));
-            if (GUILayout.Button(_i18N.t("Button.clear"), GUILayout.Width(120f * _scaleFactor)))
+            if (GUILayout.Button(_i18N.t("Button.Clear"), GUILayout.Width(120f * _scaleFactor)))
             {
-                SearchText = null;
+                SearchText = "";
                 SelectedPropClass = null;
                 OnFilterChanged?.Invoke();
             }
@@ -362,11 +364,11 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
                     OnFilterChanged?.Invoke();
                 }
                 
-                if (index == 0)
-                    GUILayout.Space(10f * _scaleFactor);
-
                 if (index % 5 == 1) 
                     GUILayout.EndHorizontal();
+                
+                if (index == 1)
+                    GUILayout.Space(10f * _scaleFactor);
             });
         }
          

@@ -69,6 +69,7 @@ public class AddItem : BaseUnityPlugin
         obj.AddComponent<IMGUIAddItemView>();
         DontDestroyOnLoad(obj);
         _view = obj.GetComponent<IMGUIAddItemView>();
+        _view.Initialize(_model);
 
         // 初始化Controller
         _controller = new AddItemController(_model,  _view);

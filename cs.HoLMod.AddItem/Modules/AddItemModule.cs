@@ -35,6 +35,8 @@ public partial class AddItemModule : IAddItemModel
     {
         _i18N = Localization.CreateInstance(@namespace: AddItem.LocaleNamespace);
         _vStr = Localization.CreateInstance(@namespace: Localization.VanillaNamespace);
+
+        FilteredProps = ItemData.AllProps;
     }
     
     public void FilterItems(int propClass = -1 , string search = "")
@@ -71,9 +73,9 @@ public partial class AddItemModule : IAddItemModel
     public void AddProp(int propId, int propCount)
     {
         var flag = PropTool.AddProp(propId, propCount);
-        MsgTool.TipMsg(_i18N.t($"Tip.AddItem.{(flag?"Succeed":"Failed")}",
-                args:[_vStr.t($"Text_AllProp.{propId}"), propCount]),
-            flag ? TipLv.Info : TipLv.Warning);
+        var msg = _i18N.t($"Tip.AddItem.{(flag ? "Succeed" : "Failed")}", 
+            args: [_vStr.t($"Text_AllProp.{propId}"), propCount]);
+        MsgTool.TipMsg(msg, flag ? TipLv.Info : TipLv.Warning);
     }
     
     /// <summary>
