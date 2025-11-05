@@ -61,24 +61,24 @@
     "Clear": "Clear"
   },
   "Error": {
-    "NoProp": ""
+    "NoProp": "No matching item found"
   },
   "Tip": {
     "AddItem": {
-      "Succeed": "",
-      "Failed": ""
+      "Succeed": "Successfully added item [{0}] x{1}",
+      "Failed": "Failed to add item [{0}] x{1}"
     },
     "AddStories": {
-      "Succeed": "",
-      "Failed": "",
-      "None": ""
+      "Succeed": "Storiesbook [{0}] added successfully",
+      "Failed": "Failed to add, storiesbook [{0}] already exists",
+      "None": "Failed to add, storiesbook [{0}] does not exist"
     },
-    "SelectedNone": "",
+    "SelectedNone": "Nothing selected to add. Please select first.",
     "AddCoins": {
-      "Succeed": ""
+      "Succeed": "Added {0} Coins"
     },
     "AddGold": {
-      "Succeed": ""
+      "Succeed": "Added {0} Gold"
     }
   }
 }
