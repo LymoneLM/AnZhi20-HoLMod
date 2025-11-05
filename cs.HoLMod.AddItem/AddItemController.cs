@@ -58,6 +58,9 @@ public class AddItemController
                 storage = storage < 1 ? 1 : storage;
                 _view.CountInput = Mathf.Clamp(count, 1, storage).ToString();
                 break;
+            case MenuTab.Stories:
+                _view.CountInput = "1";
+                break;
         }
     }
 

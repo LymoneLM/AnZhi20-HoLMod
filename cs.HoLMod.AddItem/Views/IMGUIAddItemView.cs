@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using UnityEngine;
 using YuanAPI;
 
@@ -93,6 +94,8 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
         }
     }
     
+    private static float _defaultWidth = 800f;
+    private static float _defaultHeight = 1000f;
     // 分辨率更新处理方法
     private void UpdateResolutionSettings()
     {
@@ -101,36 +104,10 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
         var currentHeight = Screen.height;
         
         // 默认窗口大小
-        var defaultWidth = 1000f;
-        var defaultHeight = 1200f;
         
-        // TODO: 无级缩放
-        
-        // 根据分辨率设置窗口大小和缩放因子
-        if (currentWidth == 2560 && currentHeight == 1440 || currentWidth == 3840 && currentHeight == 2160)
-        {
-            // 高分辨率，调整窗口位置和大小，控件缩放为1.0倍
-            _scaleFactor = 1.0f;
-            _windowRect = new Rect(150, 100, defaultWidth + 100f, defaultHeight - 100f);
-        }
-        else if (currentWidth == 1920 && currentHeight == 1080)
-        {
-            // 中等分辨率，调整窗口位置和大小，控件缩放为0.8倍
-            _scaleFactor = 0.8f;
-            _windowRect = new Rect(100, 200, defaultWidth *1.2f, defaultHeight *1.2f - 500f);
-        }
-        else if (currentWidth == 1280 && currentHeight == 720)
-        {
-            // 低分辨率，调整窗口位置和大小，控件缩放为0.5倍
-            _scaleFactor = 0.5f;
-            _windowRect = new Rect(100, 200, defaultWidth *1.2f, defaultHeight *1.2f - 800f);
-        }
-        else
-        {
-            // 其他分辨率，使用中分辨率设置
-            _scaleFactor = 0.8f;
-            _windowRect = new Rect(100, 200, defaultWidth * 1.2f, defaultHeight * 1.2f - 500f);
-        }
+        _scaleFactor = (float)currentWidth / 1920;
+        _windowRect = new Rect(150, 100, _defaultWidth * _scaleFactor, _defaultHeight * _scaleFactor);
+
         
         AddItem.Logger.LogInfo($"当前分辨率: {currentWidth}x{currentHeight}，缩放因子: {_scaleFactor}");
     }
@@ -174,9 +151,6 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
             GUI.skin.button.alignment = TextAnchor.MiddleCenter; 
             GUI.skin.toggle.fontSize = fontSize;
             GUI.skin.toggle.alignment = TextAnchor.MiddleCenter; 
-            
-            // 调整窗口最小宽度
-            _windowRect.width = Mathf.Max(_windowRect.width, 800f * _scaleFactor);
 
             // 创建窗口
             _windowRect = GUI.Window(0, _windowRect, DrawWindow, "", GUI.skin.window);
@@ -194,12 +168,11 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
         GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
         // 窗口最上方标题文本
         GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-        GUILayout.FlexibleSpace();
-        GUILayout.Label($"{_i18N.t("Mod.Name")} v{AddItem.VERSION} by:{_i18N.t("Mod.Author")}", 
-            GUI.skin.label, GUILayout.ExpandWidth(false));
-        GUILayout.FlexibleSpace();
+        GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+        GUILayout.Label($"{_i18N.t("Mod.Name")} v{AddItem.VERSION} by:{_i18N.t("Mod.Author")}");
+        GUI.skin.label.alignment = TextAnchor.MiddleLeft;
         GUILayout.EndHorizontal();
-        GUILayout.Space(15f * _scaleFactor);
+        GUILayout.Space(10f * _scaleFactor);
         
         // 菜单页面标签
         GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -227,53 +200,15 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
                 throw new ArgumentOutOfRangeException();
         }
         
-        GUILayout.Space(10f * _scaleFactor);
+        GUILayout.BeginVertical();
         
-        // 提示信息、数量输入框，添加按钮
-        {
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-
-            GUILayout.BeginVertical(GUILayout.ExpandWidth(true));
-            GUILayout.FlexibleSpace();
-            
-            //TODO: 当前添加物品显示
-            GUILayout.Label($"当前物品：{"123"}", GUILayout.Width(100f * _scaleFactor));
-            
-            // 仅在物品模式下显示数量输入框
-            if (PanelTab == MenuTab.Items)
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label(_i18N.t("Info.Count"), GUILayout.Width(100f * _scaleFactor));
-                CountInput = GUILayout.TextField(CountInput, GUILayout.Width(200f * _scaleFactor));
-                GUILayout.EndHorizontal();
-                GUILayout.Space(10f * _scaleFactor);
-                
-                //TODO: 快捷添加按键区
-                GUILayout.Label($"当前物品：{"123"}", GUILayout.Width(100f * _scaleFactor));
-                
-            }
-            GUILayout.FlexibleSpace();
-            GUILayout.EndVertical();
-
-            // 添加按钮
-            {
-                GUILayout.BeginVertical(GUILayout.ExpandWidth(true));
-                GUILayout.FlexibleSpace();
-                if (GUILayout.Button(_i18N.t("Button.Add"),
-                        GUILayout.Width(180f * _scaleFactor), GUILayout.Height(80f * _scaleFactor)))
-                {
-                    OnAddButton?.Invoke();
-                }
-                GUILayout.FlexibleSpace();
-                GUILayout.EndVertical();
-            }
-            
-            GUILayout.EndHorizontal();
-        }
+        GUILayout.FlexibleSpace();
+        GUILayout.Space(10f * _scaleFactor);
+        DrawAddButton();
+        GUILayout.Space(10f * _scaleFactor);
         
         // 使用说明
         {
-            // GUILayout.Space(20f * _scaleFactor);
             GUILayout.BeginVertical();
             
             GUILayout.Label(_i18N.t("Info.Description"), GUI.skin.box);
@@ -282,6 +217,7 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
             
             GUILayout.EndVertical();
         }
+        GUILayout.EndVertical();
         
         GUILayout.EndVertical();
         
@@ -291,10 +227,10 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
 
     private void DrawAddCurrency()
     {
-        GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.Height(300f * _scaleFactor));
+        GUILayout.BeginVertical();
         
         // 货币类型选择
-        GUILayout.Label(_i18N.t("Info.Category"), GUILayout.Width(200f * _scaleFactor));
+        GUILayout.Label(_i18N.t("Info.Category"), GUILayout.Width(160f * _scaleFactor));
         
         GUILayout.BeginHorizontal();
         if (GUILayout.Button(_i18N.t("CurrencyClass.Coins"), GUILayout.Width(160f * _scaleFactor)))
@@ -310,14 +246,13 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
         GUILayout.Space(10f * _scaleFactor);
         
         // 当前货币数量显示
-        GUILayout.BeginVertical();
+        GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
         GUILayout.Label(_i18N.t("Info.CurrencyNow.Coins",  FormulaData.GetCoinsNum()),
             GUILayout.ExpandWidth(true));
         GUILayout.Label(_i18N.t("Info.CurrencyNow.Gold", args: Mainload.CGNum[1]), 
             GUILayout.ExpandWidth(true));
         GUILayout.EndVertical();
         
-        GUILayout.FlexibleSpace();
         GUILayout.EndVertical();
     }
 
@@ -358,7 +293,7 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
                     GUILayout.BeginHorizontal();
 
                 if (GUILayout.Button(_i18N.t($"PropClass.{cate}"), 
-                     GUILayout.Width((index < 2 ? 300 : 180) * _scaleFactor)))
+                     GUILayout.Width((index < 2 ? 285 : 140) * _scaleFactor)))
                 {
                     SelectedPropClass = (PropClass)Enum.Parse(typeof(PropClass), cate);
                     OnFilterChanged?.Invoke();
@@ -374,7 +309,7 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
          
         // 物品列表滚动栏
         {
-            GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.Height(300f * _scaleFactor));
+            GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
             _scrollPosition = GUILayout.BeginScrollView(_scrollPosition,
                 GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
 
@@ -403,7 +338,7 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
     private void DrawAddStories()
     {
         // 话本模式
-        GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.Height(300f * _scaleFactor));
+        GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
         _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, 
             GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
             
@@ -419,4 +354,79 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
         GUILayout.EndScrollView();
         GUILayout.EndVertical();
     }
+
+    private void DrawAddButton()
+    {
+        GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+
+        {
+            GUILayout.BeginVertical(GUILayout.ExpandWidth(true));
+
+            var text = PanelTab switch
+            {
+                MenuTab.Currency => _i18N.t($"CurrencyClass.{SelectedCurrency.ToString()}"),
+                MenuTab.Items => SelectedPropId != null ? _vStr.t($"Text_AllProp.{SelectedPropId}") : "",
+                MenuTab.Stories => SelectedBookId != null ? ItemData.StoriesList[(int)SelectedBookId] : "",
+                _ => ""
+            };
+            GUILayout.Label($"{_i18N.t("Info.Selected")}{text}", GUILayout.ExpandWidth(true));
+
+            GUILayout.Space(6f * _scaleFactor);
+
+            // 数量输入框
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(_i18N.t("Info.Count"), GUILayout.Width(100f * _scaleFactor));
+            CountInput = GUILayout.TextField(CountInput, GUILayout.ExpandWidth(true));
+            GUILayout.EndHorizontal();
+
+            GUILayout.Space(6f * _scaleFactor);
+
+            DrawQuickAddRow();
+            
+            GUILayout.EndVertical();
+        }
+
+        // 添加按钮
+        GUILayout.BeginVertical(GUILayout.ExpandWidth(true));
+        {
+            GUILayout.Space(15f * _scaleFactor);
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button(_i18N.t("Button.Add"),
+                    GUILayout.Width(180f * _scaleFactor), GUILayout.Height(80f * _scaleFactor)))
+            {
+                OnAddButton?.Invoke();
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+        }
+        GUILayout.EndVertical();
+            
+        GUILayout.EndHorizontal();
+    }
+    
+    private static (string label, int value)[] _kQuickAdds =
+    [
+        ("1", 1),
+        ("100", 100),
+        ("1w", 10_000),
+        ("100w", 1_000_000),
+        ("Max", int.MaxValue)
+    ];
+
+    private void DrawQuickAddRow()
+    {
+        GUILayout.BeginHorizontal();
+        foreach (var (label, value) in _kQuickAdds)
+        {
+            if (GUILayout.Button(label, GUILayout.Width(80f * _scaleFactor), GUILayout.Height(36f * _scaleFactor)))
+            {
+                CountInput = value.ToString();
+            }
+            GUILayout.Space(6f * _scaleFactor);
+        }
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+    }
+
 }
