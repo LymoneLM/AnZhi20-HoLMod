@@ -353,6 +353,7 @@
     <Compile Include="LanguageManager.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ToolWindowManager.cs" />
     <Compile Include="Windows.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

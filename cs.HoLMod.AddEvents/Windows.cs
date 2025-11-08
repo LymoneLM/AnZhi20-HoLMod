@@ -199,9 +199,9 @@ namespace cs.HoLMod.AddEvents
             eventListContentRect.anchoredPosition = Vector2.zero;
             
             // 添加事件列表项
-            if (eventData.EventList != null)
+            if (EventData.EventList != null)
             {
-                for (int i = 0; i < eventData.EventList.Count; i++)
+                for (int i = 0; i < EventData.EventList.Count; i++)
                 {
                     int index = i; // 捕获当前索引
                     GameObject eventItem = new GameObject($"EventItem_{index}");
@@ -215,7 +215,7 @@ namespace cs.HoLMod.AddEvents
                     GameObject eventTextObj = new GameObject("EventText");
                     eventTextObj.transform.SetParent(eventItem.transform, false);
                     Text eventText = eventTextObj.AddComponent<Text>();
-                    eventText.text = eventData.EventList[index];
+                    eventText.text = EventData.EventList[index];
                     eventText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
                     eventText.fontSize = 14;
                     eventText.alignment = TextAnchor.MiddleLeft;
@@ -245,7 +245,7 @@ namespace cs.HoLMod.AddEvents
                         
                         // 更新选中的事件索引
                         selectedEventIndex = index;
-                        AddEvents.Logger.LogInfo($"选中事件: {eventData.EventList[index]} (索引: {index})");
+                        AddEvents.Logger.LogInfo($"选中事件: {EventData.EventList[index]} (索引: {index})");
                         
                         // 更新参数列表
                         UpdateParameterList();
@@ -324,7 +324,7 @@ namespace cs.HoLMod.AddEvents
             // 添加按钮点击事件
             button.onClick.AddListener(() => 
             {
-                if (selectedEventIndex >= 0 && selectedEventIndex < eventData.EventParams.Count)
+                if (selectedEventIndex >= 0 && selectedEventIndex < EventData.EventParams.Count)
                 {
                     // 创建参数映射字典，用于存储所有参数名和对应的值
                     Dictionary<string, string> paramValues = new Dictionary<string, string>();
@@ -385,7 +385,7 @@ namespace cs.HoLMod.AddEvents
                     }
                     
                     // 创建一个新的参数列表副本
-                    List<string> updatedParams = new List<string>(eventData.EventParams[selectedEventIndex]);
+                    List<string> updatedParams = new List<string>(EventData.EventParams[selectedEventIndex]);
                     
                     // 更新参数中的所有占位符
                     if (updatedParams.Count > 1)
@@ -495,9 +495,9 @@ namespace cs.HoLMod.AddEvents
                 button.onClick.AddListener(() => {
                     // 根据选中的事件类型确定显示丹药还是符咒列表
                     string itemType = "";
-                    if (selectedEventIndex >= 0 && selectedEventIndex < eventData.EventList.Count)
+                    if (selectedEventIndex >= 0 && selectedEventIndex < EventData.EventList.Count)
                     {
-                        string eventName = eventData.EventList[selectedEventIndex];
+                        string eventName = EventData.EventList[selectedEventIndex];
                         if (eventName.Contains("丹药"))
                         {
                             itemType = "DanYao";
@@ -576,13 +576,13 @@ namespace cs.HoLMod.AddEvents
             }
             
             // 检查是否有选中的事件
-            if (selectedEventIndex >= 0 && selectedEventIndex < eventData.EventParams.Count)
+            if (selectedEventIndex >= 0 && selectedEventIndex < EventData.EventParams.Count)
             {
                 // 显示两个参数：文本参数A和文本参数B
-                AddParamItem(paramListContent, eventData.TextParameterA, "文本", 1, new Vector2(0, 50));
-                AddParamItem(paramListContent, eventData.TextParameterB, "文本", 2, new Vector2(0, -20));
+                AddParamItem(paramListContent, EventData.TextParameterA, "文本", 1, new Vector2(0, 50));
+                AddParamItem(paramListContent, EventData.TextParameterB, "文本", 2, new Vector2(0, -20));
                 
-                AddEvents.Logger.LogInfo($"已更新参数列表，显示 {eventData.EventList[selectedEventIndex]} 的参数");
+                AddEvents.Logger.LogInfo($"已更新参数列表，显示 {EventData.EventList[selectedEventIndex]} 的参数");
             }
         }
         
@@ -757,27 +757,27 @@ namespace cs.HoLMod.AddEvents
             if (currentItemType == "DanYao")
             {
                 // 如果丹药名称列表为空，使用模拟数据
-                if (eventData.DanYaoNameList.Count == 0)
+                if (EventData.DanYaoNameList.Count == 0)
                 {
                     itemList = new List<string> { "补气丹", "培元丹", "聚气丹", "筑基丹", "金丹" };
                     AddEvents.Logger.LogWarning("使用模拟丹药数据");
                 }
                 else
                 {
-                    itemList = eventData.DanYaoNameList;
+                    itemList = EventData.DanYaoNameList;
                 }
             }
             else if (currentItemType == "FuZhou")
             {
                 // 如果符咒名称列表为空，使用模拟数据
-                if (eventData.FuZhouNameList.Count == 0)
+                if (EventData.FuZhouNameList.Count == 0)
                 {
                     itemList = new List<string> { "金光符", "烈火符", "玄水符", "风刃符", "神行符" };
                     AddEvents.Logger.LogWarning("使用模拟符咒数据");
                 }
                 else
                 {
-                    itemList = eventData.FuZhouNameList;
+                    itemList = EventData.FuZhouNameList;
                 }
             }
             
