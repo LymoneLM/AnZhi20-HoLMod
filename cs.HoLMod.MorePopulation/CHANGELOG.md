@@ -1,3 +1,7 @@
+### v1.5.0
+
+- 修复bug：修复更新后在墓地中人口无法修正。（Fix bugs : After the repair and update, the population in the cemetery cannot be corrected.）
+
 ### v1.4.0
 
 - 修复bug：修复更新后在封地中人口无法修正。（Fix bugs : After the repair and update, the population in the sealed land cannot be corrected.）
