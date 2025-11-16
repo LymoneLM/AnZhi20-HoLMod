@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.AddEvents", "..\c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.NewItems", "..\cs.HoLMod.NewItems\cs.HoLMod.NewItems.csproj", "{62C07123-4D94-4050-96BD-3A2139D3B6EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.GlobalPanel", "..\cs.HoLMod.GlobalPanel\cs.HoLMod.GlobalPanel.csproj", "{2D289F03-84D8-435F-805D-58083ABE3521}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{62C07123-4D94-4050-96BD-3A2139D3B6EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62C07123-4D94-4050-96BD-3A2139D3B6EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62C07123-4D94-4050-96BD-3A2139D3B6EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D289F03-84D8-435F-805D-58083ABE3521}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D289F03-84D8-435F-805D-58083ABE3521}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D289F03-84D8-435F-805D-58083ABE3521}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D289F03-84D8-435F-805D-58083ABE3521}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
