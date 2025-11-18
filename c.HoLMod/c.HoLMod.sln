@@ -5,7 +5,7 @@ VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.AddItem", "..\cs.HoLMod.AddItem\cs.HoLMod.AddItem.csproj", "{EDE19BC5-60DB-4A18-9B23-584575E4CAF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.MemberCheat", "..\cs.HoLMod.MenberCheat\cs.HoLMod.MemberCheat.csproj", "{9997E218-2A91-4468-B675-8CB0ACB3A051}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.MemberCheatOld", "..\cs.HoLMod.MenberCheat\cs.HoLMod.MemberCheatOld.csproj", "{9997E218-2A91-4468-B675-8CB0ACB3A051}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.MoreGambles", "..\cs.HoLMod.MoreGambles\cs.HoLMod.MoreGambles.csproj", "{99F85E54-8F2C-4E83-97C2-104A50FFCA51}"
 EndProject
@@ -34,6 +34,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.NewItems", "..\cs.HoLMod.NewItems\cs.HoLMod.NewItems.csproj", "{62C07123-4D94-4050-96BD-3A2139D3B6EC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.GlobalPanel", "..\cs.HoLMod.GlobalPanel\cs.HoLMod.GlobalPanel.csproj", "{2D289F03-84D8-435F-805D-58083ABE3521}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.MemberCheatNew", "..\cs.HoLMod.MemberCheat\cs.HoLMod.MemberCheatNew.csproj", "{070220C4-3514-4FC2-8C1E-E6821CDD34B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +107,10 @@ Global
 		{2D289F03-84D8-435F-805D-58083ABE3521}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D289F03-84D8-435F-805D-58083ABE3521}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D289F03-84D8-435F-805D-58083ABE3521}.Release|Any CPU.Build.0 = Release|Any CPU
+		{070220C4-3514-4FC2-8C1E-E6821CDD34B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{070220C4-3514-4FC2-8C1E-E6821CDD34B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{070220C4-3514-4FC2-8C1E-E6821CDD34B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{070220C4-3514-4FC2-8C1E-E6821CDD34B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
