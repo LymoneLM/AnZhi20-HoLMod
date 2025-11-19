@@ -124,37 +124,46 @@ public class MemberCheatPanelA : MonoBehaviour
 
     public List<List<string>> Mod_Text_UIA = new List<List<string>>
     {
-        AllText.Text_UIA[129],
-        AllText.Text_UIA[267],
-        new List<string>
+        AllText.Text_UIA[129],      //0
+        AllText.Text_UIA[267],      //1
+        new List<string>            //2
         {
             "世家",
             "Clan"
         },
-        new List<string>
+        new List<string>            //3
         {
             "皇室",
             "Royal"
         },
-        new List<string>
+        new List<string>            //4
         {
             "农庄",
             "Farm"
         },
-        new List<string>
+        new List<string>            //5
         {
             "位置",
             "Position"
         },
-        new List<string>
+        new List<string>            //6
         {
             "所属郡",
             "Province"
         },
-        new List<string>
+        new List<string>            //7
         {
             "农庄名字",
             "Farm Name"
+        },
+        new List<string>            //8
+        {
+            "成员编辑",
+            "Member Cheat"
+        },
+        new List<string>            //9
+        {
+            "By AnZhi20 Version " + cs.HoLMod.MemberCheat.PluginInfo.PLUGIN_VERSION
         }
     };
 
@@ -451,6 +460,10 @@ public class MemberCheatPanelA : MonoBehaviour
 
     private void initShow()
     {
+        base.transform.Find("panel").Find("Title").GetComponent<Text>()
+            .text = Mod_Text_UIA[8][Mainload.SetData[4]];
+        base.transform.Find("panel").Find("VersionAndAuthor").GetComponent<Text>()
+            .text = Mod_Text_UIA[9][0];
         base.transform.Find("SelectA").Find("Text").GetComponent<Text>()
             .text = Mod_Text_UIA[0][Mainload.SetData[4]];
         base.transform.Find("SelectB").Find("Text").GetComponent<Text>()
@@ -1720,7 +1733,7 @@ public class MemberCheatPanelA : MonoBehaviour
         SelectBT(0, 0, "null", new Vector3(0f, 0f, 0f));
         List<List<int>> list = new List<List<int>>();
         List<List<int>> list2 = new List<List<int>>();
-        if (!IsMenkeClass)
+        if ((!IsMenkeClass && !IsShiJiaClass && !IsHuangShiClass && !IsNongZhuangClass) || IsShiJiaClass || IsHuangShiClass)
         {
             List<string> list3 = new List<string>();
             float num = 10000000f;
@@ -1764,24 +1777,66 @@ public class MemberCheatPanelA : MonoBehaviour
                                                 "20", "21", "22", "23", "24", "25", "26"
                                             };
             }
-            if (MemberClass_Shai == 0 || MemberClass_Shai == 1)
+
+            if (!IsMenkeClass && !IsShiJiaClass && !IsHuangShiClass && !IsNongZhuangClass)
             {
-                for (int i = 0; i < Mainload.Member_now.Count; i++)
+                if (MemberClass_Shai == 0 || MemberClass_Shai == 1)
                 {
-                    if (float.Parse(Mainload.Member_now[i][21]) <= num && (list3.Contains(Mainload.Member_now[i][15]) || list3.Count <= 0) && (Sex_Shai == 0 || (Sex_Shai == 1 && Mainload.Member_now[i][4].Split('|')[4] == "1") || (Sex_Shai == 2 && Mainload.Member_now[i][4].Split('|')[4] == "0")) && int.Parse(Mainload.Member_now[i][6]) >= OldMin_Shai && int.Parse(Mainload.Member_now[i][6]) <= OldMax_Shai && (ShenFen_Shai == 0 || (ShenFen_Shai == 1 && Mainload.Member_now[i][12].Split('|')[0].Split('@')[0] == "5" && !FormulaData.is_WuGuan(Mainload.Member_now[i][12].Split('|')[0])) || (ShenFen_Shai == 2 && Mainload.Member_now[i][12].Split('|')[0].Split('@')[0] == "5" && FormulaData.is_WuGuan(Mainload.Member_now[i][12].Split('|')[0])) || (ShenFen_Shai == 3 && Mainload.Member_now[i][12].Split('|')[0].Split('@')[0] != "5")) && (HunYin_Shai == 0 || (HunYin_Shai == 1 && Mainload.Member_now[i][26] == "0") || (HunYin_Shai == 2 && Mainload.Member_now[i][26] == "1") || (HunYin_Shai == 3 && Mainload.Member_now[i][26] != "0" && Mainload.Member_now[i][26] != "1")) && (ZhiZe_Shai == 0 || ZhiZe_Shai == int.Parse(Mainload.Member_now[i][41].Split('|')[0]) + 1))
+                    for (int i = 0; i < Mainload.Member_now.Count; i++)
                     {
-                        list.Add(new List<int> { 0, i });
+                        if (float.Parse(Mainload.Member_now[i][21]) <= num &&
+                            (list3.Contains(Mainload.Member_now[i][15]) || list3.Count <= 0) &&
+                            (Sex_Shai == 0 || (Sex_Shai == 1 && Mainload.Member_now[i][4].Split('|')[4] == "1") || (Sex_Shai == 2 && Mainload.Member_now[i][4].Split('|')[4] == "0")) &&
+                            int.Parse(Mainload.Member_now[i][6]) >= OldMin_Shai &&
+                            int.Parse(Mainload.Member_now[i][6]) <= OldMax_Shai &&
+                            (ShenFen_Shai == 0 || (ShenFen_Shai == 1 && Mainload.Member_now[i][12].Split('|')[0].Split('@')[0] == "5" && !FormulaData.is_WuGuan(Mainload.Member_now[i][12].Split('|')[0])) || (ShenFen_Shai == 2 && Mainload.Member_now[i][12].Split('|')[0].Split('@')[0] == "5" && FormulaData.is_WuGuan(Mainload.Member_now[i][12].Split('|')[0])) || (ShenFen_Shai == 3 && Mainload.Member_now[i][12].Split('|')[0].Split('@')[0] != "5")) &&
+                            (HunYin_Shai == 0 || (HunYin_Shai == 1 && Mainload.Member_now[i][26] == "0") || (HunYin_Shai == 2 && Mainload.Member_now[i][26] == "1") || (HunYin_Shai == 3 && Mainload.Member_now[i][26] != "0" && Mainload.Member_now[i][26] != "1")) &&
+                            (ZhiZe_Shai == 0 || ZhiZe_Shai == int.Parse(Mainload.Member_now[i][41].Split('|')[0]) + 1))
+                        {
+                            list.Add(new List<int> { 0, i });
+                        }
+                    }
+                }
+                if (MemberClass_Shai == 0 || MemberClass_Shai == 2)
+                {
+                    for (int j = 0; j < Mainload.Member_qu.Count; j++)
+                    {
+                        if (float.Parse(Mainload.Member_qu[j][16]) <= num &&
+                            (list3.Contains(Mainload.Member_qu[j][11]) || list3.Count <= 0) &&
+                            (Sex_Shai == 0 || (Sex_Shai == 1 && Mainload.Member_qu[j][2].Split('|')[4] == "1") || (Sex_Shai == 2 && Mainload.Member_qu[j][2].Split('|')[4] == "0")) &&
+                            int.Parse(Mainload.Member_qu[j][5]) >= OldMin_Shai &&
+                            int.Parse(Mainload.Member_qu[j][5]) <= OldMax_Shai &&
+                            (ShenFen_Shai == 0 || ShenFen_Shai == 3) &&
+                            (HunYin_Shai == 0 || (HunYin_Shai == 2 && Mainload.Member_qu[j][29] != "2") || (HunYin_Shai == 3 && Mainload.Member_qu[j][29] == "2")) &&
+                            (ZhiZe_Shai == 0 || ZhiZe_Shai == int.Parse(Mainload.Member_qu[j][32].Split('|')[0]) + 1))
+                        {
+                            list.Add(new List<int> { 1, j });
+                        }
                     }
                 }
             }
-            if (MemberClass_Shai == 0 || MemberClass_Shai == 2)
+            else if (IsShiJiaClass)
             {
-                for (int j = 0; j < Mainload.Member_qu.Count; j++)
+                if (MemberClass_Shai == 0 || MemberClass_Shai == 1)
                 {
-                    if (float.Parse(Mainload.Member_qu[j][16]) <= num && (list3.Contains(Mainload.Member_qu[j][11]) || list3.Count <= 0) && (Sex_Shai == 0 || (Sex_Shai == 1 && Mainload.Member_qu[j][2].Split('|')[4] == "1") || (Sex_Shai == 2 && Mainload.Member_qu[j][2].Split('|')[4] == "0")) && int.Parse(Mainload.Member_qu[j][5]) >= OldMin_Shai && int.Parse(Mainload.Member_qu[j][5]) <= OldMax_Shai && (ShenFen_Shai == 0 || ShenFen_Shai == 3) && (HunYin_Shai == 0 || (HunYin_Shai == 2 && Mainload.Member_qu[j][29] != "2") || (HunYin_Shai == 3 && Mainload.Member_qu[j][29] == "2")) && (ZhiZe_Shai == 0 || ZhiZe_Shai == int.Parse(Mainload.Member_qu[j][32].Split('|')[0]) + 1))
-                    {
-                        list.Add(new List<int> { 1, j });
-                    }
+
+                }
+
+                if (MemberClass_Shai == 0 || MemberClass_Shai == 2)
+                {
+
+                }
+            }
+            else if (IsHuangShiClass)
+            {
+                if (MemberClass_Shai == 0 || MemberClass_Shai == 1)
+                {
+
+                }
+
+                if (MemberClass_Shai == 0 || MemberClass_Shai == 2)
+                {
+
                 }
             }
             int index = 0;
@@ -2020,7 +2075,7 @@ public class MemberCheatPanelA : MonoBehaviour
                 }
             }
         }
-        else
+        else if (IsMenkeClass)
         {
             for (int num5 = 0; num5 < Mainload.MenKe_Now.Count; num5++)
             {
@@ -2118,12 +2173,16 @@ public class MemberCheatPanelA : MonoBehaviour
                 }
             }
         }
+        else if (IsNongZhuangClass)
+        {
+
+        }
         for (int num10 = 0; num10 < base.transform.Find("AllMember").Find("Viewport").Find("Content")
-            .childCount; num10++)
+                 .childCount; num10++)
         {
             Object.Destroy(base.transform.Find("AllMember").Find("Viewport").Find("Content")
-                .GetChild(num10)
-                .gameObject);
+                    .GetChild(num10)
+                    .gameObject);
         }
         GameObject obj = Object.Instantiate(MSelectTipA);
         obj.name = "MSelectTip";
@@ -2185,9 +2244,6 @@ public class MemberCheatPanelA : MonoBehaviour
             base.transform.Find("CheatPanelD1").gameObject.SetActive(value: false);
             base.transform.Find("CheatPanelD2").gameObject.SetActive(value: false);
             base.transform.Find("CheatPanelE").gameObject.SetActive(value: false);
-            base.transform.Find("ShowA").gameObject.SetActive(value: false);
-            base.transform.Find("ShowB").gameObject.SetActive(value: false);
-            base.transform.Find("ShowC").gameObject.SetActive(value: false);
         }
         else if (MemberID_ShowNow != MemberID)
         {
@@ -2205,219 +2261,109 @@ public class MemberCheatPanelA : MonoBehaviour
     }
 
 
-    public void AllActShow()
+    public void AllActShow()    //修改窗口显示逻辑
     {
         if (!IsMenkeClass && !IsShiJiaClass && !IsHuangShiClass && !IsNongZhuangClass)
         {
             if (MemberClass == 0)
             {
-                base.transform.Find("AllActA").gameObject.SetActive(value: true);
-                base.transform.Find("AllActB").gameObject.SetActive(value: false);
-                base.transform.Find("AllActC").gameObject.SetActive(value: false);
-                base.transform.Find("ShowA").gameObject.SetActive(value: true);
-                base.transform.Find("ShowB").gameObject.SetActive(value: false);
-                base.transform.Find("ShowC").gameObject.SetActive(value: false);
-                AllAct_Swich("A");
-                if (Mainload.Member_now[MemberIndex][24] != "null")
-                {
-                    base.transform.Find("AllActA").Find("Act_A").Find("Text")
-                        .GetComponent<Text>()
-                        .text = "*" + AllText.Text_UIA[1055][Mainload.SetData[4]];
-                }
-                else
-                {
-                    base.transform.Find("AllActA").Find("Act_A").Find("Text")
-                        .GetComponent<Text>()
-                        .text = AllText.Text_UIA[1055][Mainload.SetData[4]];
-                }
-                if (Mainload.Member_now[MemberIndex][41] == "-1|0|0")
-                {
-                    base.transform.Find("AllActA").Find("Act_K").Find("Text")
-                        .GetComponent<Text>()
-                        .text = AllText.Text_UIA[1189][Mainload.SetData[4]];
-                }
-                else
-                {
-                    base.transform.Find("AllActA").Find("Act_K").Find("Text")
-                        .GetComponent<Text>()
-                        .text = "*" + AllText.Text_UIA[1189][Mainload.SetData[4]];
-                }
-                if (Mainload.Member_now[MemberIndex][12].Split('|')[0].Split('@')[0] == "5" || int.Parse(Mainload.Member_now[MemberIndex][6]) < Mainload.OldFenjie[1])
-                {
-                    base.transform.Find("AllActA").Find("SingleAct_A").gameObject.SetActive(value: false);
-                }
-                else
-                {
-                    base.transform.Find("AllActA").Find("SingleAct_A").gameObject.SetActive(value: true);
-                }
-                if (Mainload.Member_now[MemberIndex][12].Split('|')[0].Split('@')[0] == "5")
-                {
-                    base.transform.Find("AllActA").Find("SingleAct_B").gameObject.SetActive(value: true);
-                }
-                else
-                {
-                    base.transform.Find("AllActA").Find("SingleAct_B").gameObject.SetActive(value: false);
-                }
-                if (int.Parse(Mainload.Member_now[MemberIndex][6]) >= Mainload.OldFenjie[1])
-                {
-                    if (base.transform.Find("ShowA").Find("Show_C").gameObject.activeSelf)
-                    {
-                        AllActA_A();
-                    }
-                    else if (base.transform.Find("ShowA").Find("Show_D").gameObject.activeSelf || base.transform.Find("ShowA").Find("Show_E").gameObject.activeSelf)
-                    {
-                        bool flag = false;
-                        for (int i = 0; i < Mainload.Horse_Have.Count; i++)
-                        {
-                            if (Mainload.Horse_Have[i][6] == Mainload.Member_now[MemberIndex][0])
-                            {
-                                flag = true;
-                                break;
-                            }
-                        }
-                        if (!flag)
-                        {
-                            AllActA_A();
-                        }
-                    }
-                }
-                else if (base.transform.Find("ShowA").Find("Show_D").gameObject.activeSelf || base.transform.Find("ShowA").Find("Show_E").gameObject.activeSelf)
-                {
-                    AllActA_A();
-                }
-                if (Mainload.Member_now[MemberIndex][2] == "null" && int.Parse(Mainload.Member_now[MemberIndex][6]) >= Mainload.OldFenjie[1])
-                {
-                    base.transform.Find("AllActA").Find("Act_M").gameObject.SetActive(value: true);
-                }
-                else
-                {
-                    base.transform.Find("AllActA").Find("Act_M").gameObject.SetActive(value: false);
-                    if (base.transform.Find("ShowA").Find("Show_M").gameObject.activeSelf)
-                    {
-                        AllActA_A();
-                    }
-                }
-                bool flag2 = true;
-                if (int.Parse(Mainload.Member_now[MemberIndex][6]) < Mainload.OldFenjie[1])
-                {
-                    flag2 = false;
-                }
-                else if (Mainload.Member_now[MemberIndex][23] != "null")
-                {
-                    string[] array = Mainload.Member_now[MemberIndex][23].Split('|');
-                    for (int j = 0; j < array.Length; j++)
-                    {
-                        if (array[j].Split('@')[0] == "19")
-                        {
-                            flag2 = false;
-                        }
-                    }
-                }
-                base.transform.Find("AllActA").Find("Act_K").gameObject.SetActive(flag2);
-                if (!flag2 && base.transform.Find("ShowA").Find("Show_K").gameObject.activeSelf)
-                {
-                    AllActA_A();
-                }
+                base.transform.Find("CheatPanelA1").gameObject.SetActive(value: true);
+                base.transform.Find("CheatPanelA2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelB").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelC1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelC2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelD1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelD2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelE").gameObject.SetActive(value: false);
             }
-            else if (MemberClass == 1)
+            else if(MemberClass == 1)
             {
-                base.transform.Find("AllActA").gameObject.SetActive(value: false);
-                base.transform.Find("AllActB").gameObject.SetActive(value: true);
-                base.transform.Find("AllActC").gameObject.SetActive(value: false);
-                base.transform.Find("ShowA").gameObject.SetActive(value: true);
-                base.transform.Find("ShowB").gameObject.SetActive(value: true);
-                base.transform.Find("ShowC").gameObject.SetActive(value: false);
-                AllAct_Swich("B");
-                if (Mainload.Member_qu[MemberIndex][17] != "null")
-                {
-                    base.transform.Find("AllActB").Find("Act_A").Find("Text")
-                        .GetComponent<Text>()
-                        .text = "*" + AllText.Text_UIA[1055][Mainload.SetData[4]];
-                }
-                else
-                {
-                    base.transform.Find("AllActB").Find("Act_A").Find("Text")
-                        .GetComponent<Text>()
-                        .text = AllText.Text_UIA[1055][Mainload.SetData[4]];
-                }
-                if (Mainload.Member_qu[MemberIndex][32] == "-1|0|0")
-                {
-                    base.transform.Find("AllActB").Find("Act_G").Find("Text")
-                        .GetComponent<Text>()
-                        .text = AllText.Text_UIA[1189][Mainload.SetData[4]];
-                }
-                else
-                {
-                    base.transform.Find("AllActB").Find("Act_G").Find("Text")
-                        .GetComponent<Text>()
-                        .text = "*" + AllText.Text_UIA[1189][Mainload.SetData[4]];
-                }
-                bool flag3 = false;
-                bool flag4 = false;
-                string text = Mainload.Member_qu[MemberIndex][2].Split('|')[9];
-                for (int k = 0; k < Mainload.Member_now.Count; k++)
-                {
-                    if (text == Mainload.Member_now[k][0])
-                    {
-                        if (Mainload.Member_now[k][26] == "1" || Mainload.Member_now[k][26] == "3")
-                        {
-                            flag4 = true;
-                        }
-                        flag3 = true;
-                        break;
-                    }
-                }
-                if (Mainload.Member_qu[MemberIndex][29] == "1")
-                {
-                    if (!flag4)
-                    {
-                        base.transform.Find("AllActB").Find("SingleAct_A").gameObject.SetActive(value: true);
-                    }
-                    else
-                    {
-                        base.transform.Find("AllActB").Find("SingleAct_A").gameObject.SetActive(value: false);
-                    }
-                }
-                else
-                {
-                    base.transform.Find("AllActB").Find("SingleAct_A").gameObject.SetActive(value: false);
-                }
-                if (flag3)
-                {
-                    base.transform.Find("AllActB").Find("Act_F").gameObject.SetActive(value: true);
-                }
-                else
-                {
-                    base.transform.Find("AllActB").Find("Act_F").gameObject.SetActive(value: false);
-                    if (base.transform.Find("ShowB").Find("Show_F").gameObject.activeSelf)
-                    {
-                        AllActB_A();
-                    }
-                }
-                bool flag5 = true;
-                if (Mainload.Member_qu[MemberIndex][27] != "null")
-                {
-                    string[] array2 = Mainload.Member_qu[MemberIndex][27].Split('|');
-                    for (int l = 0; l < array2.Length; l++)
-                    {
-                        if (array2[l].Split('@')[0] == "19")
-                        {
-                            flag5 = false;
-                        }
-                    }
-                }
-                base.transform.Find("AllActB").Find("Act_G").gameObject.SetActive(flag5);
-                if (!flag5 && base.transform.Find("ShowA").Find("ShowK").gameObject.activeSelf)
-                {
-                    AllActB_A();
-                }
+                base.transform.Find("CheatPanelA1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelA2").gameObject.SetActive(value: true);
+                base.transform.Find("CheatPanelB").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelC1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelC2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelD1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelD2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelE").gameObject.SetActive(value: false);
             }
         }
-        else
+        else if (IsMenkeClass)
         {
-            if (Mainload.MenKe_Now[MemberIndex][10] == "0")
+            if (MemberClass == 2)
             {
-                AllAct_Swich("C");
+                base.transform.Find("CheatPanelA1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelA2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelB").gameObject.SetActive(value: true);
+                base.transform.Find("CheatPanelC1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelC2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelD1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelD2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelE").gameObject.SetActive(value: false);
+            }
+        }
+        else if (IsShiJiaClass)
+        {
+            if (MemberClass == 3)
+            {
+                base.transform.Find("CheatPanelA1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelA2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelB").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelC1").gameObject.SetActive(value: true);
+                base.transform.Find("CheatPanelC2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelD1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelD2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelE").gameObject.SetActive(value: false);
+            }
+            else if (MemberClass == 4)
+            {
+                base.transform.Find("CheatPanelA1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelA2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelB").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelC1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelC2").gameObject.SetActive(value: true);
+                base.transform.Find("CheatPanelD1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelD2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelE").gameObject.SetActive(value: false);
+            }
+        }
+        else if (IsHuangShiClass)
+        {
+            if (MemberClass == 5)
+            {
+                base.transform.Find("CheatPanelA1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelA2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelB").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelC1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelC2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelD1").gameObject.SetActive(value: true);
+                base.transform.Find("CheatPanelD2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelE").gameObject.SetActive(value: false);
+            }
+            else if (MemberClass == 6)
+            {
+                base.transform.Find("CheatPanelA1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelA2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelB").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelC1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelC2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelD1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelD2").gameObject.SetActive(value: true);
+                base.transform.Find("CheatPanelE").gameObject.SetActive(value: false);
+            }
+        }
+        else if (IsNongZhuangClass)
+        {
+            if (MemberClass == 7)
+            {
+                base.transform.Find("CheatPanelA1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelA2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelB").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelC1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelC2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelD1").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelD2").gameObject.SetActive(value: false);
+                base.transform.Find("CheatPanelE").gameObject.SetActive(value: true);
             }
         }
     }
