@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <OutputType>Library</OutputType>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <LangVersion>preview</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="BepInEx.Core" Version="5.4.21" />
@@ -19,6 +18,9 @@
         <Reference Include="Assembly-CSharp-firstpass">
             <HintPath>..\libs\Assembly-CSharp-firstpass.dll</HintPath>
             <Private>False</Private>
+        </Reference>
+        <Reference Include="YuanAPI">
+            <HintPath>..\libs\YuanAPI.dll</HintPath>
         </Reference>
     </ItemGroup>
 </Project>
