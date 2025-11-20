@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using DG.Tweening;
+﻿using DG.Tweening;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -69,57 +70,57 @@ public class MemberCheatPanelA : MonoBehaviour
 
     public List<List<string>>  Mod_Text_AllShaiSelect = new List<List<string>>
     {
-        new List<string>
+        new List<string>        // 0
         {
             "全部|族中子弟|族人配偶",
             "All|Descendants|Consorts"
         },
-        new List<string>
+        new List<string>        // 1
         {
             "全部|赋闲在家|外出为官|健康过低|出征|游学|游历|流放|徒刑|其他",
             "All|Idle|Official|Low Health|Military Mission|Study Tour|Travelling|Exile|Imprisonment|Others"
         },
-        new List<string>
+        new List<string>        // 2
         {
             "全部|男|女",
             "All|Male|Female"
         },
-        new List<string>
+        new List<string>        // 3
         {
             "文(优先)|武(优先)|商(优先)|艺(优先)|计谋(优先)|魅力(优先)|巫(优先)|医(优先)|相(优先)|卜(优先)|魅(优先)|工(优先)",
             "Writing|Might|Business|Arts|Cunning|Charisma|Sorcery Skill|Medicine Skill|Daoism Skill|Augur Skill|Charisma Skill|Crafting Skill"
         },
-        new List<string>
+        new List<string>        // 4
         {
             "全部|文官|武官|无官职",
             "All|Civil Officials|Military Officials|Unranked"
         },
-        new List<string>
+        new List<string>        // 5
         {
             "全部|未婚|已婚|其他",
             "All|Single|Married|Others"
         },
-        new List<string>
+        new List<string>        // 6
         {
             "全部",
             "All"
         },
-        new List<string>
+        new List<string>        // 7
         {
             "全部|无职事|写信做工|街头交易|打探消息|散播流言|私人教习|戏台演出|私塾教学|武场教学",
             "All|No Duty|Doing Gigs|Street Trading|Collecting Intel|Spreading Rumor|Private Teacher|Stage Actor|Clan Teacher|Training Coach"
         },
-        new List<string>
+        new List<string>        // 8
         {
             "全部|大地图|封地",
             "All|Map|FengDi"
         },
-        new List<string>
+        new List<string>        // 9
         {
             "全部|南郡|三川郡|蜀郡|丹阳郡|陈留郡|长沙郡|会稽郡|广陵郡|太原郡|益州郡|南海郡|云南郡",
             "All|Nan Province|Sanchuan Province|Shu Province|Danyang Province|Chenliu Province|Changsha Province|Kuaiji Province|Guangling Province|Taiyuan Province|Yizhou Province|Nanhai Province|Yunnan Province"
         },
-        new List<string> { }
+        new List<string> { }        // 10
     };
 
     public List<List<string>> Mod_Text_UIA = new List<List<string>>
@@ -1136,7 +1137,7 @@ public class MemberCheatPanelA : MonoBehaviour
         IsShiJiaClass = false;
         IsHuangShiClass = false;
         IsNongZhuangClass = true;
-        Shai_NongZhuangShow();
+        Shai_MemberShow();
     }
 
     public void ShaiChangeA(string ID)
@@ -1819,24 +1820,77 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 if (MemberClass_Shai == 0 || MemberClass_Shai == 1)
                 {
-
+                    for (int i = 0; i < Mainload.Member_other.Count; i++)
+                    {
+                        for (int j = 0; j < Mainload.Member_other[i].Count; j++)
+                        {
+                            if (float.Parse(Mainload.Member_other[i][j][20]) <= num &&
+                            (list3.Contains(Mainload.Member_other[i][j][16]) || list3.Count <= 0) &&
+                            (Sex_Shai == 0 || (Sex_Shai == 1 && Mainload.Member_other[i][j][2].Split('|')[4] == "1") || (Sex_Shai == 2 && Mainload.Member_other[i][j][2].Split('|')[4] == "0")) &&
+                            int.Parse(Mainload.Member_other[i][j][3]) >= OldMin_Shai &&
+                            int.Parse(Mainload.Member_other[i][j][3]) <= OldMax_Shai &&
+                            (ShenFen_Shai == 0 || (ShenFen_Shai == 1 && Mainload.Member_other[i][j][9].Split('|')[0].Split('@')[0] == "5" && !FormulaData.is_WuGuan(Mainload.Member_other[i][j][9].Split('|')[0])) || (ShenFen_Shai == 2 && Mainload.Member_other[i][j][9].Split('|')[0].Split('@')[0] == "5" && FormulaData.is_WuGuan(Mainload.Member_other[i][j][9].Split('|')[0])) || (ShenFen_Shai == 3 && Mainload.Member_other[i][j][9].Split('|')[0].Split('@')[0] != "5")) &&
+                            (HunYin_Shai == 0 || (HunYin_Shai == 1 && Mainload.Member_other[i][j][21] == "0") || (HunYin_Shai == 2 && Mainload.Member_other[i][j][21] == "1") || (HunYin_Shai == 3 && Mainload.Member_other[i][j][21] != "0" && Mainload.Member_other[i][j][21] != "1")))
+                            {
+                                list.Add(new List<int> { 3, i ,j });
+                            }
+                        }
+                    }
                 }
-
                 if (MemberClass_Shai == 0 || MemberClass_Shai == 2)
                 {
-
+                    for (int i = 0; i < Mainload.Member_Other_qu.Count; i++)
+                    {
+                        for (int j = 0; j < Mainload.Member_Other_qu[i].Count; j++)
+                        {
+                            if (float.Parse(Mainload.Member_Other_qu[i][j][16]) <= num &&
+                                (list3.Contains(Mainload.Member_Other_qu[i][j][11]) || list3.Count <= 0) &&     // 存疑，Mainload.Member_Other_qu[i][j][11]疑似状态，需测试确认
+                                (Sex_Shai == 0 || (Sex_Shai == 1 && Mainload.Member_Other_qu[i][j][2].Split('|')[4] == "1") || (Sex_Shai == 2 && Mainload.Member_Other_qu[i][j][2].Split('|')[4] == "0")) &&
+                                int.Parse(Mainload.Member_Other_qu[i][j][3]) >= OldMin_Shai &&
+                                int.Parse(Mainload.Member_Other_qu[i][j][3]) <= OldMax_Shai &&
+                                (ShenFen_Shai == 0 || ShenFen_Shai == 3) &&
+                                (HunYin_Shai == 0 || HunYin_Shai == 2 || HunYin_Shai == 3))
+                            {
+                                list.Add(new List<int> { 4, i, j });
+                            }
+                        }
+                    }
                 }
             }
             else if (IsHuangShiClass)
             {
                 if (MemberClass_Shai == 0 || MemberClass_Shai == 1)
                 {
-
+                    for (int i = 0; i < Mainload.Member_King.Count; i++)
+                    {
+                        if (float.Parse(Mainload.Member_King[i][19]) <= num &&
+                            (list3.Contains(Mainload.Member_King[i][15]) || list3.Count <= 0) &&
+                            (Sex_Shai == 0 || (Sex_Shai == 1 && Mainload.Member_King[i][2].Split('|')[4] == "1") || (Sex_Shai == 2 && Mainload.Member_King[i][2].Split('|')[4] == "0")) &&
+                            int.Parse(Mainload.Member_King[i][3]) >= OldMin_Shai &&
+                            int.Parse(Mainload.Member_King[i][3]) <= OldMax_Shai &&
+                            (ShenFen_Shai == 0 || (ShenFen_Shai == 1 && Mainload.Member_King[i][9].Split('|')[0].Split('@')[0] == "5" && !FormulaData.is_WuGuan(Mainload.Member_King[i][9].Split('|')[0])) || (ShenFen_Shai == 2 && Mainload.Member_King[i][9].Split('|')[0].Split('@')[0] == "5" && FormulaData.is_WuGuan(Mainload.Member_King[i][9].Split('|')[0])) || (ShenFen_Shai == 3 && Mainload.Member_King[i][9].Split('|')[0].Split('@')[0] != "5")) &&
+                            (HunYin_Shai == 0 || (HunYin_Shai == 1 && Mainload.Member_King[i][20] == "0") || (HunYin_Shai == 2 && Mainload.Member_King[i][20] == "1") || (HunYin_Shai == 3 && Mainload.Member_King[i][20] != "0" && Mainload.Member_King[i][20] != "1")))
+                        {
+                            list.Add(new List<int> { 5, i });
+                        }
+                    }
                 }
 
                 if (MemberClass_Shai == 0 || MemberClass_Shai == 2)
                 {
-
+                    for (int i = 0; i < Mainload.Member_King_qu.Count; i++)
+                    {
+                        if (float.Parse(Mainload.Member_King_qu[i][16]) <= num &&
+                            (list3.Contains(Mainload.Member_King_qu[i][11]) || list3.Count <= 0) &&     // 存疑，Mainload.Member_King_qu[i][11]疑似状态，需测试确认
+                            (Sex_Shai == 0 || (Sex_Shai == 1 && Mainload.Member_King_qu[i][2].Split('|')[4] == "1") || (Sex_Shai == 2 && Mainload.Member_King_qu[i][2].Split('|')[4] == "0")) &&
+                            int.Parse(Mainload.Member_King_qu[i][3]) >= OldMin_Shai &&
+                            int.Parse(Mainload.Member_King_qu[i][3]) <= OldMax_Shai &&
+                            (ShenFen_Shai == 0 || ShenFen_Shai == 3) &&
+                            (HunYin_Shai == 0 || HunYin_Shai == 2 || HunYin_Shai == 3))
+                        {
+                            list.Add(new List<int> { 6, i });
+                        }
+                    }
                 }
             }
             int index = 0;
@@ -1992,12 +2046,8 @@ public class MemberCheatPanelA : MonoBehaviour
                                                     });
                     }
                 }
-                else
+                else if (list[k][0] == 1)
                 {
-                    if (list[k][0] != 1)
-                    {
-                        continue;
-                    }
                     if (num3 == 0)
                     {
                         bool flag3 = false;
@@ -2073,6 +2123,343 @@ public class MemberCheatPanelA : MonoBehaviour
                                                     });
                     }
                 }
+                else if (list[k][0] == 3)
+                {
+                    if (num2 == 0)
+                    {
+                        bool flag = false;
+                        for (int l = 0; l < list2.Count; l++)
+                        {
+                            if (list2[l][0] == 0)
+                            {
+                                if (float.Parse(Mainload.Member_other[list[k][1]][list[k][2]][index]) > float.Parse(Mainload.Member_other[list2[l][1]][list2[l][2]][index]))
+                                {
+                                    list2.Insert(l, new List<int>
+                                                                {
+                                                                    list[k][0],
+                                                                    list[k][1],
+                                                                    list[k][2]
+                                                                });
+                                    flag = true;
+                                    break;
+                                }
+                            }
+                            else if (float.Parse(Mainload.Member_other[list[k][1]][list[k][2]][index]) > float.Parse(Mainload.Member_Other_qu[list2[l][1]][list2[l][2]][index2]))
+                            {
+                                list2.Insert(l, new List<int>
+                                                            {
+                                                                list[k][0],
+                                                                list[k][1],
+                                                                list[k][2]
+                                                            });
+                                flag = true;
+                                break;
+                            }
+                        }
+                        if (!flag)
+                        {
+                            list2.Add(new List<int>
+                                                        {
+                                                            list[k][0],
+                                                            list[k][1],
+                                                            list[k][2]
+                                                        });
+                        }
+                        continue;
+                    }
+                    bool flag2 = false;
+                    for (int m = 0; m < list2.Count; m++)
+                    {
+                        if (list2[m][0] == 0)
+                        {
+                            if (Mainload.Member_other[list[k][1]][list[k][2]][2].Split('|')[6] == num2.ToString() && 
+                                Mainload.Member_other[list2[m][1]][list2[m][2]][2].Split('|')[6] == num2.ToString() && 
+                                float.Parse(Mainload.Member_other[list[k][1]][list[k][2]][index]) > float.Parse(Mainload.Member_other[list2[m][1]][list2[m][2]][index]))
+                            {
+                                list2.Insert(m, new List<int>
+                                                            {
+                                                                list[k][0],
+                                                                list[k][1], 
+                                                                list[k][2]
+                                                            });
+                                flag2 = true;
+                                break;
+                            }
+                        }
+                        else if (Mainload.Member_other[list[k][1]][list[k][2]][2].Split('|')[6] == num2.ToString() &&
+                                 Mainload.Member_Other_qu[list2[m][1]][list2[m][2]][2].Split('|')[6] == num3.ToString() && 
+                                 float.Parse(Mainload.Member_other[list[k][1]][list[k][2]][index]) > float.Parse(Mainload.Member_Other_qu[list2[m][1]][list2[m][2]][index2]))
+                        {
+                            list2.Insert(m, new List<int>
+                                                        {
+                                                            list[k][0],
+                                                            list[k][1],
+                                                            list[k][2]
+                                                        });
+                            flag2 = true;
+                            break;
+                        }
+                    }
+                    if (!flag2 && Mainload.Member_other[list[k][1]][list[k][2]][2].Split('|')[6] == num2.ToString())
+                    {
+                        list2.Add(new List<int>
+                                                    {
+                                                        list[k][0],
+                                                        list[k][1],
+                                                        list[k][2]
+                                                    });
+                    }
+                }
+                else if (list[k][0] == 4)
+                {
+                    if (num3 == 0)
+                    {
+                        bool flag3 = false;
+                        for (int n = 0; n < list2.Count; n++)
+                        {
+                            if (list2[n][0] == 0)
+                            {
+                                if (float.Parse(Mainload.Member_Other_qu[list[k][1]][list[k][2]][index2]) > float.Parse(Mainload.Member_other[list2[n][1]][list2[n][2]][index]))
+                                {
+                                    list2.Insert(n, new List<int>
+                                                                {
+                                                                    list[k][0],
+                                                                    list[k][1],
+                                                                    list[k][2]
+                                                                });
+                                    flag3 = true;
+                                    break;
+                                }
+                            }
+                            else if (float.Parse(Mainload.Member_Other_qu[list[k][1]][list[k][2]][index2]) > float.Parse(Mainload.Member_Other_qu[list2[n][1]][list2[n][2]][index2]))
+                            {
+                                list2.Insert(n, new List<int>
+                                                            {
+                                                                list[k][0],
+                                                                list[k][1],
+                                                                list[k][2]
+                                                            });
+                                flag3 = true;
+                                break;
+                            }
+                        }
+                        if (!flag3)
+                        {
+                            list2.Add(new List<int>
+                                                        {
+                                                            list[k][0],
+                                                            list[k][1],
+                                                            list[k][2]
+                                                        });
+                        }
+                        continue;
+                    }
+                    bool flag4 = false;
+                    for (int num4 = 0; num4 < list2.Count; num4++)
+                    {
+                        if (list2[num4][0] == 0)
+                        {
+                            if (Mainload.Member_Other_qu[list[k][1]][list[k][2]][2].Split('|')[6] == num3.ToString() && 
+                                Mainload.Member_other[list2[num4][1]][list2[num4][2]][2].Split('|')[6] == num2.ToString() && 
+                                float.Parse(Mainload.Member_Other_qu[list[k][1]][list[k][2]][index2]) > float.Parse(Mainload.Member_other[list2[num4][1]][list2[num4][2]][index]))
+                            {
+                                list2.Insert(num4, new List<int>
+                                                            {
+                                                                list[k][0],
+                                                                list[k][1],
+                                                                list[k][2]
+                                                            });
+                                flag4 = true;
+                                break;
+                            }
+                        }
+                        else if (Mainload.Member_Other_qu[list[k][1]][list[k][2]][2].Split('|')[6] == num3.ToString() && 
+                                 Mainload.Member_Other_qu[list2[num4][1]][list2[num4][2]][2].Split('|')[6] == num3.ToString() && 
+                                 float.Parse(Mainload.Member_Other_qu[list[k][1]][list[k][2]][index2]) > float.Parse(Mainload.Member_Other_qu[list2[num4][1]][list2[num4][2]][index2]))
+                        {
+                            list2.Insert(num4, new List<int>
+                                                        {
+                                                            list[k][0],
+                                                            list[k][1],
+                                                            list[k][2]
+                                                        });
+                            flag4 = true;
+                            break;
+                        }
+                    }
+                    if (!flag4 && Mainload.Member_Other_qu[list[k][1]][list[k][2]][2].Split('|')[6] == num3.ToString())
+                    {
+                        list2.Add(new List<int>
+                                                    {
+                                                        list[k][0],
+                                                        list[k][1],
+                                                        list[k][2]
+                                                    });
+                    }
+                }
+                else if (list[k][0] == 5)
+                {
+                    if (num2 == 0)
+                    {
+                        bool flag = false;
+                        for (int l = 0; l < list2.Count; l++)
+                        {
+                            if (list2[l][0] == 0)
+                            {
+                                if (float.Parse(Mainload.Member_King[list[k][1]][index]) > float.Parse(Mainload.Member_King[list2[l][1]][index]))
+                                {
+                                    list2.Insert(l, new List<int>
+                                                                {
+                                                                    list[k][0],
+                                                                    list[k][1]
+                                                                });
+                                    flag = true;
+                                    break;
+                                }
+                            }
+                            else if (float.Parse(Mainload.Member_King[list[k][1]][index]) > float.Parse(Mainload.Member_King_qu[list2[l][1]][index2]))
+                            {
+                                list2.Insert(l, new List<int>
+                                                            {
+                                                                list[k][0],
+                                                                list[k][1]
+                                                            });
+                                flag = true;
+                                break;
+                            }
+                        }
+                        if (!flag)
+                        {
+                            list2.Add(new List<int>
+                                                        {
+                                                            list[k][0],
+                                                            list[k][1]
+                                                        });
+                        }
+                        continue;
+                    }
+                    bool flag2 = false;
+                    for (int m = 0; m < list2.Count; m++)
+                    {
+                        if (list2[m][0] == 0)
+                        {
+                            if (Mainload.Member_King[list[k][1]][2].Split('|')[6] == num2.ToString() && 
+                                Mainload.Member_King[list2[m][1]][2].Split('|')[6] == num2.ToString() && 
+                                float.Parse(Mainload.Member_King[list[k][1]][index]) > float.Parse(Mainload.Member_King[list2[m][1]][index]))
+                            {
+                                list2.Insert(m, new List<int>
+                                                            {
+                                                                list[k][0],
+                                                                list[k][1]
+                                                            });
+                                flag2 = true;
+                                break;
+                            }
+                        }
+                        else if (Mainload.Member_King[list[k][1]][2].Split('|')[6] == num2.ToString() && 
+                                 Mainload.Member_King_qu[list2[m][1]][2].Split('|')[6] == num3.ToString() && 
+                                 float.Parse(Mainload.Member_King[list[k][1]][index]) > float.Parse(Mainload.Member_King_qu[list2[m][1]][index2]))
+                        {
+                            list2.Insert(m, new List<int>
+                                                        {
+                                                            list[k][0],
+                                                            list[k][1]
+                                                        });
+                            flag2 = true;
+                            break;
+                        }
+                    }
+                    if (!flag2 && Mainload.Member_King[list[k][1]][2].Split('|')[6] == num2.ToString())
+                    {
+                        list2.Add(new List<int>
+                                                    {
+                                                        list[k][0],
+                                                        list[k][1]
+                                                    });
+                    }
+                }
+                else if (list[k][0] == 6)
+                {
+                    if (num3 == 0)
+                    {
+                        bool flag3 = false;
+                        for (int n = 0; n < list2.Count; n++)
+                        {
+                            if (list2[n][0] == 0)
+                            {
+                                if (float.Parse(Mainload.Member_King_qu[list[k][1]][index2]) > float.Parse(Mainload.Member_King[list2[n][1]][index]))
+                                {
+                                    list2.Insert(n, new List<int>
+                                                                {
+                                                                    list[k][0],
+                                                                    list[k][1]
+                                                                });
+                                    flag3 = true;
+                                    break;
+                                }
+                            }
+                            else if (float.Parse(Mainload.Member_King_qu[list[k][1]][index2]) > float.Parse(Mainload.Member_King_qu[list2[n][1]][index2]))
+                            {
+                                list2.Insert(n, new List<int>
+                                                            {
+                                                                list[k][0],
+                                                                list[k][1]
+                                                            });
+                                flag3 = true;
+                                break;
+                            }
+                        }
+                        if (!flag3)
+                        {
+                            list2.Add(new List<int>
+                                                        {
+                                                            list[k][0],
+                                                            list[k][1]
+                                                        });
+                        }
+                        continue;
+                    }
+                    bool flag4 = false;
+                    for (int num4 = 0; num4 < list2.Count; num4++)
+                    {
+                        if (list2[num4][0] == 0)
+                        {
+                            if (Mainload.Member_King_qu[list[k][1]][2].Split('|')[6] == num3.ToString() && 
+                                Mainload.Member_King[list2[num4][1]][2].Split('|')[6] == num2.ToString() && 
+                                float.Parse(Mainload.Member_King_qu[list[k][1]][index2]) > float.Parse(Mainload.Member_King[list2[num4][1]][index]))
+                            {
+                                list2.Insert(num4, new List<int>
+                                                            {
+                                                                list[k][0],
+                                                                list[k][1]
+                                                            });
+                                flag4 = true;
+                                break;
+                            }
+                        }
+                        else if (Mainload.Member_King_qu[list[k][1]][2].Split('|')[6] == num3.ToString() && 
+                                 Mainload.Member_King_qu[list2[num4][1]][2].Split('|')[6] == num3.ToString() && 
+                                 float.Parse(Mainload.Member_King_qu[list[k][1]][index2]) > float.Parse(Mainload.Member_King_qu[list2[num4][1]][index2]))
+                        {
+                            list2.Insert(num4, new List<int>
+                                                        {
+                                                            list[k][0],
+                                                            list[k][1]
+                                                        });
+                            flag4 = true;
+                            break;
+                        }
+                    }
+                    if (!flag4 && Mainload.Member_King_qu[list[k][1]][2].Split('|')[6] == num3.ToString())
+                    {
+                        list2.Add(new List<int>
+                                                    {
+                                                        list[k][0],
+                                                        list[k][1]
+                                                    });
+                    }
+                }
+
             }
         }
         else if (IsMenkeClass)
@@ -2175,7 +2562,30 @@ public class MemberCheatPanelA : MonoBehaviour
         }
         else if (IsNongZhuangClass)
         {
+            for (int number1 = 0; number1 < Mainload.NongZ_now.Count; number1++)
+            {
+                for (int number2 = 0; number2 < Mainload.NongZ_now[number1].Count; number2++)
+                {
+                    if (Mainload.NongZ_now[number1][number2][0] == "-1")                                // 只搜索属于玩家的农庄
+                    {
+                        Mod_Text_AllShaiSelect[10].Add(Mainload.NongZ_now[number1][number2][6]);        // 把农庄名字添加到标签
 
+                        if ((WeiZhi_Shai == 0 || WeiZhi_Shai == number1) && 
+                            (SuoShuJun_Shai == 0 || SuoShuJun_Shai == number2) &&
+                            (NongZhuangMingZi_Shai == 0 || Mod_Text_AllShaiSelect[10][NongZhuangMingZi_Shai] == Mainload.NongZ_now[number1][number2][6]))
+                        {
+                            for (int number3 = 0; number3 < Mainload.ZhuangTou_now[number1][number2].Count; number3++)
+                            {
+                                if (Mainload.NongZ_now[number1][number2][14] == Mainload.ZhuangTou_now[number1][number2][number3][0])
+                                {
+
+                                    list.Add(new List<int> { 7, number1, number2, number3 });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         for (int num10 = 0; num10 < base.transform.Find("AllMember").Find("Viewport").Find("Content")
                  .childCount; num10++)
@@ -2224,6 +2634,56 @@ public class MemberCheatPanelA : MonoBehaviour
                 obj4.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj4.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj4.transform.localPosition = new Vector3(50 + 90 * (num11 % 10), -63 - 115 * Mathf.FloorToInt((float)num11 / 10f), 0f);
+                num11++;
+            }
+            else if (list2[num12][0] == 3)
+            {
+                GameObject obj5 = Object.Instantiate(PerMemberA);
+                obj5.name = list2[num12][1].ToString();
+                obj5.transform.GetComponent<PerMemberBT>().ShowId = 213;
+                obj5.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
+                obj5.transform.localScale = new Vector3(1f, 1f, 1f);
+                obj5.transform.localPosition = new Vector3(50 + 90 * (num11 % 10), -63 - 115 * Mathf.FloorToInt((float)num11 / 10f), 0f);
+                num11++;
+            }
+            else if (list2[num12][0] == 4)
+            {
+                GameObject obj6 = Object.Instantiate(PerMemberA);
+                obj6.name = list2[num12][1].ToString();
+                obj6.transform.GetComponent<PerMemberBT>().ShowId = 214;
+                obj6.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
+                obj6.transform.localScale = new Vector3(1f, 1f, 1f);
+                obj6.transform.localPosition = new Vector3(50 + 90 * (num11 % 10), -63 - 115 * Mathf.FloorToInt((float)num11 / 10f), 0f);
+                num11++;
+            }
+            else if (list2[num12][0] == 5)
+            {
+                GameObject obj7 = Object.Instantiate(PerMemberA);
+                obj7.name = list2[num12][1].ToString();
+                obj7.transform.GetComponent<PerMemberBT>().ShowId = 215;
+                obj7.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
+                obj7.transform.localScale = new Vector3(1f, 1f, 1f);
+                obj7.transform.localPosition = new Vector3(50 + 90 * (num11 % 10), -63 - 115 * Mathf.FloorToInt((float)num11 / 10f), 0f);
+                num11++;
+            }
+            else if (list2[num12][0] == 6)
+            {
+                GameObject obj8 = Object.Instantiate(PerMemberA);
+                obj8.name = list2[num12][1].ToString();
+                obj8.transform.GetComponent<PerMemberBT>().ShowId = 216;
+                obj8.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
+                obj8.transform.localScale = new Vector3(1f, 1f, 1f);
+                obj8.transform.localPosition = new Vector3(50 + 90 * (num11 % 10), -63 - 115 * Mathf.FloorToInt((float)num11 / 10f), 0f);
+                num11++;
+            }
+            else if (list2[num12][0] == 7)
+            {
+                GameObject obj9 = Object.Instantiate(PerMemberA);
+                obj9.name = list2[num12][1].ToString();
+                obj9.transform.GetComponent<PerMemberBT>().ShowId = 217;
+                obj9.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
+                obj9.transform.localScale = new Vector3(1f, 1f, 1f);
+                obj9.transform.localPosition = new Vector3(50 + 90 * (num11 % 10), -63 - 115 * Mathf.FloorToInt((float)num11 / 10f), 0f);
                 num11++;
             }
         }
