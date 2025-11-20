@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.MultifunctionalCh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.AddItem", "..\cs.HoLMod.AddItem\cs.HoLMod.AddItem.csproj", "{EDE19BC5-60DB-4A18-9B23-584575E4CAF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.MemberCheat", "..\cs.HoLMod.MenberCheat\cs.HoLMod.MemberCheat.csproj", "{9997E218-2A91-4468-B675-8CB0ACB3A051}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.MemberCheatOld", "..\cs.HoLMod.MenberCheat\cs.HoLMod.MemberCheatOld.csproj", "{9997E218-2A91-4468-B675-8CB0ACB3A051}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.MoreGambles", "..\cs.HoLMod.MoreGambles\cs.HoLMod.MoreGambles.csproj", "{99F85E54-8F2C-4E83-97C2-104A50FFCA51}"
 EndProject
@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.TaskCheat", "..\c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.MorePopulation", "..\cs.HoLMod.MorePopulation\cs.HoLMod.MorePopulation.csproj", "{D1E8EBB6-3E94-4AC1-A0A1-BCBC5BDC0FF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.Tool", "..\cs.HoLMod.Tool\cs.HoLMod.Tool.csproj", "{BC6B3C19-C8D0-4E90-91D2-0062D3A408CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.TestTool", "..\cs.HoLMod.Tool\cs.HoLMod.TestTool.csproj", "{BC6B3C19-C8D0-4E90-91D2-0062D3A408CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.ES3EditorAPP", "..\cs.HoLMod.ES3EditorAPP\cs.HoLMod.ES3EditorAPP.csproj", "{CE6FE5C1-BF8E-4368-8773-059A1E145CBE}"
 EndProject
@@ -32,6 +32,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.NewItemsAddEquipments", "..\cs.HoLMod.NewItemsAddEquipments\cs.HoLMod.NewItemsAddEquipments.csproj", "{E9C00D51-8BCA-4CDC-8962-605D3CF26FB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.AddEvents", "..\cs.HoLMod.AddEvents\cs.HoLMod.AddEvents.csproj", "{A01208BE-DD60-4332-AA50-2F5A8789E3A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.NewItems", "..\cs.HoLMod.NewItems\cs.HoLMod.NewItems.csproj", "{62C07123-4D94-4050-96BD-3A2139D3B6EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.GlobalPanel", "..\cs.HoLMod.GlobalPanel\cs.HoLMod.GlobalPanel.csproj", "{2D289F03-84D8-435F-805D-58083ABE3521}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs.HoLMod.MemberCheatNew", "..\cs.HoLMod.MemberCheat\cs.HoLMod.MemberCheatNew.csproj", "{070220C4-3514-4FC2-8C1E-E6821CDD34B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,6 +105,18 @@ Global
 		{A01208BE-DD60-4332-AA50-2F5A8789E3A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A01208BE-DD60-4332-AA50-2F5A8789E3A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A01208BE-DD60-4332-AA50-2F5A8789E3A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62C07123-4D94-4050-96BD-3A2139D3B6EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62C07123-4D94-4050-96BD-3A2139D3B6EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62C07123-4D94-4050-96BD-3A2139D3B6EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62C07123-4D94-4050-96BD-3A2139D3B6EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D289F03-84D8-435F-805D-58083ABE3521}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D289F03-84D8-435F-805D-58083ABE3521}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D289F03-84D8-435F-805D-58083ABE3521}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D289F03-84D8-435F-805D-58083ABE3521}.Release|Any CPU.Build.0 = Release|Any CPU
+		{070220C4-3514-4FC2-8C1E-E6821CDD34B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{070220C4-3514-4FC2-8C1E-E6821CDD34B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{070220C4-3514-4FC2-8C1E-E6821CDD34B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{070220C4-3514-4FC2-8C1E-E6821CDD34B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

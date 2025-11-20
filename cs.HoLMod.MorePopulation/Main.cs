@@ -9,7 +9,7 @@ namespace cs.HoLMod.MorePopulation
     {
         public const string PLUGIN_GUID = "cs.HoLMod.MorePopulation.AnZhi20";
         public const string PLUGIN_NAME = "HoLMod.MorePopulation";
-        public const string PLUGIN_VERSION = "1.4.0";
+        public const string PLUGIN_VERSION = "1.5.0";
     }
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Main : BaseUnityPlugin
@@ -81,7 +81,7 @@ namespace cs.HoLMod.MorePopulation
                 string SceneClass = arrayadd[0];
 
                 // 检查场景类型是否为有效类型
-                if (SceneClass != "M" && SceneClass != "Z" && SceneClass != "S" && SceneClass != "H" && SceneClass != "F")
+                if (SceneClass != "M" && SceneClass != "Z" && SceneClass != "S" && SceneClass != "H" && SceneClass != "F" && SceneClass != "L")
                 {
                     Log?.LogWarning($"当前场景类型[{SceneClass}]不是有效游戏场景，无法执行人口修正");
                     return;
