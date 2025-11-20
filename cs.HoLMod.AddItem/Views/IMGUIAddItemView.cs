@@ -106,11 +106,8 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
         const float refW = 1920f;
         const float refH = 1080f;
         
-        // 等比缩放：以 1920x1080 为参考，取最小比，确保不超屏
         _scaleFactor = Mathf.Min(currentWidth / refW, currentHeight / refH);
-
-        // 使用“逻辑尺寸”，不要在此处乘缩放因子（由 GUI.matrix 统一缩放）
-        _windowRect = new Rect(150, 100, _defaultWidth, _defaultHeight);
+        _windowRect = new Rect(150, 50, _defaultWidth, _defaultHeight);
 
         AddItem.Logger.LogInfo($"当前分辨率: {currentWidth}x{currentHeight}，缩放因子: {_scaleFactor}");
     }
@@ -132,25 +129,14 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
             GUI.color = Color.white;
             GUI.EndGroup();
 
-            // 应用缩放因子（唯一缩放入口）
+            // 应用缩放因子
             var guiMatrix = GUI.matrix;
             GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity,
                 new Vector3(_scaleFactor, _scaleFactor, 1f));
-            
-            // 使用固定“逻辑”内边距与字体（避免与 GUI.matrix 叠加缩放）
-            GUI.skin.window.padding = new RectOffset(20, 20, 10, 10);
-            
-            var fontSize = 18;
-            GUI.skin.textField.fontSize = fontSize;
-            GUI.skin.window.fontSize = fontSize;
-            GUI.skin.label.fontSize = fontSize;
-            GUI.skin.button.fontSize = fontSize;
-            GUI.skin.button.alignment = TextAnchor.MiddleCenter; 
-            GUI.skin.toggle.fontSize = fontSize;
-            GUI.skin.toggle.alignment = TextAnchor.MiddleCenter; 
 
             // 创建窗口（逻辑尺寸）
-            _windowRect = GUI.Window(0, _windowRect, DrawWindow, "", GUI.skin.window);
+            _windowRect = GUI.Window(0, _windowRect, DrawWindow, 
+                $"{_i18N.t("Mod.Name")} v{AddItem.VERSION} by:{_i18N.t("Mod.Author")}", GUI.skin.window);
             
             // 恢复原始矩阵
             GUI.matrix = guiMatrix;
@@ -163,13 +149,6 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
     private void DrawWindow(int windowID)
     {
         GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
-        // 窗口最上方标题文本
-        GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-        GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-        GUILayout.Label($"{_i18N.t("Mod.Name")} v{AddItem.VERSION} by:{_i18N.t("Mod.Author")}");
-        GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-        GUILayout.EndHorizontal();
-        GUILayout.Space(10f);
         
         // 菜单页面标签
         GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -229,6 +208,10 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
         // 货币类型选择
         GUILayout.Label(_i18N.t("Info.Category"), GUILayout.Width(160f));
         
+        GUILayout.BeginVertical();
+        _scrollPosition = GUILayout.BeginScrollView(_scrollPosition,
+            GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+        
         GUILayout.BeginHorizontal();
         if (GUILayout.Button(_i18N.t("CurrencyClass.Coins"), GUILayout.Width(160f)))
         {
@@ -239,6 +222,9 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
             SelectedCurrency = CurrencyClass.Gold;
         }
         GUILayout.EndHorizontal();
+        
+        GUILayout.EndScrollView();
+        GUILayout.EndVertical();
         
         GUILayout.Space(10f);
         
@@ -303,6 +289,8 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
                     GUILayout.Space(10f);
             });
         }
+        
+        GUILayout.Space(10f);
          
         // 物品列表滚动栏
         {
