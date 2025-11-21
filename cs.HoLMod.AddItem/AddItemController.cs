@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using YuanAPI;
 
@@ -61,6 +62,9 @@ public class AddItemController
             case MenuTab.Stories:
                 _view.CountInput = "1";
                 break;
+            case MenuTab.Map:
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 
@@ -77,6 +81,9 @@ public class AddItemController
                 break;
             case MenuTab.Stories:
                 WhenAddStories();
+                break;
+            case MenuTab.Map:
+                WhenAddMaps();
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -116,6 +123,60 @@ public class AddItemController
             return;
         }
         _model.AddStoriesBook((int)_view.SelectedBookId);
+    }
+
+    private void WhenAddMaps()
+    {
+        var junId = _view.SelectedJunId;
+        var xianId = _view.SelectedXianId;
+        var area = _view.SelectedArea;
+        switch (_view.SelectedMap)
+        {
+            case MapTab.Mansion:
+                _model.AddMansion(junId, xianId, GetName());
+                break;
+            case MapTab.Farm:
+                if(!CheckArea())
+                    break;
+                _model.AddFarm(junId, xianId, area, GetName());
+                break;
+            case MapTab.Fief:
+                _model.AddFief(junId);
+                break;
+            case MapTab.Family:
+                _model.AddFamily(junId, xianId);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private List<string> _mapArea = ["4", "9", "16", "25"];
+    private bool CheckArea()
+    {
+        return _mapArea.Contains(_view.SelectedArea);
+    }
+
+    private string GetName()
+    {
+        var name = _view.NameInput;
+        if (!string.IsNullOrWhiteSpace(name)) 
+            return name;
+        
+        switch (_view.SelectedMap)
+        {
+            case MapTab.Mansion:
+                name = RandName.GetFudiName();
+                break;
+            case MapTab.Farm:
+                name = RandName.GetNongZName();
+                break;
+            case MapTab.Fief:
+            case MapTab.Family:
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        return name;
     }
     
     #endregion

@@ -119,4 +119,28 @@ public partial class AddItemModule : IAddItemModel
         var bookIdStr = bookId.ToString();
         return Mainload.XiQuHave_Now.Any(book => book[0] == bookIdStr);
     }
+
+    #region 地图添加
+
+    public void AddMansion(int junId, int xianId, string name)
+    {
+        
+    }
+
+    public void AddFarm(int junId, int xianId, string area, string name)
+    {
+        
+    }
+
+    public void AddFief(int junId)
+    {
+        
+    }
+
+    public void AddFamily(int junId, int xianId)
+    {
+        
+    }
+
+    #endregion
 }
