@@ -6,6 +6,7 @@ public interface IAddItemView
 {
     event Action OnFilterChanged;
     event Action OnCountInputChanged;
+    event Action OnNameInputChanged;
     event Action OnAddButton;
     
     bool ShowMenu { get; set; }
@@ -22,10 +23,17 @@ public interface IAddItemView
     int? SelectedPropId { get; set; }
     
     // 话本相关
-    public int? SelectedBookId { get; set; }
+    int? SelectedBookId { get; set; }
+    
+    // 地图相关
+    MapTab SelectedMap { get; set; }
+    int SelectedJunId { get; set; }
+    int SelectedXianId { get; set; }
+    string SelectedArea { get; set; }
     
     // 控制栏
     string CountInput { get; set; }
+    string NameInput { get; set; }
 
     void Initialize(IAddItemModel model);
 }

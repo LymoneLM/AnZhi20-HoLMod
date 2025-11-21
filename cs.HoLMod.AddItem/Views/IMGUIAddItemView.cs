@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 using YuanAPI;
@@ -17,6 +18,7 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
     // 事件
     public event Action OnFilterChanged;
     public event Action OnCountInputChanged;
+    public event Action OnNameInputChanged;
     public event Action OnAddButton;
     
     public bool ShowMenu { get; set; }
@@ -35,6 +37,12 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
     // 话本相关
     public int? SelectedBookId { get; set; }
     
+    // 地图相关
+    public MapTab SelectedMap { get; set; } = MapTab.Mansion;
+    public int SelectedJunId { get; set; }
+    public int SelectedXianId { get; set; }
+    public string SelectedArea { get; set; } = "16";
+    
     // 控制栏
     public string CountInput
     {
@@ -47,6 +55,17 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
             OnCountInputChanged?.Invoke();
         }
     } = "1";
+    public string NameInput
+    {
+        get;
+        set
+        {
+            if (field == value) 
+                return;
+            field = value;
+            OnNameInputChanged?.Invoke();
+        }
+    } = "";
 
     #endregion
 
@@ -161,6 +180,7 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
         GUILayout.Space(10f);
         
         // 根据当前模式显示不同内容
+        GUILayout.BeginVertical(GUILayout.ExpandWidth(true),GUILayout.ExpandHeight(true));
         switch (PanelTab)
         {
             case MenuTab.Currency:
@@ -172,13 +192,18 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
             case MenuTab.Stories:
                 DrawAddStories();
                 break;
+            case MenuTab.Map:
+                DrawAddMaps();
+                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
+        GUILayout.EndVertical();
         
+        // 底部
         GUILayout.BeginVertical();
-        
         GUILayout.FlexibleSpace();
+        
         GUILayout.Space(10f);
         DrawAddButton();
         GUILayout.Space(10f);
@@ -203,8 +228,6 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
 
     private void DrawAddCurrency()
     {
-        GUILayout.BeginVertical();
-        
         // 货币类型选择
         GUILayout.Label(_i18N.t("Info.Category"), GUILayout.Width(160f));
         
@@ -234,8 +257,6 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
             GUILayout.ExpandWidth(true));
         GUILayout.Label(_i18N.t("Info.CurrencyNow.Gold", args: Mainload.CGNum[1]), 
             GUILayout.ExpandWidth(true));
-        GUILayout.EndVertical();
-        
         GUILayout.EndVertical();
     }
 
@@ -340,6 +361,137 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
         GUILayout.EndVertical();
     }
 
+    [Flags]
+    private enum MapPartFlag
+    {
+        None = 1,
+        Jun = 1<<1,
+        Xian = 1<<2,
+        Area = 1<<3,
+        Name = 1<<4,
+    }
+
+    private Dictionary<MapTab, MapPartFlag> _mapPartFlags = new()
+    {
+        { MapTab.Mansion, MapPartFlag.Jun | MapPartFlag.Xian | MapPartFlag.Name },
+        { MapTab.Farm , MapPartFlag.Jun | MapPartFlag.Xian | MapPartFlag.Area | MapPartFlag.Name },
+        { MapTab.Fief , MapPartFlag.Jun},
+        { MapTab.Family, MapPartFlag.Jun | MapPartFlag.Xian },
+    };
+
+    private List<string> _mapArea = ["4", "9", "16", "25"];
+    
+    private void DrawAddMaps()
+    {
+        // 类型选项
+        GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+        Enum.GetNames(typeof(MapTab)).ForEach((key, index) =>
+        {
+            if (GUILayout.Button(_i18N.t("MapTab." + key), GUILayout.ExpandWidth(true)))
+                SelectedMap = (MapTab)index;
+        });
+        GUILayout.EndHorizontal();
+        
+        GUILayout.Space(10f);
+        
+        GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+        _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, 
+            GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+        
+        // 郡
+        if ((_mapPartFlags[SelectedMap] & MapPartFlag.Jun) == MapPartFlag.Jun)
+        {
+            GUILayout.Label(_i18N.t("Info.Jun"), GUILayout.Width(160f));
+            
+            var perLineBtn = 6;
+            var maxBtn = ItemData.JunList.Count;
+            ItemData.JunList.ForEach((junName, index) =>
+            {
+                if(index % perLineBtn == 0)
+                    GUILayout.BeginHorizontal();
+                
+                if (GUILayout.Button(junName, GUILayout.Width(100f)))
+                {
+                    SelectedJunId = index;
+                }
+                
+                if(++index % perLineBtn == 0 || index == maxBtn)
+                    GUILayout.EndHorizontal();
+            });
+        }
+        
+        // 县
+        if ((_mapPartFlags[SelectedMap] & MapPartFlag.Xian) == MapPartFlag.Xian)
+        {
+            GUILayout.Space(10f);
+            GUILayout.Label(_i18N.t("Info.Xian"), GUILayout.Width(160f));
+
+            var perLineBtn = 6;
+            var maxBtn = ItemData.XianList[SelectedJunId].Count;
+            // 防错补丁
+            if (SelectedXianId >= maxBtn)
+                SelectedXianId = 0;
+            ItemData.XianList[SelectedJunId].ForEach((xianName, index) =>
+            {
+                if(index % perLineBtn == 0)
+                    GUILayout.BeginHorizontal();
+                    
+                if (GUILayout.Button(xianName, GUILayout.Width(100f)))
+                {
+                    SelectedXianId = index;
+                }
+                
+                if(++index % perLineBtn == 0 || index == maxBtn)
+                    GUILayout.EndHorizontal();
+            });
+        }
+        
+        // 面积
+        if ((_mapPartFlags[SelectedMap] & MapPartFlag.Area) == MapPartFlag.Area)
+        {
+            GUILayout.Space(10f);
+            GUILayout.Label(_i18N.t("Info.Area"), GUILayout.Width(160f));
+            
+            GUILayout.BeginHorizontal();
+            _mapArea.ForEach(area =>
+            {
+                if (GUILayout.Button(area, GUILayout.Width(100f)))
+                {
+                    SelectedArea = area;
+                }
+            });
+            GUILayout.EndHorizontal();
+        }
+            
+        GUILayout.EndScrollView();
+        GUILayout.EndVertical();
+    }
+
+    private string GetSelectMap()
+    {
+        var str = _i18N.t("MapTab." + Enum.GetName(typeof(MapTab), SelectedMap));
+        
+        if ((_mapPartFlags[SelectedMap] & MapPartFlag.Jun) == MapPartFlag.Jun)
+        {
+            str += " - ";
+            str += ItemData.JunList[SelectedJunId];
+        }
+
+        if ((_mapPartFlags[SelectedMap] & MapPartFlag.Xian) == MapPartFlag.Xian)
+        {
+            str += " - ";
+            str += ItemData.XianList[SelectedJunId][SelectedXianId];
+        }
+
+        if ((_mapPartFlags[SelectedMap] & MapPartFlag.Area) == MapPartFlag.Area)
+        {
+            str += " - ";
+            str += SelectedArea;
+        }
+
+        return str;
+    }
+
     private void DrawAddButton()
     {
         GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -352,6 +504,7 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
                 MenuTab.Currency => _i18N.t($"CurrencyClass.{SelectedCurrency.ToString()}"),
                 MenuTab.Items => SelectedPropId != null ? _vStr.t($"Text_AllProp.{SelectedPropId}") : "",
                 MenuTab.Stories => SelectedBookId != null ? ItemData.StoriesList[(int)SelectedBookId] : "",
+                MenuTab.Map => GetSelectMap(),
                 _ => ""
             };
             GUILayout.Label($"{_i18N.t("Info.Selected")}{text}", GUILayout.ExpandWidth(true));
@@ -360,13 +513,37 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
 
             // 数量输入框
             GUILayout.BeginHorizontal();
-            GUILayout.Label(_i18N.t("Info.Count"), GUILayout.Width(100f));
-            CountInput = GUILayout.TextField(CountInput, GUILayout.ExpandWidth(true));
+            switch (PanelTab)
+            {
+                case MenuTab.Currency:
+                case MenuTab.Items:
+                case MenuTab.Stories:
+                    GUILayout.Label(_i18N.t("Info.Count"), GUILayout.Width(100f));
+                    CountInput = GUILayout.TextField(CountInput, GUILayout.ExpandWidth(true));
+                    break;
+                case MenuTab.Map:
+                    if ((_mapPartFlags[SelectedMap] & MapPartFlag.Name) == MapPartFlag.Name)
+                    {
+                        GUILayout.Label(_i18N.t("Info.Name"), GUILayout.Width(100f));
+                        NameInput = GUILayout.TextField(NameInput, GUILayout.ExpandWidth(true));
+                    }
+                    else
+                    {
+                        GUILayout.Label(_i18N.t("Info.Name"), GUILayout.Width(100f));
+                        GUILayout.TextField(_i18N.t("Info.NoName"), GUILayout.ExpandWidth(true));
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
             GUILayout.EndHorizontal();
 
             GUILayout.Space(6f);
-
+            
+            GUILayout.BeginHorizontal();
             DrawQuickAddRow();
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
             
             GUILayout.EndVertical();
         }
@@ -401,7 +578,6 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
 
     private void DrawQuickAddRow()
     {
-        GUILayout.BeginHorizontal();
         foreach (var (label, value) in _kQuickAdds)
         {
             if (GUILayout.Button(label, GUILayout.Width(80f), GUILayout.Height(36f)))
@@ -410,8 +586,5 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
             }
             GUILayout.Space(6f);
         }
-        GUILayout.FlexibleSpace();
-        GUILayout.EndHorizontal();
     }
-
 }

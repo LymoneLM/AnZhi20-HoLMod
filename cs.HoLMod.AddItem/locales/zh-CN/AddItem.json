@@ -54,7 +54,12 @@
       "Coins": "当前铜钱: {0}",
       "Gold": "当前元宝: {0}"
     },
-    "Selected": "当前选中: "
+    "Selected": "当前选中: ",
+    "Jun": "郡: ",
+    "Xian": "县: ",
+    "Area": "面积: ",
+    "Name": "名称(留空随机): ",
+    "NoName": "不可修改"
   },
   "Button": {
     "Add": "添加",
@@ -80,5 +85,11 @@
     "AddGold": {
       "Succeed": "已添加{0}元宝"
     }
+  },
+  "MapTab": {
+    "Mansion": "府邸",
+    "Farm": "农庄",
+    "Fief": "封地",
+    "Family": "世家"
   }
 }

@@ -54,7 +54,12 @@
       "Coins": "Current Conis: {0}",
       "Gold": "Current Gold: {0}"
     },
-    "Selected": "Current Selected: "
+    "Selected": "Current Selected: ",
+    "Jun": "Select Jun: ",
+    "Xian": "Select Xian: ",
+    "Area": "Select Area: ",
+    "Name": "Name: ",
+    "NoName": "-None-"
   },
   "Button": {
     "Add": "Add",
@@ -80,5 +85,11 @@
     "AddGold": {
       "Succeed": "Added {0} Gold"
     }
+  },
+  "MapTab": {
+    "Mansion": "Mansion",
+    "Farm": "Farm",
+    "Fief": "Fief",
+    "Family": "Family"
   }
 }
