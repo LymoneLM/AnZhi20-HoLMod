@@ -1645,7 +1645,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj2 = Object.Instantiate(PerMemberA);
                 obj2.name = MemberSouSuo[j][1].ToString();
-                obj2.transform.GetComponent<PerMemberBT>().ShowId = 210;
+                obj2.transform.GetComponent<PerMemberBT>().ShowId = 1210;
                 obj2.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj2.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj2.transform.localPosition = new Vector3(50 + 90 * (num % 10), -63 - 115 * Mathf.FloorToInt((float)num / 10f), 0f);
@@ -1655,7 +1655,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj3 = Object.Instantiate(PerMemberA);
                 obj3.name = MemberSouSuo[j][1].ToString();
-                obj3.transform.GetComponent<PerMemberBT>().ShowId = 211;
+                obj3.transform.GetComponent<PerMemberBT>().ShowId = 1211;
                 obj3.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj3.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj3.transform.localPosition = new Vector3(50 + 90 * (num % 10), -63 - 115 * Mathf.FloorToInt((float)num / 10f), 0f);
@@ -1665,7 +1665,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj4 = Object.Instantiate(PerMemberA);
                 obj4.name = MemberSouSuo[j][1].ToString();
-                obj4.transform.GetComponent<PerMemberBT>().ShowId = 212;
+                obj4.transform.GetComponent<PerMemberBT>().ShowId = 1212;
                 obj4.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj4.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj4.transform.localPosition = new Vector3(50 + 90 * (num % 10), -63 - 115 * Mathf.FloorToInt((float)num / 10f), 0f);
@@ -1675,7 +1675,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj4 = Object.Instantiate(PerMemberA);
                 obj4.name = MemberSouSuo[j][1].ToString();
-                obj4.transform.GetComponent<PerMemberBT>().ShowId = 213;
+                obj4.transform.GetComponent<PerMemberBT>().ShowId = 1213;
                 obj4.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj4.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj4.transform.localPosition = new Vector3(50 + 90 * (num % 10), -63 - 115 * Mathf.FloorToInt((float)num / 10f), 0f);
@@ -1685,7 +1685,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj4 = Object.Instantiate(PerMemberA);
                 obj4.name = MemberSouSuo[j][1].ToString();
-                obj4.transform.GetComponent<PerMemberBT>().ShowId = 214;
+                obj4.transform.GetComponent<PerMemberBT>().ShowId = 1214;
                 obj4.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj4.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj4.transform.localPosition = new Vector3(50 + 90 * (num % 10), -63 - 115 * Mathf.FloorToInt((float)num / 10f), 0f);
@@ -1695,7 +1695,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj4 = Object.Instantiate(PerMemberA);
                 obj4.name = MemberSouSuo[j][1].ToString();
-                obj4.transform.GetComponent<PerMemberBT>().ShowId = 215;
+                obj4.transform.GetComponent<PerMemberBT>().ShowId = 1215;
                 obj4.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj4.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj4.transform.localPosition = new Vector3(50 + 90 * (num % 10), -63 - 115 * Mathf.FloorToInt((float)num / 10f), 0f);
@@ -1705,7 +1705,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj4 = Object.Instantiate(PerMemberA);
                 obj4.name = MemberSouSuo[j][1].ToString();
-                obj4.transform.GetComponent<PerMemberBT>().ShowId = 216;
+                obj4.transform.GetComponent<PerMemberBT>().ShowId = 1216;
                 obj4.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj4.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj4.transform.localPosition = new Vector3(50 + 90 * (num % 10), -63 - 115 * Mathf.FloorToInt((float)num / 10f), 0f);
@@ -1715,7 +1715,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj4 = Object.Instantiate(PerMemberA);
                 obj4.name = MemberSouSuo[j][1].ToString();
-                obj4.transform.GetComponent<PerMemberBT>().ShowId = 217;
+                obj4.transform.GetComponent<PerMemberBT>().ShowId = 1217;
                 obj4.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj4.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj4.transform.localPosition = new Vector3(50 + 90 * (num % 10), -63 - 115 * Mathf.FloorToInt((float)num / 10f), 0f);
@@ -2610,7 +2610,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj2 = Object.Instantiate(PerMemberA);
                 obj2.name = list2[num12][1].ToString();
-                obj2.transform.GetComponent<PerMemberBT>().ShowId = 210;
+                obj2.transform.GetComponent<PerMemberBT>().ShowId = 1210;
                 obj2.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj2.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj2.transform.localPosition = new Vector3(50 + 90 * (num11 % 10), -63 - 115 * Mathf.FloorToInt((float)num11 / 10f), 0f);
@@ -2620,7 +2620,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj3 = Object.Instantiate(PerMemberA);
                 obj3.name = list2[num12][1].ToString();
-                obj3.transform.GetComponent<PerMemberBT>().ShowId = 211;
+                obj3.transform.GetComponent<PerMemberBT>().ShowId = 1211;
                 obj3.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj3.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj3.transform.localPosition = new Vector3(50 + 90 * (num11 % 10), -63 - 115 * Mathf.FloorToInt((float)num11 / 10f), 0f);
@@ -2630,7 +2630,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj4 = Object.Instantiate(PerMemberA);
                 obj4.name = list2[num12][1].ToString();
-                obj4.transform.GetComponent<PerMemberBT>().ShowId = 212;
+                obj4.transform.GetComponent<PerMemberBT>().ShowId = 1212;
                 obj4.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj4.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj4.transform.localPosition = new Vector3(50 + 90 * (num11 % 10), -63 - 115 * Mathf.FloorToInt((float)num11 / 10f), 0f);
@@ -2640,7 +2640,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj5 = Object.Instantiate(PerMemberA);
                 obj5.name = list2[num12][1].ToString();
-                obj5.transform.GetComponent<PerMemberBT>().ShowId = 213;
+                obj5.transform.GetComponent<PerMemberBT>().ShowId = 1213;
                 obj5.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj5.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj5.transform.localPosition = new Vector3(50 + 90 * (num11 % 10), -63 - 115 * Mathf.FloorToInt((float)num11 / 10f), 0f);
@@ -2650,7 +2650,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj6 = Object.Instantiate(PerMemberA);
                 obj6.name = list2[num12][1].ToString();
-                obj6.transform.GetComponent<PerMemberBT>().ShowId = 214;
+                obj6.transform.GetComponent<PerMemberBT>().ShowId = 1214;
                 obj6.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj6.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj6.transform.localPosition = new Vector3(50 + 90 * (num11 % 10), -63 - 115 * Mathf.FloorToInt((float)num11 / 10f), 0f);
@@ -2660,7 +2660,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj7 = Object.Instantiate(PerMemberA);
                 obj7.name = list2[num12][1].ToString();
-                obj7.transform.GetComponent<PerMemberBT>().ShowId = 215;
+                obj7.transform.GetComponent<PerMemberBT>().ShowId = 1215;
                 obj7.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj7.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj7.transform.localPosition = new Vector3(50 + 90 * (num11 % 10), -63 - 115 * Mathf.FloorToInt((float)num11 / 10f), 0f);
@@ -2670,7 +2670,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj8 = Object.Instantiate(PerMemberA);
                 obj8.name = list2[num12][1].ToString();
-                obj8.transform.GetComponent<PerMemberBT>().ShowId = 216;
+                obj8.transform.GetComponent<PerMemberBT>().ShowId = 1216;
                 obj8.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj8.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj8.transform.localPosition = new Vector3(50 + 90 * (num11 % 10), -63 - 115 * Mathf.FloorToInt((float)num11 / 10f), 0f);
@@ -2680,7 +2680,7 @@ public class MemberCheatPanelA : MonoBehaviour
             {
                 GameObject obj9 = Object.Instantiate(PerMemberA);
                 obj9.name = list2[num12][1].ToString();
-                obj9.transform.GetComponent<PerMemberBT>().ShowId = 217;
+                obj9.transform.GetComponent<PerMemberBT>().ShowId = 1217;
                 obj9.transform.SetParent(base.transform.Find("AllMember").Find("Viewport").Find("Content"));
                 obj9.transform.localScale = new Vector3(1f, 1f, 1f);
                 obj9.transform.localPosition = new Vector3(50 + 90 * (num11 % 10), -63 - 115 * Mathf.FloorToInt((float)num11 / 10f), 0f);
@@ -2830,7 +2830,7 @@ public class MemberCheatPanelA : MonoBehaviour
 
     private void CloseBT()
     {
-        IsMemberCheatPanelOpen = false;
+        base.transform.Find("PanelA").gameObject.SetActive(value: false);
     }
 
     public void UpdateMemberShow()

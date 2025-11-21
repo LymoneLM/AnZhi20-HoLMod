@@ -243,9 +243,8 @@ public class membercheat : MonoBehaviour
     {
         if (Input.GetKeyDown(Mainload.FastKey[0]) || Mainload.isClick_NullA)
         {
-            Mainload.isClick_NullA = false;
             OnEnableShow();
-            Mainload.isZupuPanelOpen = false;
+            base.transform.Find("PanelA").gameObject.SetActive(value: false);
         }
     }
 }

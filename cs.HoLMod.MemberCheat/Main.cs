@@ -32,6 +32,7 @@ namespace cs.HoLMod.MemberCheat
         private void Awake()
         {
             LoadAssetBundle();
+            打开修改器();
         }
         
         private void LoadAssetBundle()
@@ -39,7 +40,7 @@ namespace cs.HoLMod.MemberCheat
             try
             {
                 // 加载ab包
-                string bundlePath = Path.Combine(Paths.PluginPath, "membercheat" + ".bundle");
+                string bundlePath = Path.Combine(Paths.PluginPath, "membercheat");
                 if (File.Exists(bundlePath))
                 {
                     memberCheatBundle = AssetBundle.LoadFromFile(bundlePath);
@@ -97,7 +98,15 @@ namespace cs.HoLMod.MemberCheat
                 Logger.LogError("加载ab包时发生错误: " + ex.Message);
             }
         }
-        
+
+        private void 打开修改器()
+        {
+            if (Input.GetKeyDown(KeyCode.F8))
+            {
+                base.transform.Find("PanelA").gameObject.SetActive(value: true);
+            }
+        }
+
         private void OnDestroy()
         {
             // 卸载ab包
