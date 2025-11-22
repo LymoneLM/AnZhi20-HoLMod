@@ -70,16 +70,18 @@ public class AddItemController
 
     private void CallAddButton()
     {
-        CheckCountInput();
         switch (_view.PanelTab)
         {
             case MenuTab.Currency:
+                CheckCountInput();
                 WhenAddCurrency();
                 break;
             case MenuTab.Items:
+                CheckCountInput();
                 WhenAddItem();
                 break;
             case MenuTab.Stories:
+                CheckCountInput();
                 WhenAddStories();
                 break;
             case MenuTab.Map:
@@ -136,8 +138,11 @@ public class AddItemController
                 _model.AddMansion(junId, xianId, GetName());
                 break;
             case MapTab.Farm:
-                if(!CheckArea())
+                if (!CheckArea(area))
+                {
+                    MsgTool.TipMsg("无效面积");
                     break;
+                }
                 _model.AddFarm(junId, xianId, area, GetName());
                 break;
             case MapTab.Fief:
@@ -152,9 +157,9 @@ public class AddItemController
     }
 
     private List<string> _mapArea = ["4", "9", "16", "25"];
-    private bool CheckArea()
+    private bool CheckArea(string area)
     {
-        return _mapArea.Contains(_view.SelectedArea);
+        return _mapArea.Contains(area);
     }
 
     private string GetName()

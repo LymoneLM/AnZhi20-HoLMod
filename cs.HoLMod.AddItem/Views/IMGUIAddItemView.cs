@@ -387,6 +387,9 @@ public class IMGUIAddItemView : MonoBehaviour, IAddItemView
         GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
         Enum.GetNames(typeof(MapTab)).ForEach((key, index) =>
         {
+            // 隐藏未做完的功能
+            if(key == "Family") 
+                return;
             if (GUILayout.Button(_i18N.t("MapTab." + key), GUILayout.ExpandWidth(true)))
                 SelectedMap = (MapTab)index;
         });
