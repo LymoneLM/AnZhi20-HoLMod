@@ -1,0 +1,17 @@
+### v2.0.0
+
+- 装备库MOD，计划添加：武器（已实现，添加了74个武器）、马匹（开发中）、珠宝（已实现，添加了176个珠宝）、符咒（已实现，添加了24个符咒）。Equipment library MOD, planned to add: weapons (implemented, 74 weapons added), horses (under development), jewelry (implemented, 176 jewelry added), spells (implemented, 24 spells added).
+- 添加逻辑：武器可以在游戏内通过铁匠铺购买获取，珠宝可以在游戏内通过珠宝行购买获取，符咒可以在游戏内通过云游道人随机售卖获取。Add logic: Weapons can be purchased and obtained through blacksmith shops in the game, jewelry can be purchased and obtained through jewelry stores in the game, and talismans can be randomly sold and obtained through Cloud Taoist in the game.
+- 可添加的珠宝：（木/石/铜/铁/银/金）扳指（男）、（下/中/上/特等）（花青种、豆种、糯种、冰种、玻璃种）玉扳指（男）、至尊扳指（男）、（下/中/上/特等）（花青种、豆种、糯种、冰种、玻璃种）玉佩（男）、至尊玉佩（男）、（木/石/铜/铁/银/金）印（男/女）、（下/中/上/特等）（花青种、豆种、糯种、冰种、玻璃种）玉印（男/女）、玉玺（龙印/凤印）、麻布腰带（男/女）、（下/中/上/特等）（粗布/葛布/缎/绸/绫）腰带（男/女）、（一至五等）（宋锦/蜀锦/云锦）腰带（男/女）、至尊腰带（男/女）。Jewelry that can be added: (Wood/Stone/Copper/Iron/Silver/Gold) Ring Finger (Male), (Bottom/Medium/Top/Special Grade) (Flower Green, Bean Seed, Glutinous Seed, Ice Seed, Glass Seed) Jade Ring Finger (Male), Supreme Ring Finger (Male), (Bottom/Medium/Top/Special Grade) (Flower Green, Bean Seed, Glutinous Seed, Ice Seed, Glass Seed) Jade Pendant (Male), Supreme Jade Pendant (Male), (Wood/Stone/Copper/Iron/Silver/Gold) Seal (Male/Female), (Bottom/Medium/Top/Special Grade) (Flower Green, Bean Seed, Glutinous Seed, Ice Seed) Glass type) jade seal (male/female), jade seal (dragon seal/phoenix seal), linen belt (male/female), (lower/middle/upper/special grade) (coarse cloth/greige cloth/satin/silk/satin) belt (male/female), (first to fifth grade) (Song brocade/Shu brocade/Yun brocade) belt (male/female), supreme belt (male/female).
+- 可添加的符咒：1-24级符咒。Additional spells: Level 1-24 spells.
+- 已修复bug：物品数量显示错误。Fixed bug: Item quantity display error.
+
+### v1.1.0
+
+- 已修复bug：MOD依赖。Fixed bug: MOD dependency.
+
+### v1.0.0
+
+- 装备库MOD，计划添加：武器（已实现，添加了74个武器）、马匹（开发中）、珠宝（开发中）、符咒（开发中）。Hook equipment library MOD, planned to add: weapons (already implemented, 74 weapons added), horses (under development), jewelry (under development), talismans (under development).
+- 为配置文件及其它相关内容增加英文适配。Add English adaptation for configuration files and other related content.
+- 可添加的武器：石斧、石镰、青铜戈、青铜剑、青铜矛、青铜钺、（精）铁刀、（精）铁枪、（精）铁剑、（精）铁戟、（精）铁斧、（精）铁钺、（精）铁钩、（精）铁叉、（精）铁鞭、（精）铁锏、（精）铁锤、（精）铁抓、（精）铁棍、（精）铁棒、（精）铁拐、（精）铁镋、（精）铁流星锤、精钢刀、精钢枪、精钢剑、精钢戟、精钢斧、精钢钺、精钢钩、精钢叉、精钢鞭、精钢锏、精钢锤、精钢抓、精钢棍、精钢棒、精钢拐、精钢镋、精钢流星锤、54式手枪、64式手枪、92式手枪、AK-47步枪、M4步枪、M16步枪、56式步枪、95式步枪、81式步枪、97式步枪、M24狙击步枪、M95狙击步枪、M99狙击步枪、QBU88式狙击步枪、QBU10式狙击步枪、CS/LR3式狙击步枪、CS/LR4式狙击步枪。Weapons that can be added: stone axe, stone sickle, bronze spear, bronze sword, bronze spear, bronze sword, (fine) iron knife, (fine) iron spear, (fine) iron sword, (fine) iron spear, (fine) iron spear, (fine) iron axe, (fine) iron spear, (fine) iron hook, (fine) iron fork, (fine) iron whip, (fine) iron mace, (fine) iron hammer, (fine) iron grab, (fine) iron rod, (fine) iron rod, (fine) iron crutch, (fine) iron spear, (fine) iron meteor hammer, fine steel knife, fine steel gun, fine steel sword, fine steel spear Stainless Steel Axe, Stainless Steel Axe, Stainless Steel Hook, Stainless Steel Fork, Stainless Steel Whip, Stainless Steel Spear, Stainless Steel Hammer, Stainless Steel Grasp, Stainless Steel Rod, Stainless Steel Rod, Stainless Steel Hook, Stainless Steel Hammer, Type 54 Pistol, Type 64 Pistol, Type 92 Pistol AK-47 rifle, M4 rifle, M16 rifle, 56 rifle, 95 rifle, 81 rifle, 97 rifle, M24 sniper rifle, M95 sniper rifle, M99 sniper rifle, QBU88 sniper rifle, QBU10 sniper rifle, CS/LR3 sniper rifle, CS/LR4 sniper rifle.

@@ -41,7 +41,7 @@ namespace cs.HoLMod.TaskCheat
             string SceneClass = arrayadd[0];
 
             // 检查场景类型是否为有效类型，只要有一个为有效类型，就认为是游戏中，那么继续执行
-            if (SceneClass == "M" || SceneClass == "Z" || SceneClass == "S" || SceneClass == "H" || SceneClass == "F")
+            if (SceneClass == "M" || SceneClass == "Z" || SceneClass == "S" || SceneClass == "H" || SceneClass == "F" && SceneClass != "L")
             {
                 try
             {

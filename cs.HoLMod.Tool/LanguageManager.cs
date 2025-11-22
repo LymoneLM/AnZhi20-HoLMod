@@ -1,105 +1,86 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
-namespace cs.HoLMod.Tool
+namespace cs.HoLMod.TestTool
 {
-    public class LanguageManager
+    internal class LanguageManager
     {
-        public enum Language
-        {
-            Chinese,
-            English
-        }
+        // 单例模式
+        private static readonly LanguageManager instance = new LanguageManager();
+        private string currentLanguageCode = "zh-CN"; // 默认中文
+        private Dictionary<string, Dictionary<string, string>> translations = new Dictionary<string, Dictionary<string, string>>();
 
-        private static LanguageManager _instance;
-        public static LanguageManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new LanguageManager();
-                }
-                return _instance;
-            }
-        }
-
-        private Language _currentLanguage = Language.Chinese;
-        public Language CurrentLanguage
-        {
-            get { return _currentLanguage; }
-            set { _currentLanguage = value; }
-        }
-
-        private Dictionary<string, Dictionary<Language, string>> _languageDictionary = new Dictionary<string, Dictionary<Language, string>>();
-
+        // 私有构造函数
         private LanguageManager()
         {
-            // 初始化多语言字典
-            InitializeLanguageDictionary();
+            // 初始化语言翻译字典
+            InitializeTranslations();
         }
 
-        private void InitializeLanguageDictionary()
+        // 获取单例实例
+        public static LanguageManager Instance
         {
-            // 添加基础语言条目
-            AddLanguageEntry("windowTitle", "数据编辑器", "Data Editor");
-            AddLanguageEntry("selectArray", "选择数组", "Select Array");
-            AddLanguageEntry("originalValue", "原始值", "Original Value");
-            AddLanguageEntry("newValue", "新值", "New Value");
-            AddLanguageEntry("modify", "修改", "Modify");
-            AddLanguageEntry("emptyArray", "数组为空", "Array is empty");
-            AddLanguageEntry("chinese", "中文", "Chinese");
-            AddLanguageEntry("english", "英文", "English");
-            // 可以在这里添加更多的语言条目
+            get { return instance; }
         }
 
-        // 添加新的语言条目
-        public void AddLanguageEntry(string key, string chineseText, string englishText)
+        // 初始化翻译
+        private void InitializeTranslations()
         {
-            if (!_languageDictionary.ContainsKey(key))
+            // 中文翻译（代码中编写的中文，翻译的中文）
+            translations["zh-CN"] = new Dictionary<string, string>
             {
-                _languageDictionary[key] = new Dictionary<Language, string>();
-            }
+            };
 
-            _languageDictionary[key][Language.Chinese] = chineseText;
-            _languageDictionary[key][Language.English] = englishText;
+            // 英文翻译（代码中编写的中文，翻译的英文）
+            translations["en-US"] = new Dictionary<string, string>
+            {
+            };
         }
 
-        // 添加新的语言支持
-        public void AddNewLanguage(Language language, Dictionary<string, string> translations)
+        // 设置当前语言
+        public void SetLanguage(string languageCode)
         {
-            foreach (var kvp in translations)
+            if (translations.ContainsKey(languageCode))
             {
-                if (!_languageDictionary.ContainsKey(kvp.Key))
-                {
-                    _languageDictionary[kvp.Key] = new Dictionary<Language, string>();
-                }
-
-                _languageDictionary[kvp.Key][language] = kvp.Value;
-            }
-        }
-
-        // 获取翻译文本
-        public string GetText(string key)
-        {
-            if (_languageDictionary.ContainsKey(key) && _languageDictionary[key].ContainsKey(_currentLanguage))
-            {
-                return _languageDictionary[key][_currentLanguage];
-            }
-            
-            // 如果找不到对应的翻译，返回键本身
-            return key;
-        }
-
-        // 切换语言
-        public void ToggleLanguage()
-        {
-            if (_currentLanguage == Language.Chinese)
-            {
-                _currentLanguage = Language.English;
+                currentLanguageCode = languageCode;
             }
             else
             {
-                _currentLanguage = Language.Chinese;
+                // 如果请求的语言不存在，使用默认语言
+                currentLanguageCode = "zh-CN";
+            }
+        }
+
+        // 获取翻译
+        public string GetTranslation(string key)
+        {
+            if (translations[currentLanguageCode].ContainsKey(key))
+            {
+                return translations[currentLanguageCode][key];
+            }
+            else
+            {
+                // 如果键不存在，返回键本身
+                return key;
+            }
+        }
+
+        // 获取支持的语言列表
+        public List<string> GetSupportedLanguages()
+        {
+            return translations.Keys.ToList();
+        }
+
+        // 获取语言显示名称
+        public string GetLanguageDisplayName(string languageCode)
+        {
+            switch (languageCode)
+            {
+                case "zh-CN": return "中文简体";
+                case "en-US": return "English";
+                // 可以在这里添加更多语言的显示名称
+                default:
+                    return languageCode;
             }
         }
     }

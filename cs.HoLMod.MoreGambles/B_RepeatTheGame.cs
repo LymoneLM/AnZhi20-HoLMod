@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using BepInEx.Logging;
-using cs.HoLMod.TaskCheat; // 引入LanguageManager所在命名空间
 
 namespace cs.HoLMod.MoreGambles
 {
@@ -28,11 +27,11 @@ namespace cs.HoLMod.MoreGambles
                 if (remainingMoney <= 0)
                 {
                     // 弹出借贷窗口（暂时不实现，默认为不借贷继续运行）
-                Logger.LogInfo(LanguageManager.GetText("RemainingMoneyZeroLoanWindow"));
+                Logger.LogInfo(LanguageManager.Instance.GetText("RemainingMoneyZeroLoanWindow"));
                 
                 // 模拟借贷后再次检查（默认为不借贷）
                 // 由于借贷功能暂未实现，剩余货币仍为0，直接返回主窗口
-                Logger.LogInfo(LanguageManager.GetText("LoanFunctionNotImplemented"));
+                Logger.LogInfo(LanguageManager.Instance.GetText("LoanFunctionNotImplemented"));
                     returnToMainMenuAction?.Invoke();
                     return false;
                 }
@@ -130,7 +129,7 @@ namespace cs.HoLMod.MoreGambles
                 GUI.skin.button.fontSize = Mathf.RoundToInt(14 * scaleFactor);
                 GUI.skin.label.fontSize = Mathf.RoundToInt(14 * scaleFactor);
                 
-                windowRect = GUI.Window(0, windowRect, DrawDialogWindow, LanguageManager.GetText("GameOver"), GUI.skin.window);
+                windowRect = GUI.Window(0, windowRect, DrawDialogWindow, LanguageManager.Instance.GetText("GameOver"), GUI.skin.window);
             }
             
             private void DrawDialogWindow(int windowID)
@@ -140,7 +139,7 @@ namespace cs.HoLMod.MoreGambles
                 
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
-                GUILayout.Label(LanguageManager.GetText("PlayAgainQuestion"), GUILayout.ExpandWidth(false));
+                GUILayout.Label(LanguageManager.Instance.GetText("PlayAgainQuestion"), GUILayout.ExpandWidth(false));
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
                 
@@ -149,7 +148,7 @@ namespace cs.HoLMod.MoreGambles
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
                 
-                if (GUILayout.Button(LanguageManager.GetText("PlayAgain"), GUILayout.Width(120f * scaleFactor), GUILayout.Height(40f * scaleFactor)))
+                if (GUILayout.Button(LanguageManager.Instance.GetText("PlayAgain"), GUILayout.Width(120f * scaleFactor), GUILayout.Height(40f * scaleFactor)))
                 {
                     // 玩家选择再玩一局
                     isVisible = false;
@@ -159,7 +158,7 @@ namespace cs.HoLMod.MoreGambles
                 
                 GUILayout.Space(20f * scaleFactor);
                 
-                if (GUILayout.Button(LanguageManager.GetText("ReturnToMainMenu"), GUILayout.Width(120f * scaleFactor), GUILayout.Height(40f * scaleFactor)))
+                if (GUILayout.Button(LanguageManager.Instance.GetText("ReturnToMainMenu"), GUILayout.Width(120f * scaleFactor), GUILayout.Height(40f * scaleFactor)))
                 {
                     // 玩家选择返回主窗口
                     isVisible = false;

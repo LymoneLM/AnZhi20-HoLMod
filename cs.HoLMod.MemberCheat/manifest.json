@@ -1,0 +1,9 @@
+{
+    "name": "MemberCheat",
+    "version_number": "2.0.0",
+    "website_url": "https://github.com/AnZhi20/AnZhi20-HoLMod",
+    "description": "在游戏内按F3打开窗口可自定义修改成员。Press F3 in-game to open a window where you can Cheat Member.",
+    "dependencies": [
+        "BepInEx-BepInExPack-5.4.2100"
+    ]
+}

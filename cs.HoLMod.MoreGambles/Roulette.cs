@@ -1,10 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using BepInEx;
-using cs.HoLMod.TaskCheat;
 
 namespace cs.HoLMod.MoreGambles
 {
@@ -87,7 +83,7 @@ namespace cs.HoLMod.MoreGambles
             initialSpinSpeed = 0f;
             decelerationRate = 0f;
             winningNumber = 0;
-            winningColor = LanguageManager.GetText("绿色");
+            winningColor = LanguageManager.Instance.GetText("绿色");
             resultDisplayTimer = 0f;
             
             // 破产相关初始化
@@ -95,21 +91,21 @@ namespace cs.HoLMod.MoreGambles
             bankruptcyWarningTime = 0f;
             bankruptciesCount = 0;
             
-            Logger.LogInfo(LanguageManager.GetText("轮盘赌游戏初始化完成"));
+            Logger.LogInfo(LanguageManager.Instance.GetText("轮盘赌游戏初始化完成"));
         }
 
         private void InitializeRouletteNumbers()
         {
             // 初始化美式轮盘数字（0-36），包括0和00
             // 实际游戏中可能需要调整颜色和数字分布
-            rouletteNumbers.Add(new NumberColor(0, LanguageManager.GetText("绿色")));
+            rouletteNumbers.Add(new NumberColor(0, LanguageManager.Instance.GetText("绿色")));
             
             // 1-36的数字和颜色
             string[] colors = new string[] {
-                LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"),
-                LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"),
-                LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"),
-                LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("红色"), LanguageManager.GetText("黑色"), LanguageManager.GetText("红色")
+                LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"),
+                LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"),
+                LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"),
+                LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色"), LanguageManager.Instance.GetText("黑色"), LanguageManager.Instance.GetText("红色")
             };
             
             for (int i = 1; i <= 36; i++)
@@ -125,7 +121,7 @@ namespace cs.HoLMod.MoreGambles
             {
                 bankruptciesCount++;
                 currentState = GameState.GameOver;
-                Logger.LogInfo(LanguageManager.GetText("玩家破产！"));
+                Logger.LogInfo(LanguageManager.Instance.GetText("玩家破产！"));
                 
                 // 可以添加破产后的处理逻辑，如给予一些救济金
                 if (bankruptciesCount <= 3) // 给予3次救济金
@@ -145,7 +141,7 @@ namespace cs.HoLMod.MoreGambles
                     playerChips = reliefAmount; // 给予筹码作为救济金
                     bankruptcyWarning = true;
                     bankruptcyWarningTime = Time.time; // 设置警告时间戳
-                    Logger.LogInfo(LanguageManager.GetFormattedText("获得救济金：{0}个筹码", reliefAmount));
+                    // TODO: Logger.LogInfo(LanguageManager.Instance.GetFormattedText("获得救济金：{0}个筹码", reliefAmount));
                     currentState = GameState.NotStarted;
                 }
             }
@@ -169,7 +165,7 @@ namespace cs.HoLMod.MoreGambles
                 UpdateResolutionSettings();
                 showMenu = !showMenu;
                 blockGameInput = showMenu;
-                Logger.LogInfo(showMenu ? LanguageManager.GetText("轮盘赌窗口已打开") : LanguageManager.GetText("轮盘赌窗口已关闭"));
+                Logger.LogInfo(showMenu ? LanguageManager.Instance.GetText("轮盘赌窗口已打开") : LanguageManager.Instance.GetText("轮盘赌窗口已关闭"));
             }
 
             // 阻止游戏输入当窗口显示时
@@ -288,7 +284,7 @@ namespace cs.HoLMod.MoreGambles
             GUI.skin.textField.fontSize = Mathf.RoundToInt(12 * scaleFactor);
 
             // 创建主游戏窗口
-            windowRect = GUI.Window(0, windowRect, DrawWindow, LanguageManager.GetText("轮盘赌 - 高级版"), GUI.skin.window);
+            windowRect = GUI.Window(0, windowRect, DrawWindow, LanguageManager.Instance.GetText("轮盘赌 - 高级版"), GUI.skin.window);
 
             // 恢复原始矩阵和背景色
             GUI.matrix = guiMatrix;

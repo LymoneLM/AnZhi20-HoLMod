@@ -31,7 +31,7 @@ namespace cs.HoLMod.Member_Other_quData
             public const int MOOD = 8;                      // 心情
             public const int UNKNOWN_9 = 9;                 // 未知含义
             public const int REPUTATION = 10;               // 声誉
-            public const int UNKNOWN_11 = 11;               // 未知含义
+            public const int UNKNOWN_11 = 11;               // 状态？
             public const int FAVORABILITY = 12;             // 好感度
             public const int PREGNANCY_MONTHS = 13;         // 怀孕月份
             public const int RECENT_EVENTS = 14;            // 近期记事
