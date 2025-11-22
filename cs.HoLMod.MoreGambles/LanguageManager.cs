@@ -56,7 +56,7 @@ namespace cs.HoLMod.MoreGambles
         }
 
         // 获取翻译
-        public string GetTranslation(string key)
+        public string GetText(string key)
         {
             if (translations[currentLanguageCode].ContainsKey(key))
             {

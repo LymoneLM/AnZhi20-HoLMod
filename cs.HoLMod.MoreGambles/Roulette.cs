@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using BepInEx;
 
@@ -101,7 +98,7 @@ namespace cs.HoLMod.MoreGambles
         {
             // 初始化美式轮盘数字（0-36），包括0和00
             // 实际游戏中可能需要调整颜色和数字分布
-            rouletteNumbers.Add(new NumberColor(0, LanguageManager.GetText("绿色")));
+            rouletteNumbers.Add(new NumberColor(0, LanguageManager.Instance.GetText("绿色")));
             
             // 1-36的数字和颜色
             string[] colors = new string[] {
@@ -144,7 +141,7 @@ namespace cs.HoLMod.MoreGambles
                     playerChips = reliefAmount; // 给予筹码作为救济金
                     bankruptcyWarning = true;
                     bankruptcyWarningTime = Time.time; // 设置警告时间戳
-                    Logger.LogInfo(LanguageManager.Instance.GetFormattedText("获得救济金：{0}个筹码", reliefAmount));
+                    // TODO: Logger.LogInfo(LanguageManager.Instance.GetFormattedText("获得救济金：{0}个筹码", reliefAmount));
                     currentState = GameState.NotStarted;
                 }
             }
