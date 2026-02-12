@@ -4,6 +4,7 @@ using System.Diagnostics;
 using cs.HoLMod.AddItem.Views;
 using UnityEngine;
 using YuanAPI;
+using YuanAPI.Tools;
 
 namespace cs.HoLMod.AddItem;
 
